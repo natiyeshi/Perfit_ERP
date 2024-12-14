@@ -1,5 +1,5 @@
-import helloRouter from "./hello.route";
+import authRouter from "./auth.routes";
 
 export default {
-  helloRouter,
+  authRouter,
 };

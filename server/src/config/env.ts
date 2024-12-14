@@ -2,11 +2,8 @@ import dotenv from "dotenv";
 
 type NODE_ENV_TYPE = "production" | "development";
 
-// Get the NODE_ENV value from process.env with a fallback to 'development'
 const NODE_ENV: NODE_ENV_TYPE =
   (process.env.NODE_ENV as NODE_ENV_TYPE) || "development";
-
-  console.log("NODE_ENV from process.env:", process.env.NODE_ENV);
 
 // Load the appropriate .env file based on NODE_ENV
 dotenv.config({

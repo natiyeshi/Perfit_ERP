@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// Learn more in the documentation: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
