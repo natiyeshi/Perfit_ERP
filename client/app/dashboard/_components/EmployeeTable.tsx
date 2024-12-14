@@ -1,6 +1,5 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { EmailOtpType } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
 import FilterCard, { filterInf } from "./Filter";
 import { IoCloseSharp } from "react-icons/io5";
@@ -17,8 +16,7 @@ import { IDBEmployee } from "@/types/IEmployee";
 import DeleteEmployee from "@/components/custom/DeleteEmployee";
 import DetailEmployee from "@/components/custom/DetailEmployee";
 import { IoMdRefresh } from "react-icons/io";
-import { getEmployees } from "../hr/_actions/employee";
-import { createClient } from "@/utils/supabase/client";
+import employeeData from "@/data/empdata";
 
 interface TableProps {
   mainData: IDBEmployee[];
@@ -57,8 +55,8 @@ const EmployeeTable: React.FC<TableProps> = ({ mainData }) => {
   };
 
   const reload = async () => {
-    const { data, error } = await getEmployees();
-    setEmployees(data ? data : []);
+    // const { data, error } = await getEmployees();
+    setEmployees(employeeData);
   };
 
   useEffect(() => {

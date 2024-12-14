@@ -1,7 +1,4 @@
 import CustomLink from "@/components/custom/CustomLink";
-import { createClient } from "@/utils/supabase/server";
-import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function Layout({ children }: { children: any }) {
   return (

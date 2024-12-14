@@ -20,9 +20,7 @@ import { Label } from "@/components/ui/label"; // ShadCN Label component
 import { IoCloseSharp } from "react-icons/io5";
 import { IEmployee } from "@/types/IEmployee";
 import { VEmployee } from "@/validation/VEmployee";
-import { createEmployee } from "@/app/dashboard/hr/_actions/employee";
 import CustomeErrorMessage from "@/components/custom/ErrorMessage";
-import { createClient } from "@/utils/supabase/client";
 import { formatISO } from "date-fns";
 
 const initialValues: IEmployee = {
@@ -51,19 +49,19 @@ function AddEmployee({ setEmployees }: { setEmployees: Function }) {
 
   const handleSubmit = async (values: IEmployee, { resetForm }: any) => {
     setErr(null);
-    const supabase = createClient();
-    const { data: NewEmployee, error }: any = await supabase
-      .from("Employee")
-      .insert([values])
-      .select();
-    if (error && NewEmployee && NewEmployee.length > 0) {
-      setErr(error);
-    } else {
-      console.log(NewEmployee);
-      NewEmployee && setEmployees((data: any) => [NewEmployee[0], ...data]);
-      resetForm(); // Reset form after submission
-      setOpen(false);
-    }
+    // const supabase = createClient();
+    // const { data: NewEmployee, error }: any = await supabase
+    //   .from("Employee")
+    //   .insert([values])
+    //   .select();
+    // if (error && NewEmployee && NewEmployee.length > 0) {
+    //   setErr(error);
+    // } else {
+    //   console.log(NewEmployee);
+    //   NewEmployee && setEmployees((data: any) => [NewEmployee[0], ...data]);
+    //   resetForm(); // Reset form after submission
+    //   setOpen(false);
+    // }
   };
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
