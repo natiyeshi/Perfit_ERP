@@ -1,25 +1,29 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
-import { ApiResponse } from "../types";
+import { RouteError, sendApiResponse } from "../utils";
+import { StatusCodes } from "http-status-codes";
 
 const routeErrorHandlingMiddleware: ErrorRequestHandler = (
   err: any,
   _: Request,
   res: Response,
   __: NextFunction
-): void => {
-  if (err?.statusCode) {
-    return res.status(err.statusCode).json({
+) => {
+  if (err instanceof RouteError)
+    sendApiResponse({
+      res,
+      statusCode: err.statusCode,
       success: false,
       message: err.message,
-      result: err.data,
-    } satisfies ApiResponse<typeof err.data>) as unknown as void;
-  }
-
-  return res.status(500).json({
-    success: false,
-    message: err.message || "Something went wrong",
-    result: err || null,
-  } satisfies ApiResponse<typeof err.data>) as unknown as void;
+      result: err.result,
+    });
+  else
+    sendApiResponse({
+      res,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+      success: false,
+      message: err.message,
+      result: err.data || null,
+    });
 };
 
 export default routeErrorHandlingMiddleware;

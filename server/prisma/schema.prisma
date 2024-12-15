@@ -7,98 +7,158 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  UNKNOWN
+  DATA_AGGREGATOR
+  SALES_PERSON
+  ADMIN
+}
+
+model User {
+  id          String       @id @unique @default(cuid())
+  fullName    String
+  email       String       @unique
+  password    String
+  salesPerson SalesPerson?
+  role        UserRole     @default(UNKNOWN)
+
+  @@index([email])
+  @@map("users")
+}
+
 model Product {
-  id                   String                 @id @unique @default(cuid())
-  name                 String?
-  brand                String?
-  competitorImportData CompetitorImportData[]
-  inventory            Inventory[]
-  iodm                 IODM[]
-  pipeline             Pipeline[]
+  id                String             @id @unique @default(cuid())
+  name              String
+  unitPrice         Float              @map("unit_price")
+  shelfLife         String?            @map("shelf_life")
+  brand             String?
+  productCatagories ProductCategory[]
+  competitorImports CompetitorImport[]
+  inventories       Inventory[]
+  IDOMs             IODM[]
+  pipelines         Pipeline[]
+
+  @@map("products")
 }
 
 model Supplier {
-  id                   String                 @id @unique @default(cuid())
-  name                 String?
-  email                String?
-  phoneNumber          String?                @map("phone_number")
-  country              String?
-  competitorImportData CompetitorImportData[]
-  inventory            Inventory[]
+  id                String             @id @unique @default(cuid())
+  name              String
+  email             String?
+  phoneNumber       String?            @map("phone_number")
+  country           String?
+  competitorImports CompetitorImport[]
+  inventories       Inventory[]
+
+  @@map("suppliers")
 }
 
-model CompetitorImportData {
+model Competitor {
+  id                String             @id @unique @default(cuid())
+  name              String
+  email             String?
+  phoneNumber       String?            @map("phone_number")
+  country           String?
+  competitorImports CompetitorImport[]
+
+  @@map("competitors")
+}
+
+model CompetitorImport {
   id             String    @id @unique @default(cuid())
-  product        Product?  @relation(fields: [productId], references: [id])
-  supplier       Supplier? @relation(fields: [supplierId], references: [id])
-  quantity       Int?
+  quantity       Int
   unit           String?
   unitPrice      Float?    @map("unit_price")
   totalPrice     Float?    @map("total_price")
   orderDate      DateTime? @map("order_date")
   shelfLife      String?   @map("shelf_life")
   modeOfShipment String?   @map("mode_of_shipment")
-  productName    String?   @map("product_name")
-  productBrand   String?   @map("product_brand")
-  createdAt      DateTime? @default(now()) @map("created_at")
-  companyName    String?   @map("company_name")
-  productId      String?
-  supplierId     String?
+
+  companyName String?   @map("company_name")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  productId     String
+  product       Product    @relation(fields: [productId], references: [id])
+  supplierId    String?
+  supplier      Supplier?  @relation(fields: [supplierId], references: [id])
+  competiatorId String
+  competitor    Competitor @relation(fields: [competiatorId], references: [id], onDelete: Cascade)
+
+  @@map("competitor_imports")
 }
 
 model Inventory {
   id             String    @id @unique @default(cuid())
+  productId      String?
   product        Product?  @relation(fields: [productId], references: [id])
+  supplierId     String?
   supplier       Supplier? @relation(fields: [supplierId], references: [id])
-  quantity       Int?
+  quantity       Int
   unit           String?
   unitPrice      Float?    @map("unit_price")
   totalPrice     Float?    @map("total_price")
   orderDate      DateTime? @map("order_date")
   shelfLife      DateTime? @map("shelf_life")
-  modeOfShipment String?   @map("mode_of_shipment")
-  productName    String?   @map("product_name")
-  productBrand   String?   @map("product_brand")
-  createdAt      DateTime? @default(now()) @map("created_at")
-  productId      String?
-  supplierId     String?
+  modeOfShipment String?   @map("mode_of_shipment") // I don't know why we need this field
+
+  createdAt DateTime? @default(now()) @map("created_at")
 }
 
 model Customer {
-  id                String             @id @unique @default(cuid())
-  name              String?
-  label             String?
-  sellsTransactions SellsTransaction[]
+  id           String        @id @unique @default(cuid())
+  fullName     String
+  label        String?
+  transactions Transaction[]
+
+  @@map("customers")
 }
 
-model SellsTransaction {
-  id          String    @id @unique @default(cuid())
-  customer    Customer? @relation(fields: [customerId], references: [id])
-  sellsPerson Sells?    @relation(fields: [sellsId], references: [id])
-  quantity    Int?
-  totalPrice  Float?    @map("total_price")
-  createdAt   DateTime? @map("created_at")
-  customerId  String?
-  sellsId     String?
+model Transaction {
+  id         String   @id @unique @default(cuid())
+  customerId String   @map("customer_id")
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  salesPersonId String      @map("sales_person_id")
+  salesPerson   SalesPerson @relation(fields: [salesPersonId], references: [id])
+  quantity      Int
+  totalPrice    Float       @map("total_price")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@map("transactions")
 }
 
-model Sells {
-  id                String             @id @unique @default(cuid())
-  name              String?
-  sellsTransactions SellsTransaction[]
+model SalesPerson {
+  id           String        @id @unique @default(cuid())
+  userId       String        @unique @map("user_id")
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@map("sales_persons")
+}
+
+model ProductCategory {
+  id       String    @id @unique @default(cuid())
+  name     String
+  products Product[]
+
+  @@map("product_categoies")
 }
 
 model IODM {
   id        String   @id @unique @default(cuid())
   product   Product? @relation(fields: [productId], references: [id])
   productId String?
+
+  @@map("IODMs")
 }
 
 model Pipeline {
   id            String   @id @unique @default(cuid())
-  product       Product? @relation(fields: [productId], references: [id])
   shipment      String?
-  quantity      Int?
-  invoiceAmount Float?   @map("invoice_amount")
+  quantity      Int
+  invoiceAmount Float    @map("invoice_amount")
   productId     String?
+  product       Product? @relation(fields: [productId], references: [id])
+
+  @@map("pipelines")
 }
