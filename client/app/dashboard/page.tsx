@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 const page = () => {
   // redirect("/dashboard/hr/employees");
-  return <></>;
+  return <>Some content here</>;
 };
 
 export default page;
