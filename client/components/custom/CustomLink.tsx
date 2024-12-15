@@ -12,7 +12,7 @@ interface CustomComponentProps {
 const CustomLink: React.FC<CustomComponentProps> = ({ link, name }) => {
   const pathname = usePathname();
 
-  const isActive = pathname.includes(link);
+  const isActive = name == "data" ? pathname == link : pathname.includes(link);
 
   return (
     <Link
