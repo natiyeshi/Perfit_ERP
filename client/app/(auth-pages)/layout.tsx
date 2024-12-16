@@ -1,9 +1,14 @@
+import PowerdBy from "@/components/custom/PowerdBy";
+
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-w-7xl flex flex-col gap-12 items-start">{children}</div>
+    <div className="w-full h-screen flex justify-center flex-col items-center">
+      <div className="max-w-7xl ">{children}</div>
+      <PowerdBy className="mt-8 " />
+    </div>
   );
 }

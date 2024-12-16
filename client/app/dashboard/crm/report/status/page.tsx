@@ -27,8 +27,12 @@ const Gender = () => {
   return (
     <ResponsiveContainer width="90%" height="80%" className={"mt-5 mx-auto "}>
       <BarChart width={150} height={40} data={data}>
-        <Bar dataKey="status" barSize={100} fill="#5D55EEFF"  />
-        <CartesianGrid strokeDasharray="3 2" vertical={false} horizontal={false} />
+        <Bar dataKey="status" barSize={100} fill="#38fc7e" />
+        <CartesianGrid
+          strokeDasharray="3 2"
+          vertical={false}
+          horizontal={false}
+        />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip labelClassName="text-black " cursor={false} />

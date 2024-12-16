@@ -11,10 +11,16 @@ export interface InnerSideBarInf {
   links: LinkInf[];
 }
 
-const InnerSideBar = ({ children,data }: {children : any, data: InnerSideBarInf }) => {
+const InnerSideBar = ({
+  children,
+  data,
+}: {
+  children: any;
+  data: InnerSideBarInf;
+}) => {
   return (
     <>
-      <div className="w-[300px] ml-[80px] border-r">
+      <div className="min-w-[230px]  ml-[80px] border-r">
         <div className="h-12 min-h-12 max-h-12 ps-4 text-white border-b capitalize text-lg flex">
           <div className="my-auto">{data.name}</div>
         </div>
@@ -28,8 +34,8 @@ const InnerSideBar = ({ children,data }: {children : any, data: InnerSideBarInf 
           ))}
         </div>
       </div>
-      <div className={`w-full max-h-screen`}>
-        <div className="w-full flex flex-col h-full">
+      <div className={`w-full max-h-screen flex-1 overflow-x-hidden overflow-y-auto`}>
+        <div className="w-full flex flex-col  h-full">
           <div className="flex w-full h-12 min-h-12 max-h-12 border-b"></div>
           {children}
         </div>
