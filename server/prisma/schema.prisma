@@ -21,9 +21,16 @@ model User {
   password    String
   salesPerson SalesPerson?
   role        UserRole     @default(UNKNOWN)
+  flag        Flag?
 
   @@index([email])
   @@map("users")
+}
+
+model Flag {
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id])
+  isSuspended Boolean @default(false) @map("is_suspended")
 }
 
 model Product {

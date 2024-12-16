@@ -27,6 +27,11 @@ export const signUpController = asyncWrapper(async (req, res) => {
       fullName: data.fullName,
       email: data.email,
       password: hashedPassword,
+      flag: {
+        create: {
+          isSuspended: false,
+        },
+      },
     },
   });
 
