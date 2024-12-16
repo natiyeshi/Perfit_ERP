@@ -24,6 +24,8 @@ const authenticationMiddleWare = asyncWrapper(async (req, _, next) => {
     role: UserRole;
   }>(token);
 
+  if (!payload) throw RouteError.Unauthorized("Invalid token");
+
   req.user = { _id: payload.userId, _role: payload.role };
   next();
 });
@@ -38,6 +40,8 @@ const roleAuthenticationMiddleware = (roles: UserRole[]) => {
       userId: string;
       role: UserRole;
     }>(token);
+
+    if (!payload) throw RouteError.Unauthorized("Invalid token");
 
     if (!roles.includes(payload.role))
       throw RouteError.Unauthorized("You don't have the required permissions.");

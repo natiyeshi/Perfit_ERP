@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import routes from "./routes";
 import middlewares from "./middleware";
 import { ENV } from "./config";
+import { setupSwagger } from "./libs";
 
 const app = express();
 
@@ -16,11 +17,14 @@ app.use(express.json());
 app.use(middlewares.limiter);
 app.use(cookieParser(ENV.COOKIE_SECRET)); // Use a secret key for signing
 
-
-// Registring routes
+// Routes
 app.use("/api/v1/auth", routes.authRouter);
+app.use("/api/v1/users", routes.userRouter);
+app.use("/api/v1/products", routes.productRouter);
 
-// Route error handling middleware
+setupSwagger(app);
+
+// Error handling middleware
 app.use(middlewares.routeErrorHandlingMiddleware);
 
 export default app;
