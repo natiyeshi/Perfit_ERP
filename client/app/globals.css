@@ -68,3 +68,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+@layer components {
+  .very-big-topic {
+    @apply text-xl font-black text-white;
+  }
+  .big-topic {
+    @apply text-lg font-black text-white;
+  }
+  
+}

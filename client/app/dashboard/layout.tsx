@@ -1,5 +1,5 @@
 
-import MainSideBar from "./_components/ManSideBar";
+import MainSideBar from "./_components/MainSideBar";
 
 export default async function Layout({ children }: { children: any }) {
   return (
