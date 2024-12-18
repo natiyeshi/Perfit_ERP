@@ -4,28 +4,28 @@ import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { authValidator } from "../validators";
 
 export const signUpController = asyncWrapper(async (req, res) => {
-  const { data, success, error } = authValidator.signUpSchema.safeParse(
-    req.body
-  );
+  const bodyValidation = authValidator.signUpSchema.safeParse(req.body);
 
-  if (!success)
+  if (!bodyValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(error)[0].message,
-      zodErrorFmt(error)
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
     );
 
   const existingUser = await db.user.findUnique({
-    where: { email: data.email },
+    where: { email: bodyValidation.data.email },
   });
 
   if (existingUser) throw RouteError.BadRequest("Email already in use.");
 
-  const hashedPassword = await passwordCrypt.hashPassword(data.password);
+  const hashedPassword = await passwordCrypt.hashPassword(
+    bodyValidation.data.password
+  );
 
   const user = await db.user.create({
     data: {
-      fullName: data.fullName,
-      email: data.email,
+      fullName: bodyValidation.data.fullName,
+      email: bodyValidation.data.email,
       password: hashedPassword,
       flag: {
         create: {
@@ -49,23 +49,21 @@ export const signUpController = asyncWrapper(async (req, res) => {
 });
 
 export const signInController = asyncWrapper(async (req, res) => {
-  const { data, success, error } = authValidator.signInSchema.safeParse(
-    req.body
-  );
-  if (!success)
+  const bodyValidation = authValidator.signInSchema.safeParse(req.body);
+  if (!bodyValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(error)[0].message,
-      zodErrorFmt(error)
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
     );
 
   const existingUser = await db.user.findUnique({
-    where: { email: data.email },
+    where: { email: bodyValidation.data.email },
   });
 
   if (!existingUser) throw RouteError.BadRequest("Invalid email or password");
 
   const isCorrectPassword = await passwordCrypt.verifyPassword(
-    data.password,
+    bodyValidation.data.password,
     existingUser.password
   );
 
@@ -94,18 +92,16 @@ export const signInController = asyncWrapper(async (req, res) => {
   });
 });
 
-export const updateUserRoleController = asyncWrapper(async (req, res) => {
-  const { data, success, error } = authValidator.updateUserRoleSchema.safeParse(
-    req.body
-  );
-  if (!success)
+export const updateROLEController = asyncWrapper(async (req, res) => {
+  const bodyValidation = authValidator.updateROLESchema.safeParse(req.body);
+  if (!bodyValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(error)[0].message,
-      zodErrorFmt(error)
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
     );
 
   const existingUser = await db.user.findUnique({
-    where: { id: data.userId },
+    where: { id: bodyValidation.data.userId },
   });
 
   if (!existingUser)
@@ -113,10 +109,10 @@ export const updateUserRoleController = asyncWrapper(async (req, res) => {
 
   const updatedUser = await db.user.update({
     where: {
-      id: data.userId,
+      id: bodyValidation.data.userId,
     },
     data: {
-      role: data.role,
+      role: bodyValidation.data.role,
     },
   });
 

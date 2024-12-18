@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
-import { productValidator } from "../validators";
+import { productValidator, queryParamIDValidator } from "../validators";
 import { db, zodErrorFmt } from "../libs";
 
 export const getProductsController = asyncWrapper(async (req, res) => {
@@ -16,9 +16,9 @@ export const getProductsController = asyncWrapper(async (req, res) => {
 });
 
 export const getProductByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = productValidator.getProductByIdSchema.safeParse(
-    req.params
-  );
+  const queryParamValidation = queryParamIDValidator(
+    "Product ID isn't provided or isn't valid"
+  ).safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -70,9 +70,9 @@ export const updateProductController = asyncWrapper(async (req, res) => {
     req.body
   );
 
-  const queryParamValidation = productValidator.getProductByIdSchema.safeParse(
-    req.params
-  );
+  const queryParamValidation = queryParamIDValidator(
+    "Product ID isn't provided or isn't valid"
+  ).safeParse(req.params);
 
   if (!bodyValidation.success)
     throw RouteError.BadRequest(
@@ -110,9 +110,9 @@ export const updateProductController = asyncWrapper(async (req, res) => {
 });
 
 export const deleteProductController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = productValidator.getProductByIdSchema.safeParse(
-    req.params
-  );
+  const queryParamValidation = queryParamIDValidator(
+    "Product ID isn't provided or isn't valid"
+  ).safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(

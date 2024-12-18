@@ -7,11 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
+enum ROLE {
   UNKNOWN
   DATA_AGGREGATOR
   SALES_PERSON
   ADMIN
+}
+
+enum CUSTOMER_LABEL {
+  A
+  B
+  C
+  D
 }
 
 model User {
@@ -20,7 +27,7 @@ model User {
   email       String       @unique
   password    String
   salesPerson SalesPerson?
-  role        UserRole     @default(UNKNOWN)
+  role        ROLE         @default(UNKNOWN)
   flag        Flag?
 
   @@index([email])
@@ -50,7 +57,7 @@ model Product {
 
 model Supplier {
   id                String             @id @unique @default(cuid())
-  name              String
+  fullName          String             @map("full_name")
   email             String?
   phoneNumber       String?            @map("phone_number")
   country           String?
@@ -81,8 +88,7 @@ model CompetitorImport {
   shelfLife      String?   @map("shelf_life")
   modeOfShipment String?   @map("mode_of_shipment")
 
-  companyName String?   @map("company_name")
-  createdAt   DateTime? @default(now()) @map("created_at")
+  // companyName String?   @map("company_name") because it is already in Competition entry
 
   productId     String
   product       Product    @relation(fields: [productId], references: [id])
@@ -90,6 +96,8 @@ model CompetitorImport {
   supplier      Supplier?  @relation(fields: [supplierId], references: [id])
   competiatorId String
   competitor    Competitor @relation(fields: [competiatorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime? @default(now()) @map("created_at")
 
   @@map("competitor_imports")
 }
@@ -112,9 +120,9 @@ model Inventory {
 }
 
 model Customer {
-  id           String        @id @unique @default(cuid())
+  id           String         @id @unique @default(cuid())
   fullName     String
-  label        String?
+  label        CUSTOMER_LABEL @default(D)
   transactions Transaction[]
 
   @@map("customers")

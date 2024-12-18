@@ -21,6 +21,13 @@ app.use(cookieParser(ENV.COOKIE_SECRET)); // Use a secret key for signing
 app.use("/api/v1/auth", routes.authRouter);
 app.use("/api/v1/users", routes.userRouter);
 app.use("/api/v1/products", routes.productRouter);
+app.use("/api/v1/suppliers", routes.supplierRouter);
+app.use("/api/v1/competitors", routes.competitorRouter);
+app.use("/api/v1/competitor-imports", routes.competitorImportRouter);
+app.use("/api/v1/inventories", routes.inventoryRouter);
+app.use("/api/v1/customers", routes.customerRouter);
+app.use("/api/v1/transactions", routes.transactionRouter);
+app.use("/api/v1/product-categories", routes.productCategoryRouter);
 
 setupSwagger(app);
 

@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { ROLE } from "@prisma/client";
 import * as z from "zod";
 
 export const signUpSchema = z.object({
@@ -28,7 +28,7 @@ export const signInSchema = z.object({
   }),
 });
 
-export const updateUserRoleSchema = z.object({
+export const updateROLESchema = z.object({
   userId: z
     .string({
       message: "UserId has to be a string",
@@ -38,10 +38,10 @@ export const updateUserRoleSchema = z.object({
     }),
   role: z.enum(
     [
-      UserRole.UNKNOWN,
-      UserRole.SALES_PERSON,
-      UserRole.DATA_AGGREGATOR,
-      UserRole.ADMIN,
+      ROLE.UNKNOWN,
+      ROLE.SALES_PERSON,
+      ROLE.DATA_AGGREGATOR,
+      ROLE.ADMIN,
     ],
     {
       message: "Invalid user role.",
