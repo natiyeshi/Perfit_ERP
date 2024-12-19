@@ -2,10 +2,10 @@ import { Router } from "express";
 import {
   signInController,
   signUpController,
-  updateUserRoleController,
+  updateROLEController,
 } from "../controllers/auth.controller";
 import middleware from "../middleware";
-import { UserRole } from "@prisma/client";
+import { ROLE } from "@prisma/client";
 
 const router = Router();
 
@@ -13,8 +13,8 @@ router.post("/sign-up", signUpController);
 router.post("/sign-in", signInController);
 router.patch(
   "/role",
-  middleware.auth.roleAuthenticationMiddleware([UserRole.ADMIN]),
-  updateUserRoleController
+  middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
+  updateROLEController
 );
 
 export default router;

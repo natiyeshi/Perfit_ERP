@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import middleware from "../middleware";
-import { UserRole } from "@prisma/client";
+import { ROLE } from "@prisma/client";
 import {
   getUserByIdController,
   getUsersController,
@@ -13,12 +13,12 @@ const router = Router();
 
 router.get(
   "",
-  middleware.auth.roleAuthenticationMiddleware([UserRole.ADMIN]),
+  middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
   getUsersController
 );
 router.get(
   "/id:",
-  middleware.auth.roleAuthenticationMiddleware([UserRole.ADMIN]),
+  middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
   getUserByIdController
 );
 router.patch(
@@ -28,7 +28,7 @@ router.patch(
 );
 router.patch(
   "/flags/:id",
-  middleware.auth.roleAuthenticationMiddleware([UserRole.ADMIN]),
+  middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
   updateFlagsByUserIdController
 );
 

@@ -11,10 +11,5 @@ export const createProductSchema = z.object({
   brand: z.string({ message: "Brand must be a string." }).optional(),
 });
 
-export const updateProductSchema = createProductSchema.optional();
+export const updateProductSchema = createProductSchema.partial();
 
-export const getProductByIdSchema = z.object({
-  id: z
-    .string({ message: "Product ID must be a string." })
-    .min(1, { message: "Product ID is required." }),
-});
