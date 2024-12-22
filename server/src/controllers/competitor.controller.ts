@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
-import { queryParamIDValidator, competitorValidator } from "../validators";
+import { queryValidator, competitorValidator } from "../validators";
 import { db, zodErrorFmt } from "../libs";
 
 export const getCompetitorsController = asyncWrapper(async (_, res) => {
@@ -20,7 +20,7 @@ export const getCompetitorsController = asyncWrapper(async (_, res) => {
 });
 
 export const getCompetitorByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Competitor ID not provided or invalid."
   ).safeParse(req.params);
 
@@ -76,7 +76,7 @@ export const createCompetitorController = asyncWrapper(async (req, res) => {
 });
 
 export const updateCompetitorController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Competitor ID not provided or invalid."
   ).safeParse(req.params);
   const bodyValidation = competitorValidator.updateCompetitorSchema.safeParse(
@@ -124,7 +124,7 @@ export const updateCompetitorController = asyncWrapper(async (req, res) => {
 });
 
 export const deleteCompetitorController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Competitor ID not provided or invalid."
   ).safeParse(req.params);
 

@@ -7,9 +7,8 @@ export const createProductSchema = z.object({
   unitPrice: z
     .number({ message: "Unit price must be a number." })
     .positive({ message: "Unit price must be a positive number." }),
-  shelfLife: z.string().optional(),
+  shelfLife: z.number().positive(),
   brand: z.string({ message: "Brand must be a string." }).optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();
-
