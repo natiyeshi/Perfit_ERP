@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { db, zodErrorFmt } from "../libs";
-import { customerValidator, queryParamIDValidator } from "../validators";
+import { customerValidator, queryValidator } from "../validators";
 
 export const getCustomersController = asyncWrapper(async (req, res) => {
   const customers = await db.customer.findMany({
@@ -20,9 +20,9 @@ export const getCustomersController = asyncWrapper(async (req, res) => {
 });
 
 export const getCustomerByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Customer ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Customer ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -76,9 +76,9 @@ export const createCustomerController = asyncWrapper(async (req, res) => {
 });
 
 export const updateCustomerController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Customer ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Customer ID not provided or invalid.")
+    .safeParse(req.params);
   const bodyValidation = customerValidator.updateCustomerSchema.safeParse(
     req.body
   );
@@ -124,9 +124,9 @@ export const updateCustomerController = asyncWrapper(async (req, res) => {
 });
 
 export const deleteCustomerController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Customer ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Customer ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(

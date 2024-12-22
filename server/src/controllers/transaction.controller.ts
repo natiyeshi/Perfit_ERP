@@ -1,16 +1,45 @@
 import { StatusCodes } from "http-status-codes";
-import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
+import {
+  asyncWrapper,
+  filterByLastDays,
+  RouteError,
+  sendApiResponse,
+} from "../utils";
 import { db, zodErrorFmt } from "../libs";
-import { transactionValidator, queryParamIDValidator } from "../validators";
+import { transactionValidator, queryValidator } from "../validators";
+import { Transaction } from "@prisma/client";
 
 // Get All Transactions
 export const getTransactionsController = asyncWrapper(async (req, res) => {
-  const transactions = await db.transaction.findMany({
-    include: {
-      customer: true,
-      salesPerson: true,
-    },
+  const paginationValiation =
+    queryValidator.paginationsQueryValidator.safeParse(req.query);
+
+  const lastDaysValidation = queryValidator.lastDaysQueryValidator.safeParse(
+    req.query
+  );
+
+  if (!paginationValiation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(paginationValiation.error)[0].message,
+      zodErrorFmt(paginationValiation.error)
+    );
+
+  if (!lastDaysValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(lastDaysValidation.error)[0].message,
+      zodErrorFmt(lastDaysValidation.error)
+    );
+    
+  let transactions = await db.transaction.findMany({
+    take: paginationValiation.data.limit,
+    skip: (paginationValiation.data.page || 1) - 1 || undefined,
   });
+
+  if (lastDaysValidation.success && lastDaysValidation.data.days)
+    transactions = filterByLastDays<Transaction>(
+      transactions,
+      lastDaysValidation.data.days
+    );
 
   return sendApiResponse({
     res,
@@ -23,9 +52,9 @@ export const getTransactionsController = asyncWrapper(async (req, res) => {
 
 // Get Transaction By ID
 export const getTransactionByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Transaction ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Transaction ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -82,9 +111,9 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
 
 // Update Transaction
 export const updateTransactionController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Transaction ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Transaction ID not provided or invalid.")
+    .safeParse(req.params);
   const bodyValidation = transactionValidator.updateTransactionSchema.safeParse(
     req.body
   );
@@ -128,9 +157,9 @@ export const updateTransactionController = asyncWrapper(async (req, res) => {
 
 // Delete Transaction
 export const deleteTransactionController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Transaction ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Transaction ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(

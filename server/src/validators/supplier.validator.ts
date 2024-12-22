@@ -3,15 +3,9 @@ import * as z from "zod";
 const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/; // Adjust the regex for your phone number format
 
 export const createSupplierSchema = z.object({
-  fullName: z.string({ message: "Supplier name must be a string." }).refine(
-    (fullName) => {
-      if (!fullName) return true;
-      return fullName.split(" ").length > 1;
-    },
-    {
-      message: "Supplier full-name has to have first name and last name",
-    }
-  ),
+  name: z.string({ message: "Supplier name must be a string." }).min(1, {
+    message: "Supplier name is required.",
+  }),
   email: z.string({ message: "Email has to be a string" }).email({
     message: "Invalid email.",
   }),

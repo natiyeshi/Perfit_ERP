@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
-import { queryParamIDValidator, userValidator } from "../validators";
+import { queryValidator, userValidator } from "../validators";
 import { db, passwordCrypt, zodErrorFmt } from "../libs";
 import { User } from "@prisma/client";
 
@@ -22,7 +22,7 @@ export const getUsersController = asyncWrapper(async (req, res) => {
 });
 
 export const getUserByIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "User ID not provided or invalid."
   ).safeParse(req.params);
 
@@ -101,7 +101,7 @@ export const updateProfileController = asyncWrapper(async (req, res) => {
 });
 
 export const updateFlagsByUserIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "User ID not provided or invalid."
   ).safeParse(req.params);
   const bodyValidation = userValidator.updateFlags.safeParse(req.body);

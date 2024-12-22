@@ -44,7 +44,7 @@ model Product {
   id                String             @id @unique @default(cuid())
   name              String
   unitPrice         Float              @map("unit_price")
-  shelfLife         String?            @map("shelf_life")
+  shelfLife         Int                @map("shelf_life")
   brand             String?
   productCatagories ProductCategory[]
   competitorImports CompetitorImport[]
@@ -57,7 +57,7 @@ model Product {
 
 model Supplier {
   id                String             @id @unique @default(cuid())
-  fullName          String             @map("full_name")
+  name              String
   email             String?
   phoneNumber       String?            @map("phone_number")
   country           String?
@@ -85,19 +85,17 @@ model CompetitorImport {
   unitPrice      Float?    @map("unit_price")
   totalPrice     Float?    @map("total_price")
   orderDate      DateTime? @map("order_date")
-  shelfLife      String?   @map("shelf_life")
+  shelfLife      Int?      @map("shelf_life")
   modeOfShipment String?   @map("mode_of_shipment")
-
-  // companyName String?   @map("company_name") because it is already in Competition entry
 
   productId     String
   product       Product    @relation(fields: [productId], references: [id])
   supplierId    String?
   supplier      Supplier?  @relation(fields: [supplierId], references: [id])
-  competiatorId String
-  competitor    Competitor @relation(fields: [competiatorId], references: [id], onDelete: Cascade)
+  competitorId String
+  competitor    Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime? @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("competitor_imports")
 }
@@ -113,10 +111,10 @@ model Inventory {
   unitPrice      Float?    @map("unit_price")
   totalPrice     Float?    @map("total_price")
   orderDate      DateTime? @map("order_date")
-  shelfLife      DateTime? @map("shelf_life")
+  shelfLife      Int       @map("shelf_life")
   modeOfShipment String?   @map("mode_of_shipment") // I don't know why we need this field
 
-  createdAt DateTime? @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 }
 
 model Customer {
@@ -137,6 +135,7 @@ model Transaction {
   salesPerson   SalesPerson @relation(fields: [salesPersonId], references: [id])
   quantity      Int
   totalPrice    Float       @map("total_price")
+  
   createdAt     DateTime    @default(now()) @map("created_at")
 
   @@map("transactions")
