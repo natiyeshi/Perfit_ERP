@@ -26,19 +26,30 @@ export const createCompetitorImportSchema = z.object({
       message: "Order date must be a string.",
     })
     .optional(),
-  shelfLife: z
-    .string({
-      message: "Shelf life must be a string.",
-    })
-    .optional(),
+  shelfLife: z.number().positive().optional(),
   modeOfShipment: z
     .string({
       message: "Mode of shipment must be a string.",
     })
     .optional(),
-  productId: z.string().uuid({ message: "Invalid product ID." }),
-  supplierId: z.string().uuid({ message: "Invalid supplier ID." }),
-  competiatorId: z.string().uuid({ message: "Invalid competitor ID." }),
+  productId: z
+    .string({
+      message: "Product ID must be a string.",
+    })
+    .min(1, { message: "Product ID is required." }),
+  supplierId: z
+    .string({
+      message: "Supplier ID must be a string.",
+    })
+    .min(1, {
+      message: "Supplier ID is required.",
+    }),
+  competitorId: z
+    .string({
+      message: "Competitor ID must be a string.",
+    })
+    .min(1, { message: "Competitor ID is required" }),
 });
 
-export const updateCompetitorImportSchema = createCompetitorImportSchema.partial();
+export const updateCompetitorImportSchema =
+  createCompetitorImportSchema.partial();

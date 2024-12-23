@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
-import { queryParamIDValidator, supplierValidator } from "../validators";
+import { queryValidator, supplierValidator } from "../validators";
 import { db, zodErrorFmt } from "../libs";
 
 // Get all suppliers
@@ -23,7 +23,7 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
 
 // Get supplier by ID
 export const getSupplierByIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Supplier ID not provided or invalid."
   ).safeParse(req.params);
 
@@ -82,7 +82,7 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
 // Update supplier details
 export const updateSupplierController = asyncWrapper(async (req, res) => {
   const bodyValidation = supplierValidator.updateSupplierSchema.safeParse(req.body);
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Supplier ID not provided or invalid."
   ).safeParse(req.params);
 
@@ -129,7 +129,7 @@ export const updateSupplierController = asyncWrapper(async (req, res) => {
 
 // Delete supplier
 export const deleteSupplierController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
+  const queryParamValidation = queryValidator.queryParamIDValidator(
     "Supplier ID not provided or invalid."
   ).safeParse(req.params);
 

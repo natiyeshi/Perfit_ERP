@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { db, zodErrorFmt } from "../libs";
-import { productCategoryValidator, queryParamIDValidator } from "../validators";
+import { productCategoryValidator, queryValidator } from "../validators";
 
 // Get all product categories
 export const getProductCategoriesController = asyncWrapper(async (req, res) => {
@@ -23,7 +23,7 @@ export const getProductCategoriesController = asyncWrapper(async (req, res) => {
 // Get a product category by ID
 export const getProductCategoryByIDController = asyncWrapper(
   async (req, res) => {
-    const queryParamValidation = queryParamIDValidator().safeParse(req.params);
+    const queryParamValidation = queryValidator.queryParamIDValidator().safeParse(req.params);
 
     if (!queryParamValidation.success)
       throw RouteError.BadRequest(
@@ -84,7 +84,7 @@ export const createProductCategoryController = asyncWrapper(
 // Update a product category
 export const updateProductCategoryController = asyncWrapper(
   async (req, res) => {
-    const queryParamValidation = queryParamIDValidator().safeParse(req.params);
+    const queryParamValidation = queryValidator.queryParamIDValidator().safeParse(req.params);
     const bodyValidation =
       productCategoryValidator.updateProductCategorySchema.safeParse(req.body);
 
@@ -134,7 +134,7 @@ export const updateProductCategoryController = asyncWrapper(
 // Delete a product category
 export const deleteProductCategoryController = asyncWrapper(
   async (req, res) => {
-    const queryParamValidation = queryParamIDValidator().safeParse(req.params);
+    const queryParamValidation = queryValidator.queryParamIDValidator().safeParse(req.params);
 
     if (!queryParamValidation.success)
       throw RouteError.BadRequest(

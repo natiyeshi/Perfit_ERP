@@ -1,15 +1,47 @@
 import { StatusCodes } from "http-status-codes";
-import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
+import {
+  asyncWrapper,
+  filterByLastDays,
+  RouteError,
+  sendApiResponse,
+} from "../utils";
 import { db, zodErrorFmt } from "../libs";
-import { inventoryValidator, queryParamIDValidator } from "../validators";
+import { inventoryValidator, queryValidator } from "../validators";
+import { Inventory, Product, Supplier } from "@prisma/client";
 
 export const getInventoriesController = asyncWrapper(async (req, res) => {
-  const inventories = await db.inventory.findMany({
-    include: {
-      product: true,
-      supplier: true,
-    },
+  const paginationValiation =
+    queryValidator.paginationsQueryValidator.safeParse(req.query);
+
+  const lastDaysValidation = queryValidator.lastDaysQueryValidator.safeParse(
+    req.query
+  );
+
+  if (!paginationValiation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(paginationValiation.error)[0].message,
+      zodErrorFmt(paginationValiation.error)
+    );
+
+  if (!lastDaysValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(lastDaysValidation.error)[0].message,
+      zodErrorFmt(lastDaysValidation.error)
+    );
+  let inventories = await db.inventory.findMany({
+    take: paginationValiation.data.limit,
+    skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    // include: {
+    //   product: true,
+    //   supplier: true,
+    // },
   });
+
+  if (lastDaysValidation.success && lastDaysValidation.data.days)
+    inventories = filterByLastDays<Inventory>(
+      inventories,
+      lastDaysValidation.data.days
+    );
 
   return sendApiResponse({
     res,
@@ -21,9 +53,9 @@ export const getInventoriesController = asyncWrapper(async (req, res) => {
 });
 
 export const getInventoryByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Inventory ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Inventory ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -78,9 +110,9 @@ export const createInventoryController = asyncWrapper(async (req, res) => {
 });
 
 export const updateInventoryController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Inventory ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Inventory ID not provided or invalid.")
+    .safeParse(req.params);
   const bodyValidation = inventoryValidator.updateInventorySchema.safeParse(
     req.body
   );
@@ -123,9 +155,9 @@ export const updateInventoryController = asyncWrapper(async (req, res) => {
 });
 
 export const deleteInventoryController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryParamIDValidator(
-    "Inventory ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Inventory ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
