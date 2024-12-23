@@ -9,7 +9,11 @@ export const signUpAction = async (formData: FormData) => {
     const password = formData.get("password")?.toString();
     const fullName = formData.get("fullName")?.toString();
     const origin = (await headers()).get("origin");
-
+    let redirectDetail = {
+        name : "",
+        message : "",
+        path : "/sign-up",
+    }
     if (!email || !password || !fullName) {
         return encodedRedirect(
             "error",
@@ -24,18 +28,19 @@ export const signUpAction = async (formData: FormData) => {
             headers: { "Content-Type": "application/json" },
         });
         console.log("Response:", res.data);
-
-        return encodedRedirect(
-            "success",
-            "/sign-up",
-            "Thanks for signing up! Please check your email for a verification link.",
-        );
+        redirectDetail.name = "success"
+        redirectDetail.message = "Thanks for signing up"
+        redirectDetail.path = "/sign-in"
+        
     } catch (err) {
-        console.error("Error response:", (err as any).response?.data);
-        return encodedRedirect(
-            "error",
-            "/sign-up",
-            (err as any).response?.data.message ?? "Something went wrong. Please try again later.",
-        );
+        console.error("Error response:", (err as any).response?.data.message ?? (err as any).response?.data.message ?? (err as any));
+        redirectDetail.name = "error"
+        redirectDetail.message = (err as any).response?.data.message ?? (err as any).response?.data.message
     }
+    return encodedRedirect(
+        redirectDetail.name as "error" | "success",
+        redirectDetail.path,
+        redirectDetail.message,
+    );
 };
+

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,7 @@ import Link from "next/link";
 import { QueryClient, QueryClientProvider, useMutation } from "react-query";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
-// import toast from "react-hot-toast";
-
+import toast, { Toaster } from "react-hot-toast";
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -19,14 +18,15 @@ export default function Login() {
   const { isLoading, isError, error, mutate } = useMutation(
     () => axios.post("/auth/sign-in", formData),
     {
-      onSuccess: () => {
-        // toast.success("Signed in successfully");
-        router.push("/dashboard");
+      onSuccess: (res) => {
+        console.log(res.data.result.user);
+        toast.success("Signed in successfully");
+        // router.push("/dashboard");
       },
     }
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     mutate();
   };
