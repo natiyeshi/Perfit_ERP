@@ -3,11 +3,22 @@ import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { queryValidator, competitorValidator } from "../validators";
 import { db, zodErrorFmt } from "../libs";
 
-export const getCompetitorsController = asyncWrapper(async (_, res) => {
+export const getCompetitorsController = asyncWrapper(async (req, res) => {
+  const paginationValiation =
+    queryValidator.paginationsQueryValidator.safeParse(req.query);
+
+  if (!paginationValiation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(paginationValiation.error)[0].message,
+      zodErrorFmt(paginationValiation.error)
+    );
+
   const competitors = await db.competitor.findMany({
     include: {
       competitorImports: true,
     },
+    take: paginationValiation.data.limit,
+    skip: (paginationValiation.data.page || 1) - 1 || undefined,
   });
 
   return sendApiResponse({
@@ -20,9 +31,9 @@ export const getCompetitorsController = asyncWrapper(async (_, res) => {
 });
 
 export const getCompetitorByIDController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Competitor ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Competitor ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -76,9 +87,9 @@ export const createCompetitorController = asyncWrapper(async (req, res) => {
 });
 
 export const updateCompetitorController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Competitor ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Competitor ID not provided or invalid.")
+    .safeParse(req.params);
   const bodyValidation = competitorValidator.updateCompetitorSchema.safeParse(
     req.body
   );
@@ -124,9 +135,9 @@ export const updateCompetitorController = asyncWrapper(async (req, res) => {
 });
 
 export const deleteCompetitorController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Competitor ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Competitor ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(

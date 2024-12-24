@@ -101,7 +101,12 @@ export const createCompetitorImportController = asyncWrapper(
       );
 
     const competitorImport = await db.competitorImport.create({
-      data: bodyValidation.data,
+      data: {
+        ...bodyValidation.data,
+        orderDate: bodyValidation.data.orderDate
+          ? new Date(bodyValidation.data.orderDate)
+          : null,
+      },
     });
 
     return sendApiResponse({
