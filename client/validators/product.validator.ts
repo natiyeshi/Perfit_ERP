@@ -8,9 +8,9 @@ export const createProductSchema = Yup.object({
     .positive("Unit price must be a positive number.")
     .required("Unit price is required.")
     .typeError("Unit price must be a number."),
-  shelfLife: Yup.string()
-    .nullable()
-    .optional(),
+  shelfLife: Yup.number()
+  .required("Shelf Life is required.")
+  .typeError("Shelf Life must be a number."),
   brand: Yup.string()
     .nullable()
     .optional()

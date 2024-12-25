@@ -3,16 +3,9 @@ import * as Yup from "yup";
 const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/; // Adjust the regex for your phone number format
 
 export const createSupplierSchema = Yup.object().shape({
-  fullName: Yup.string()
+  name: Yup.string()
     .required("Supplier name is required.")
-    .test(
-      "full-name-format",
-      "Supplier full-name has to have first name and last name.",
-      (value) => {
-        if (!value) return true; // Allow empty if it's optional
-        return value.trim().split(" ").length > 1;
-      }
-    ),
+    .min(1),
   email: Yup.string()
     .required("Email is required.")
     .email("Invalid email."),

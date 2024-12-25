@@ -46,7 +46,7 @@ function AddSupplier() {
   };
 
   const initialValues: ISupplier = {
-    fullName: "",
+    name: "",
     email: "",
     phoneNumber: "",
     country: "",
@@ -83,16 +83,16 @@ function AddSupplier() {
                   <div className="grid grid-cols-1 gap-4 w-full">
                     {/* Full Name */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="fullName">Full Name</Label>
+                      <Label htmlFor="name">Name</Label>
                       <Field
-                        name="fullName"
+                        name="name"
                         as={Input}
-                        id="fullName"
+                        id="name"
                         placeholder="Enter Full Name"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="fullName"
+                        name="name"
                         component="p"
                         className="text-sm text-red-500"
                       />

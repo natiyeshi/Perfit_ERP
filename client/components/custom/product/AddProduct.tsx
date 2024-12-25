@@ -47,14 +47,14 @@ function AddProduct() {
   const initialValues: IProduct = {
     name: "",
     unitPrice: 0,
-    shelfLife: "",
+    shelfLife: 0,
     brand: "",
   };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button  variant="outline" className="flex gap-1">
+        <Button variant="outline" className="flex gap-1">
           <div>Add Product</div>
           <FaPlus />
         </Button>
@@ -122,6 +122,7 @@ function AddProduct() {
                         name="shelfLife"
                         as={Input}
                         id="shelfLife"
+                        type="number"
                         placeholder="Enter Shelf Life"
                         className="w-full"
                       />

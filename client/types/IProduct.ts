@@ -1,7 +1,7 @@
 export interface IProduct {
     name: string;
     unitPrice: number;
-    shelfLife?: string;
+    shelfLife: number;
     brand?: string;
 }
   

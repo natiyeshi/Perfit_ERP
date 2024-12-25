@@ -1,17 +1,16 @@
 export interface IImport {
-    quantity: number; // Required for create schema
-    unit?: string; // Optional
-    unitPrice?: number; // Optional
-    totalPrice?: number; // Optional
-    orderDate?: string; // Optional
-    shelfLife?: string; // Optional
-    modeOfShipment?: string; // Optional
-    productId: string; // Required and must be a valid UUID
-    supplierId: string; // Required and must be a valid UUID
-    competiatorId: string; // Required and must be a valid UUID
-  }
-  
-  
+  quantity: number;
+  unit?: string;
+  unitPrice?: number;
+  totalPrice?: number;
+  orderDate?: string;
+  shelfLife?: number;
+  modeOfShipment?: string;
+  productId: string;
+  supplierId: string;
+  competitorId: string;
+}
+
 export interface IDBImport extends IImport {
-    id : string,
+  id : string;
 }

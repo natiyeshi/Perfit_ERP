@@ -111,6 +111,7 @@ function UpdateProduct({ initialValues }: { initialValues: IDBProduct }) {
                       <Label htmlFor="shelfLife">Shelf Life</Label>
                       <Field
                         name="shelfLife"
+                        type="number"
                         as={Input}
                         id="shelfLife"
                         placeholder="Enter Shelf Life"

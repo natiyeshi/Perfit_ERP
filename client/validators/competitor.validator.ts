@@ -1,34 +1,35 @@
-import * as yup from "yup";
+import * as Yup from "yup";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/;
-
-export const createCompetitorSchema = yup.object({
-  name: yup
-    .string()
-    .test("name-length", "Competitor name has to have at least one character.", (name) => {
-      if (!name) return true;
-      return name.length > 1;
-    }),
-  email: yup
-    .string()
-    .optional()
-    .matches(EMAIL_REGEX, { message: "Invalid email." }),
-  phoneNumber: yup
-    .string()
-    .optional()
-    .matches(PHONE_REGEX, { message: "Invalid phone number." }),
-  country: yup
-    .string()
-    .optional()
-    .test("country-length", "Invalid country", (country) => !country || country.length > 2),
+export const createCompetitorImportSchema = Yup.object().shape({
+  quantity: Yup.number()
+    .integer("Quantity must be an integer.")
+    .positive("Quantity must be greater than zero.")
+    .required("Quantity must be a number."),
+  unit: Yup.string()
+    .min(1, "Unit must at least have one character.")
+    .notRequired(),
+  unitPrice: Yup.number()
+    .positive("Unit price must be a positive number.")
+    .notRequired(),
+  totalPrice: Yup.number()
+    .positive("Total price must be a positive number.")
+    .notRequired(),
+  orderDate: Yup.string().notRequired(),
+  shelfLife: Yup.number()
+    .positive("Shelf life must be a positive number.")
+    .notRequired(),
+  modeOfShipment: Yup.string()
+    .notRequired()
+    .typeError("Mode of shipment must be a string."),
+  productId: Yup.string()
+    .min(1, "Product ID is required.")
+    .required("Product ID must be a string."),
+  supplierId: Yup.string()
+    .min(1, "Supplier ID is required.")
+    .required("Supplier ID must be a string."),
+  competitorId: Yup.string()
+    .min(1, "Competitor ID is required.")
+    .required("Competitor ID must be a string."),
 });
 
-export const updateCompetitorSchema = createCompetitorSchema.noUnknown().shape({
-  name: yup.string().optional(),
-  email: yup.string().optional(),
-  phoneNumber: yup.string().optional(),
-  country: yup.string().optional(),
-});
-
-
+export const updateCompetitorImportSchema = createCompetitorImportSchema.noUnknown().nullable().defined();

@@ -73,16 +73,16 @@ function UpdateSupplier({ initialValues }: { initialValues: IDBSupplier }) {
                   <div className="grid grid-cols-1 gap-4 w-full">
                     {/* Supplier Name */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="fullName">Supplier Name</Label>
+                      <Label htmlFor="name">Supplier Name</Label>
                       <Field
-                        name="fullName"
+                        name="name"
                         as={Input}
-                        id="fullName"
+                        id="name"
                         placeholder="Enter Supplier Name"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="fullName"
+                        name="name"
                         component="p"
                         className="text-sm text-red-500"
                       />

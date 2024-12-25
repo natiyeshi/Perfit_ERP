@@ -20,10 +20,11 @@ import axios from "@/lib/axios";
 import { IDBProduct } from "@/types/IProduct";
 import { IDBSupplier } from "@/types/ISupplier";
 import { IDBCompetitor } from "@/types/ICompetitor";
+import { parseISO } from "date-fns";
 
 const page = () => {
   const { isLoading, mutate } = useMutation(
-    (data: IImport) => axios.post("/competitor-imports", data),
+    (data: any) => axios.post("/competitor-imports", data),
     {
       onSuccess() {
         toast.success("Data Successfully Registered!");
@@ -36,7 +37,7 @@ const page = () => {
     }
   );
   const handleSubmit = (data: IImport) => {
-    mutate(data);
+    mutate({ ...data, orderDate: parseISO(data.orderDate!) });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
@@ -45,13 +46,13 @@ const page = () => {
   const initialValues: IImport = {
     productId: "",
     supplierId: "",
-    competiatorId: "",
+    competitorId: "",
     quantity: 0,
     unit: "",
     unitPrice: 0,
     totalPrice: 0,
     orderDate: "",
-    shelfLife: "",
+    shelfLife: 0,
     modeOfShipment: "",
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
@@ -99,10 +100,10 @@ const page = () => {
             <div className="grid grid-cols-2 gap-4 w-full">
               {/* competitor Name */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="competiatorId">Competitor Name</Label>
+                <Label htmlFor="competitorId">Competitor Name</Label>
                 <Select
                   onValueChange={(value: string) =>
-                    setFieldValue("competiatorId", value)
+                    setFieldValue("competitorId", value)
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -151,6 +152,7 @@ const page = () => {
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="supplierId">Supplier Name</Label>
                 <Select
+                  disabled={supplierQuery.isLoading}
                   onValueChange={(value: string) =>
                     setFieldValue("supplierId", value)
                   }
@@ -162,9 +164,7 @@ const page = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {suppliers.map((pr) => {
-                      return (
-                        <SelectItem value={pr.id}>{pr.fullName}</SelectItem>
-                      );
+                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
                     })}
                   </SelectContent>
                 </Select>
@@ -268,6 +268,7 @@ const page = () => {
                 <Label htmlFor="shelfLife">Shelf Life</Label>
                 <Field
                   name="shelfLife"
+                  type="number"
                   as={Input}
                   id="shelfLife"
                   placeholder="Enter Shelf Life"
