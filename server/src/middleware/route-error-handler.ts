@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { RouteError, sendApiResponse } from "../utils";
 import { StatusCodes } from "http-status-codes";
+import {
+  PrismaClientInitializationError,
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientValidationError,
+} from "@prisma/client/runtime/library";
 
 const routeErrorHandlingMiddleware: ErrorRequestHandler = (
   err: any,
@@ -16,7 +22,20 @@ const routeErrorHandlingMiddleware: ErrorRequestHandler = (
       message: err.message,
       result: err.result,
     });
-  else
+  else if (
+    err instanceof PrismaClientValidationError ||
+    err instanceof PrismaClientInitializationError ||
+    err instanceof PrismaClientKnownRequestError ||
+    err instanceof PrismaClientUnknownRequestError
+  ) {
+    sendApiResponse({
+      res,
+      statusCode: StatusCodes.BAD_REQUEST,
+      success: false,
+      message: err.message,
+      result: err.name,
+    });
+  } else
     sendApiResponse({
       res,
       statusCode: StatusCodes.INTERNAL_SERVER_ERROR,

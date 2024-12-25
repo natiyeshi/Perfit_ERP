@@ -1,6 +1,5 @@
 import * as z from "zod";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/;
 
 export const createCompetitorSchema = z.object({
@@ -15,22 +14,23 @@ export const createCompetitorSchema = z.object({
   ),
   email: z
     .string()
-    .optional()
-    .refine((email) => !email || EMAIL_REGEX.test(email), {
-      message: "Invalid email.",
-    }),
+    .email({
+      message: "Competitor email isn't a valid email address",
+    })
+    .optional(),
   phoneNumber: z
-    .string()
-    .optional()
-    .refine((phoneNumber) => !phoneNumber || PHONE_REGEX.test(phoneNumber), {
-      message: "Invalid phone number.",
-    }),
+    .string({
+      message: "Phone number must be string",
+    })
+    .min(10, {
+      message: "Phone number must be at least 10 characters long.",
+    })
+    .optional(),
   country: z
-    .string()
-    .optional()
-    .refine((country) => !country || country.length > 2, {
-      message: "Invalid country",
-    }),
+    .string({
+      message: "Competitor country must be a valid country.",
+    })
+    .optional(),
 });
 
 export const updateCompetitorSchema = createCompetitorSchema.partial();
