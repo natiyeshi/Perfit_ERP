@@ -5,11 +5,21 @@ import { db, zodErrorFmt } from "../libs";
 
 // Get all suppliers
 export const getSuppliersController = asyncWrapper(async (req, res) => {
+  const paginationValiation =
+    queryValidator.paginationsQueryValidator.safeParse(req.query);
+
+  if (!paginationValiation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(paginationValiation.error)[0].message,
+      zodErrorFmt(paginationValiation.error)
+    );
   const suppliers = await db.supplier.findMany({
     include: {
       competitorImports: true,
       inventories: true,
     },
+    take: paginationValiation.data.limit,
+    skip: (paginationValiation.data.page || 1) - 1 || undefined,
   });
 
   return sendApiResponse({
@@ -23,9 +33,9 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
 
 // Get supplier by ID
 export const getSupplierByIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Supplier ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Supplier ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -81,10 +91,12 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
 
 // Update supplier details
 export const updateSupplierController = asyncWrapper(async (req, res) => {
-  const bodyValidation = supplierValidator.updateSupplierSchema.safeParse(req.body);
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Supplier ID not provided or invalid."
-  ).safeParse(req.params);
+  const bodyValidation = supplierValidator.updateSupplierSchema.safeParse(
+    req.body
+  );
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Supplier ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!bodyValidation.success)
     throw RouteError.BadRequest(
@@ -129,9 +141,9 @@ export const updateSupplierController = asyncWrapper(async (req, res) => {
 
 // Delete supplier
 export const deleteSupplierController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "Supplier ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("Supplier ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(

@@ -4,7 +4,19 @@ import { productValidator, queryValidator } from "../validators";
 import { db, zodErrorFmt } from "../libs";
 
 export const getProductsController = asyncWrapper(async (req, res) => {
-  const products = await db.product.findMany({});
+  const paginationValiation =
+    queryValidator.paginationsQueryValidator.safeParse(req.query);
+
+  if (!paginationValiation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(paginationValiation.error)[0].message,
+      zodErrorFmt(paginationValiation.error)
+    );
+
+  const products = await db.product.findMany({
+    take: paginationValiation.data.limit,
+    skip: (paginationValiation.data.page || 1) - 1 || undefined,
+  });
 
   return sendApiResponse({
     res,

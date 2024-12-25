@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/; // Adjust the regex for your phone number format
+// const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/; // Adjust the regex for your phone number format
 
 export const createSupplierSchema = z.object({
   name: z.string({ message: "Supplier name must be a string." }).min(1, {
@@ -11,11 +11,12 @@ export const createSupplierSchema = z.object({
   }),
   phoneNumber: z
     .string({
-      message: "Phone-number has to be a string.",
+      message: "Phone number must be string",
     })
-    .refine((phoneNumber) => PHONE_REGEX.test(phoneNumber), {
-      message: "Invalid phone number.",
-    }),
+    .min(10, {
+      message: "Phone number must be at least 10 characters long.",
+    })
+    .optional(),
   country: z
     .string({
       message: "Country has to be a string.",
