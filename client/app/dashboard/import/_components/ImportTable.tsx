@@ -9,11 +9,20 @@ import FilterCard from "./Filter";
 import { IoMdRefresh } from "react-icons/io";
 import DeleteImport from "@/components/custom/import/DeleteImport";
 import UpdateImport from "@/components/custom/import/UpdateImport";
-import { IDBImport } from "@/types/IImport";
+import { IDBClientImport } from "@/types/IImport";
 import CustomeTable from "@/components/custom/table/CustomeTable";
 const ImportTable: React.FC = () => {
-  const headers: { name: string; key: keyof IDBImport }[] = [
-    { name: "competiatorId", key: "competiatorId" },
+  const headers: { name: string; key: keyof IDBClientImport }[] = [
+    { name: "Product Name", key: "productName" },
+    { name: "Supplier Name", key: "supplierName" },
+    { name: "Competitor Name", key: "competitorName" },
+    { name: "Quantity", key: "quantity" },
+    { name: "unit", key: "unit" },
+    { name: "unitPrice", key: "unitPrice" },
+    { name: "totalPrice", key: "totalPrice" },
+    { name: "shelfLife(month)", key: "shelfLife" },
+    { name: "modeOfShipment", key: "modeOfShipment" },
+
   ];
   const { filters, imports, setFilters, filter, reload, query } =
     useImportTable();

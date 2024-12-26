@@ -96,12 +96,13 @@ const page = () => {
       >
         {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
-            {JSON.stringify(values)}
             <div className="grid grid-cols-2 gap-4 w-full">
               {/* competitor Name */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="competitorId">Competitor Name</Label>
                 <Select
+                  disabled={competitorQuery.isLoading}
+
                   onValueChange={(value: string) =>
                     setFieldValue("competitorId", value)
                   }
@@ -127,6 +128,8 @@ const page = () => {
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="productId">Product Name</Label>
                 <Select
+                  disabled={productQuery.isLoading}
+
                   onValueChange={(value: string) =>
                     setFieldValue("productId", value)
                   }

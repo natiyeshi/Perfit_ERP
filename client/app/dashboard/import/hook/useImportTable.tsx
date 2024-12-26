@@ -1,9 +1,9 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import axios from "@/lib/axios";
 import { filterInf } from "../_components/Filter";
-import { IDBImport } from "@/types/IImport";
+import { IDBClientImport, IDBPopulatedImport } from "@/types/IImport";
 import toast, { Toaster } from "react-hot-toast";
 
 export const useImportTable = () => {
@@ -11,38 +11,57 @@ export const useImportTable = () => {
     name: "",
   });
   let toastId = "";
-  const [imports, setImports] = useState<IDBImport[]>([]);
-  const [importsData, setImportsData] = useState<IDBImport[]>([]);
+  const [imports, setImports] = useState<IDBClientImport[]>([]);
+  const [importsData, setImportsData] = useState<IDBClientImport[]>([]);
 
   const filter = (name: string, value: any) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const nameFilter = (data: IDBImport) => {
+  const nameFilter = (data: IDBClientImport) => {
     return (
       filters.name.length === 0 ||
-      (data.modeOfShipment && data.modeOfShipment.toLowerCase().includes(filters.name))
+      (data.productName &&
+        data.productName.toLowerCase().includes(filters.name)) ||
+      (data.competitorName &&
+        data.competitorName.toLowerCase().includes(filters.name)) ||
+      (data.supplierName &&
+        data.supplierName.toLowerCase().includes(filters.name))
     );
   };
 
-  const statusFilter = (data: IDBImport) => {
+  const statusFilter = (data: IDBClientImport) => {
     return (
       filters.status == null ||
       data.modeOfShipment?.toLowerCase() === filters.status.toLowerCase()
     );
   };
 
-  const query = useQuery("competitor-imports", () => axios.get("/competitor-imports"), {
-    onSuccess(data) {
-      console.log("Workign.....")
-      setImports(data.data.result || []);
-      setImportsData(data.data.result || []);
-    },
-    onError(err) {
-      console.log(err, "EEEEEEEEEEEEEEEEEE ");
-      toast.error("Something goes wrong!!")
-    },
-  });
+  const query = useQuery(
+    "competitor-imports",
+    () => axios.get("/competitor-imports/populate"),
+    {
+      onSuccess(data) {
+        let k: IDBPopulatedImport[] = data.data.result || [];
+        const res: IDBClientImport[] = [];
+        k.map((d) => {
+          let r: IDBClientImport = {
+            ...d,
+            productName: d.product.name,
+            supplierName: d.supplier.name,
+            competitorName: d.competitor.name,
+          };
+          res.push(r);
+        });
+        setImports(res);
+        setImportsData(res);
+      },
+      onError(err) {
+        console.log(err, "EEEEEEEEEEEEEEEEEE ");
+        toast.error("Something goes wrong!!");
+      },
+    }
+  );
 
   const reload = async () => {
     query.refetch();

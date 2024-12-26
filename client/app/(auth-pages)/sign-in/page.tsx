@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { QueryClient, QueryClientProvider, useMutation } from "react-query";
+import { useMutation } from "react-query";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -16,12 +16,12 @@ export default function Login() {
   });
 
   const { isLoading, isError, error, mutate } = useMutation(
-    () => axios.post("/auth/sign-in", formData),
+    () => axios.post("/auth/sign-in", formData, { withCredentials: true }),
     {
       onSuccess: (res) => {
         console.log(res.data.result.user);
         toast.success("Signed in successfully");
-        // router.push("/dashboard");
+        router.push("/dashboard");
       },
     }
   );
