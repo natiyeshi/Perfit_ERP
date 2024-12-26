@@ -62,6 +62,9 @@ export const signInController = asyncWrapper(async (req, res) => {
 
   if (!existingUser) throw RouteError.BadRequest("Invalid email or password");
 
+  if (existingUser.role === "UNKNOWN")
+    throw RouteError.BadRequest("Please wait while admin defines your role.");
+
   const isCorrectPassword = await passwordCrypt.verifyPassword(
     bodyValidation.data.password,
     existingUser.password
@@ -122,5 +125,52 @@ export const updateROLEController = asyncWrapper(async (req, res) => {
     success: true,
     message: "User role updated successfully",
     result: updatedUser,
+  });
+});
+
+export const changePasswordController = asyncWrapper(async (req, res) => {
+  const bodyValidation = authValidator.changePasswordSchema.safeParse(req.body);
+  if (!bodyValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
+    );
+
+  const user = req.user!;
+
+  const existingUser = await db.user.findUnique({
+    where: {
+      id: user._id,
+    },
+  });
+
+  if (!existingUser) throw RouteError.NotFound("User not found.");
+
+  const isCorrectPassword = await passwordCrypt.verifyPassword(
+    bodyValidation.data.oldPassword,
+    existingUser.password
+  );
+
+  if (!isCorrectPassword) throw RouteError.BadRequest("Wrong password.");
+
+  const newHashedPassword = await passwordCrypt.hashPassword(
+    bodyValidation.data.newPassword
+  );
+
+  await db.user.update({
+    where: {
+      id: user._id,
+    },
+    data: {
+      password: newHashedPassword,
+    },
+  });
+
+  return sendApiResponse({
+    res,
+    statusCode: 200,
+    success: true,
+    message: "User password updated successfully",
+    result: null,
   });
 });

@@ -12,7 +12,7 @@ import {
 const router = Router();
 
 router.get(
-  "",
+  "/",
   middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
   getUsersController
 );

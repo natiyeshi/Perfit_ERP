@@ -11,7 +11,12 @@ import { setupSwagger } from "./libs";
 const app = express();
 
 // Registering middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(middlewares.limiter);

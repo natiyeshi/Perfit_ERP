@@ -7,37 +7,33 @@ import {
 } from "../utils";
 import { db, zodErrorFmt } from "../libs";
 import { competitorImportValidator, queryValidator } from "../validators";
-import { CompetitorImport } from "@prisma/client";
 
 export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
-  const paginationValiation =
-    queryValidator.paginationsQueryValidator.safeParse(req.query);
-
-  const lastDaysValidation = queryValidator.lastDaysQueryValidator.safeParse(
-    req.query
-  );
-
-  if (!paginationValiation.success)
-    throw RouteError.BadRequest(
-      zodErrorFmt(paginationValiation.error)[0].message,
-      zodErrorFmt(paginationValiation.error)
+  const queryValidation =
+    competitorImportValidator.getCompetitorImportsQuerySchema.safeParse(
+      req.query
     );
 
-  if (!lastDaysValidation.success)
+  if (!queryValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(lastDaysValidation.error)[0].message,
-      zodErrorFmt(lastDaysValidation.error)
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
     );
 
   let competitorImports = await db.competitorImport.findMany({
-    take: paginationValiation.data.limit,
-    skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    take: queryValidation.data.limit,
+    skip: (queryValidation.data.page || 1) - 1 || undefined,
+    include: {
+      product: queryValidation.data.populate,
+      supplier: queryValidation.data.populate,
+      competitor: queryValidation.data.populate,
+    },
   });
 
-  if (lastDaysValidation.success && lastDaysValidation.data.days)
-    competitorImports = filterByLastDays<CompetitorImport>(
+  if (queryValidation.success && queryValidation.data.days)
+    competitorImports = filterByLastDays<(typeof competitorImports)[0]>(
       competitorImports,
-      lastDaysValidation.data.days
+      queryValidation.data.days
     );
 
   return sendApiResponse({
@@ -101,12 +97,7 @@ export const createCompetitorImportController = asyncWrapper(
       );
 
     const competitorImport = await db.competitorImport.create({
-      data: {
-        ...bodyValidation.data,
-        orderDate: bodyValidation.data.orderDate
-          ? new Date(bodyValidation.data.orderDate)
-          : null,
-      },
+      data: bodyValidation.data,
     });
 
     return sendApiResponse({

@@ -1,4 +1,8 @@
 import * as z from "zod";
+import {
+  lastDaysQueryValidator,
+  paginationsQueryValidator,
+} from "./query.validator";
 
 export const createInventorySchema = z.object({
   productId: z
@@ -29,17 +33,26 @@ export const createInventorySchema = z.object({
     .number()
     .nonnegative({ message: "Total price cannot be negative." })
     .optional(),
-  orderDate: z
-    .string()
-    .optional()
-    .refine((date) => !date || !isNaN(Date.parse(date)), {
-      message: "Invalid order date.",
-    }),
+  orderDate: z.coerce
+    .date({
+      message: "Order date is invalid date format.",
+    })
+    .optional(),
   shelfLife: z.number().positive(),
   modeOfShipment: z
     .string()
     .max(100, { message: "Mode of shipment must be under 100 characters." })
     .optional(),
 });
+
+export const getCompetitorImportsQuerySchema = paginationsQueryValidator
+  .extend(lastDaysQueryValidator.shape)
+  .extend({
+    populate: z
+      .boolean({
+        message: "Populate must be a boolean.",
+      })
+      .default(true),
+  });
 
 export const updateInventorySchema = createInventorySchema.partial();
