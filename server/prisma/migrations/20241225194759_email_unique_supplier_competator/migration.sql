@@ -1,77 +1,8 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `product_brand` on the `Inventory` table. All the data in the column will be lost.
-  - You are about to drop the column `product_name` on the `Inventory` table. All the data in the column will be lost.
-  - You are about to drop the `CompetitorImportData` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Customer` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `IODM` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Pipeline` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Product` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Sells` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `SellsTransaction` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Supplier` table. If the table is not empty, all the data it contains will be lost.
-  - Made the column `quantity` on table `Inventory` required. This step will fail if there are existing NULL values in that column.
-
-*/
 -- CreateEnum
 CREATE TYPE "ROLE" AS ENUM ('UNKNOWN', 'DATA_AGGREGATOR', 'SALES_PERSON', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "CUSTOMER_LABEL" AS ENUM ('A', 'B', 'C', 'D');
-
--- DropForeignKey
-ALTER TABLE "CompetitorImportData" DROP CONSTRAINT "CompetitorImportData_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "CompetitorImportData" DROP CONSTRAINT "CompetitorImportData_supplierId_fkey";
-
--- DropForeignKey
-ALTER TABLE "IODM" DROP CONSTRAINT "IODM_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Inventory" DROP CONSTRAINT "Inventory_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Inventory" DROP CONSTRAINT "Inventory_supplierId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Pipeline" DROP CONSTRAINT "Pipeline_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "SellsTransaction" DROP CONSTRAINT "SellsTransaction_customerId_fkey";
-
--- DropForeignKey
-ALTER TABLE "SellsTransaction" DROP CONSTRAINT "SellsTransaction_sellsId_fkey";
-
--- AlterTable
-ALTER TABLE "Inventory" DROP COLUMN "product_brand",
-DROP COLUMN "product_name",
-ALTER COLUMN "quantity" SET NOT NULL;
-
--- DropTable
-DROP TABLE "CompetitorImportData";
-
--- DropTable
-DROP TABLE "Customer";
-
--- DropTable
-DROP TABLE "IODM";
-
--- DropTable
-DROP TABLE "Pipeline";
-
--- DropTable
-DROP TABLE "Product";
-
--- DropTable
-DROP TABLE "Sells";
-
--- DropTable
-DROP TABLE "SellsTransaction";
-
--- DropTable
-DROP TABLE "Supplier";
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -95,7 +26,7 @@ CREATE TABLE "products" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "unit_price" DOUBLE PRECISION NOT NULL,
-    "shelf_life" TEXT,
+    "shelf_life" INTEGER NOT NULL,
     "brand" TEXT,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
@@ -131,14 +62,31 @@ CREATE TABLE "competitor_imports" (
     "unit_price" DOUBLE PRECISION,
     "total_price" DOUBLE PRECISION,
     "order_date" TIMESTAMP(3),
-    "shelf_life" TEXT,
+    "shelf_life" INTEGER,
     "mode_of_shipment" TEXT,
     "productId" TEXT NOT NULL,
     "supplierId" TEXT,
-    "competiatorId" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "competitorId" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "competitor_imports_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Inventory" (
+    "id" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "supplierId" TEXT,
+    "quantity" INTEGER NOT NULL,
+    "unit" TEXT,
+    "unit_price" DOUBLE PRECISION,
+    "total_price" DOUBLE PRECISION,
+    "order_date" TIMESTAMP(3),
+    "shelf_life" INTEGER NOT NULL,
+    "mode_of_shipment" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Inventory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -154,6 +102,7 @@ CREATE TABLE "customers" (
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
     "customer_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
     "sales_person_id" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "total_price" DOUBLE PRECISION NOT NULL,
@@ -224,10 +173,25 @@ CREATE UNIQUE INDEX "products_id_key" ON "products"("id");
 CREATE UNIQUE INDEX "suppliers_id_key" ON "suppliers"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "suppliers_email_key" ON "suppliers"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "competitors_id_key" ON "competitors"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "competitors_email_key" ON "competitors"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "competitor_imports_id_key" ON "competitor_imports"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "competitor_imports_productId_key" ON "competitor_imports"("productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Inventory_id_key" ON "Inventory"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Inventory_productId_key" ON "Inventory"("productId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "customers_id_key" ON "customers"("id");
@@ -243,6 +207,9 @@ CREATE UNIQUE INDEX "sales_persons_user_id_key" ON "sales_persons"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_categoies_id_key" ON "product_categoies"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "product_categoies_name_key" ON "product_categoies"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "IODMs_id_key" ON "IODMs"("id");
@@ -263,16 +230,19 @@ ALTER TABLE "competitor_imports" ADD CONSTRAINT "competitor_imports_productId_fk
 ALTER TABLE "competitor_imports" ADD CONSTRAINT "competitor_imports_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "suppliers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "competitor_imports" ADD CONSTRAINT "competitor_imports_competiatorId_fkey" FOREIGN KEY ("competiatorId") REFERENCES "competitors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "competitor_imports" ADD CONSTRAINT "competitor_imports_competitorId_fkey" FOREIGN KEY ("competitorId") REFERENCES "competitors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Inventory" ADD CONSTRAINT "Inventory_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Inventory" ADD CONSTRAINT "Inventory_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Inventory" ADD CONSTRAINT "Inventory_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "suppliers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_sales_person_id_fkey" FOREIGN KEY ("sales_person_id") REFERENCES "sales_persons"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

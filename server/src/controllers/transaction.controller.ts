@@ -29,7 +29,7 @@ export const getTransactionsController = asyncWrapper(async (req, res) => {
       zodErrorFmt(lastDaysValidation.error)[0].message,
       zodErrorFmt(lastDaysValidation.error)
     );
-    
+
   let transactions = await db.transaction.findMany({
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
@@ -98,6 +98,15 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
 
   const newTransaction = await db.transaction.create({
     data: bodyValidation.data,
+  });
+
+  await db.inventory.update({
+    where: { productId: bodyValidation.data.productId },
+    data: {
+      quantity: {
+        decrement: bodyValidation.data.quantity,
+      },
+    },
   });
 
   return sendApiResponse({

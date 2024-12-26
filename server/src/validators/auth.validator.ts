@@ -37,14 +37,24 @@ export const updateROLESchema = z.object({
       message: "UserId field is required.",
     }),
   role: z.enum(
-    [
-      ROLE.UNKNOWN,
-      ROLE.SALES_PERSON,
-      ROLE.DATA_AGGREGATOR,
-      ROLE.ADMIN,
-    ],
+    [ROLE.UNKNOWN, ROLE.SALES_PERSON, ROLE.DATA_AGGREGATOR, ROLE.ADMIN],
     {
       message: "Invalid user role.",
     }
   ),
+});
+
+export const changePasswordSchema = z.object({
+  oldPassword: z
+    .string({ message: "Old password has to be a string" })
+    .trim()
+    .min(1, {
+      message: "Old password field is required.",
+    }),
+  newPassword: z
+    .string({ message: "New password has to be a string" })
+    .trim()
+    .min(1, {
+      message: "New password field is required.",
+    }),
 });

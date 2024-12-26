@@ -7,40 +7,30 @@ import {
 } from "../utils";
 import { db, zodErrorFmt } from "../libs";
 import { inventoryValidator, queryValidator } from "../validators";
-import { Inventory, Product, Supplier } from "@prisma/client";
 
 export const getInventoriesController = asyncWrapper(async (req, res) => {
-  const paginationValiation =
-    queryValidator.paginationsQueryValidator.safeParse(req.query);
+  const queryValidation =
+    inventoryValidator.getCompetitorImportsQuerySchema.safeParse(req.query);
 
-  const lastDaysValidation = queryValidator.lastDaysQueryValidator.safeParse(
-    req.query
-  );
-
-  if (!paginationValiation.success)
+  if (!queryValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(paginationValiation.error)[0].message,
-      zodErrorFmt(paginationValiation.error)
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
     );
 
-  if (!lastDaysValidation.success)
-    throw RouteError.BadRequest(
-      zodErrorFmt(lastDaysValidation.error)[0].message,
-      zodErrorFmt(lastDaysValidation.error)
-    );
   let inventories = await db.inventory.findMany({
-    take: paginationValiation.data.limit,
-    skip: (paginationValiation.data.page || 1) - 1 || undefined,
-    // include: {
-    //   product: true,
-    //   supplier: true,
-    // },
+    take: queryValidation.data.limit,
+    skip: (queryValidation.data.page || 1) - 1 || undefined,
+    include: {
+      product: queryValidation.data.populate,
+      supplier: queryValidation.data.populate,
+    },
   });
 
-  if (lastDaysValidation.success && lastDaysValidation.data.days)
-    inventories = filterByLastDays<Inventory>(
+  if (queryValidation.success && queryValidation.data.days)
+    inventories = filterByLastDays<(typeof inventories)[0]>(
       inventories,
-      lastDaysValidation.data.days
+      queryValidation.data.days
     );
 
   return sendApiResponse({
