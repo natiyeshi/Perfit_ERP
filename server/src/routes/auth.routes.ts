@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  changePasswordController,
   signInController,
   signUpController,
   updateROLEController,
@@ -11,6 +12,11 @@ const router = Router();
 
 router.post("/sign-up", signUpController);
 router.post("/sign-in", signInController);
+router.post(
+  "/change-password",
+  middleware.auth.authenticationMiddleWare,
+  changePasswordController
+);
 router.patch(
   "/role",
   middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),

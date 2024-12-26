@@ -51,6 +51,7 @@ model Product {
   inventories       Inventory[]
   IDOMs             IODM[]
   pipelines         Pipeline[]
+  transactions      Transaction[]
 
   @@map("products")
 }
@@ -58,7 +59,7 @@ model Product {
 model Supplier {
   id                String             @id @unique @default(cuid())
   name              String
-  email             String?
+  email             String?            @unique
   phoneNumber       String?            @map("phone_number")
   country           String?
   competitorImports CompetitorImport[]
@@ -70,7 +71,7 @@ model Supplier {
 model Competitor {
   id                String             @id @unique @default(cuid())
   name              String
-  email             String?
+  email             String?            @unique
   phoneNumber       String?            @map("phone_number")
   country           String?
   competitorImports CompetitorImport[]
@@ -81,19 +82,19 @@ model Competitor {
 model CompetitorImport {
   id             String    @id @unique @default(cuid())
   quantity       Int
-  unit           String?
+  unit           String? // not-needed
   unitPrice      Float?    @map("unit_price")
-  totalPrice     Float?    @map("total_price")
+  totalPrice     Float?    @map("total_price") // not-needed
   orderDate      DateTime? @map("order_date")
-  shelfLife      Int?      @map("shelf_life")
+  shelfLife      Int?      @map("shelf_life") // not-needed
   modeOfShipment String?   @map("mode_of_shipment")
 
-  productId     String
-  product       Product    @relation(fields: [productId], references: [id])
-  supplierId    String?
-  supplier      Supplier?  @relation(fields: [supplierId], references: [id])
+  productId    String     @unique
+  product      Product    @relation(fields: [productId], references: [id])
+  supplierId   String?
+  supplier     Supplier?  @relation(fields: [supplierId], references: [id])
   competitorId String
-  competitor    Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  competitor   Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -102,16 +103,16 @@ model CompetitorImport {
 
 model Inventory {
   id             String    @id @unique @default(cuid())
-  productId      String?
-  product        Product?  @relation(fields: [productId], references: [id])
+  productId      String    @unique
+  product        Product   @relation(fields: [productId], references: [id])
   supplierId     String?
   supplier       Supplier? @relation(fields: [supplierId], references: [id])
   quantity       Int
   unit           String?
-  unitPrice      Float?    @map("unit_price")
-  totalPrice     Float?    @map("total_price")
+  unitPrice      Float?    @map("unit_price") // not-needed
+  totalPrice     Float?    @map("total_price") // not-needed
   orderDate      DateTime? @map("order_date")
-  shelfLife      Int       @map("shelf_life")
+  shelfLife      Int       @map("shelf_life") // not-needed
   modeOfShipment String?   @map("mode_of_shipment") // I don't know why we need this field
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -130,12 +131,13 @@ model Transaction {
   id         String   @id @unique @default(cuid())
   customerId String   @map("customer_id")
   customer   Customer @relation(fields: [customerId], references: [id])
+  productId  String   @map("product_id")
+  product    Product  @relation(fields: [productId], references: [id])
 
   salesPersonId String      @map("sales_person_id")
   salesPerson   SalesPerson @relation(fields: [salesPersonId], references: [id])
   quantity      Int
   totalPrice    Float       @map("total_price")
-  
   createdAt     DateTime    @default(now()) @map("created_at")
 
   @@map("transactions")
@@ -152,7 +154,7 @@ model SalesPerson {
 
 model ProductCategory {
   id       String    @id @unique @default(cuid())
-  name     String
+  name     String    @unique
   products Product[]
 
   @@map("product_categoies")

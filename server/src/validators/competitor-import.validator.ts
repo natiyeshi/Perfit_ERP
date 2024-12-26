@@ -1,4 +1,8 @@
 import * as z from "zod";
+import {
+  lastDaysQueryValidator,
+  paginationsQueryValidator,
+} from "./query.validator";
 
 export const createCompetitorImportSchema = z.object({
   quantity: z
@@ -21,9 +25,9 @@ export const createCompetitorImportSchema = z.object({
     .number()
     .positive({ message: "Total price must be a positive number." })
     .optional(),
-  orderDate: z
-    .string({
-      message: "Order date must be a string.",
+  orderDate: z.coerce
+    .date({
+      message: "Order date is invalid date format.",
     })
     .optional(),
   shelfLife: z.number().positive().optional(),
@@ -53,3 +57,13 @@ export const createCompetitorImportSchema = z.object({
 
 export const updateCompetitorImportSchema =
   createCompetitorImportSchema.partial();
+
+export const getCompetitorImportsQuerySchema = paginationsQueryValidator
+  .extend(lastDaysQueryValidator.shape)
+  .extend({
+    populate: z
+      .boolean({
+        message: "Populate must be a boolean.",
+      })
+      .default(true),
+  });
