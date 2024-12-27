@@ -89,7 +89,7 @@ model CompetitorImport {
   orderDate      DateTime @map("order_date")
   modeOfShipment String?  @map("mode_of_shipment")
 
-  productId    String     @unique
+  productId    String
   product      Product    @relation(fields: [productId], references: [id])
   supplierId   String
   supplier     Supplier   @relation(fields: [supplierId], references: [id])
