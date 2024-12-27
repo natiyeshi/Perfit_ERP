@@ -34,11 +34,6 @@ export const createImportSchema = z.object({
     .min(1, {
       message: "Supplier ID is required.",
     }),
-  competitorId: z
-    .string({
-      message: "Competitor ID must be a string.",
-    })
-    .min(1, { message: "Competitor ID is required" }),
 });
 
 export const updateImportSchema = createImportSchema.partial();
