@@ -1,41 +1,40 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-// import { QueryClient, QueryClientProvider, useMutation } from "react-query";
-// import axios from "@/lib/axios";
-// import { useRouter } from "next/navigation";
-// import toast from "react-hot-toast";
-import { signUpAction } from "../actions";
+import { QueryClient, QueryClientProvider, useMutation } from "react-query";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { FormMessage, Message } from "@/components/form-message";
+import { useState } from "react";
 
-export default async function SignupForm(props: {
-  searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
+export default function SignupForm() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
 
-  // const router = useRouter();
-  // const [formData, setFormData] = useState({
-  //   fullName: "",
-  //   email: "",
-  //   password: "",
-  // });
+  const { isLoading, isError, error, mutate, isSuccess } = useMutation(
+    (data: any) => axios.post("/auth/sign-up", data),
+    {
+      onSuccess: () => {
+        toast.success("Signed up successfully");
+        router.push("/sign-in");
+      },
+      onError: (err) => {
+        // toast.error((err as any).)
+      },
+    }
+  );
 
-  // const { isLoading, isError, error, mutate, isSuccess } = useMutation(
-  //   () =>
-  //  axios.post("/auth/sign-up", formData),
-  //   {
-  //     onSuccess: () => {
-  //       toast.success("Signed up successfully");
-  //       router.push("/sign-in");
-  //     },
-  //   }
-  // );
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   mutate();
-  // };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate(formData);
+  };
 
   return (
     <form method="POST" className="flex flex-col min-w-64 max-w-64 mx-auto">
@@ -52,10 +51,10 @@ export default async function SignupForm(props: {
           name="fullName"
           placeholder="John"
           required
-          // value={formData.fullName}
-          // onChange={(e) =>
-          //   setFormData({ ...formData, fullName: e.target.value })
-          // }
+          value={formData.fullName}
+          onChange={(e) =>
+            setFormData({ ...formData, fullName: e.target.value })
+          }
         />
         <Label htmlFor="email">Email</Label>
         <Input
@@ -63,8 +62,8 @@ export default async function SignupForm(props: {
           placeholder="you@example.com"
           type="email"
           required
-          // value={formData.email}
-          // onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
         <Label htmlFor="password">Password</Label>
         <Input
@@ -73,16 +72,19 @@ export default async function SignupForm(props: {
           placeholder="Your password"
           minLength={6}
           required
-          // value={formData.password}
-          // onChange={(e) =>
-          //   setFormData({ ...formData, password: e.target.value })
-          // }
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
         />
-        <Button formAction={signUpAction} type={"submit"}>
-          {/* {isLoading ? "Signing up..." : "Sign up"} */}
-          Sign up
+        <Button onClick={handleSubmit} type={"submit"}>
+          {isLoading ? "Signing up..." : "Sign up"}
         </Button>
-        <FormMessage message={searchParams} />
+        {isError && (
+          <div className="mt-2 text-sm text-red-500">
+            {(error as any).response.data.message}
+          </div>
+        )}
       </div>
     </form>
   );

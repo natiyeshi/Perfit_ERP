@@ -102,7 +102,6 @@ const page = () => {
                 <Label htmlFor="competitorId">Competitor Name</Label>
                 <Select
                   disabled={competitorQuery.isLoading}
-
                   onValueChange={(value: string) =>
                     setFieldValue("competitorId", value)
                   }
@@ -129,7 +128,6 @@ const page = () => {
                 <Label htmlFor="productId">Product Name</Label>
                 <Select
                   disabled={productQuery.isLoading}
-
                   onValueChange={(value: string) =>
                     setFieldValue("productId", value)
                   }

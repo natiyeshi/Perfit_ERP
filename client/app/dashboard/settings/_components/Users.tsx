@@ -3,62 +3,60 @@ import { Button } from "@/components/ui/button";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { IUser } from "@/types/IUser";
+import axios from "@/lib/axios";
+import { useQuery } from "react-query";
+import UpdateRole from "./UpdateRole";
 
 const Users = () => {
   const [users, setUsers] = useState<IUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const query = useQuery("users", () => axios.get("/users"), {
+    onSuccess(data) {
+      setUsers(data.data.result);
+    },
+    onError(err) {
+      toast.error("Something went wrong");
+    },
+  });
+  const roles = ["UNKNOWN", "DATA_AGGREGATOR", "SALES_PERSON", "ADMIN"];
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("http://localhost:4040/api/v1/users", {
-          method: "GET",
-          credentials: "include", // Ensures cookies are sent with the request
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Error while loading users!");
-        }
-
-        const data = await response.json();
-        // setUsers(data.result || []);
-        console.log(data);
-      } catch (err) {
-        const error = (err as Error).message ?? "Error while loading users!";
-        toast.error(error);
-        console.log(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  return (
-    <div className="flex gap-4 flex-wrap pt-12 px-6">
-      {isLoading
-        ? "Loading"
-        : users.map((user) => <User key={user.id} user={user} />)}
+  return ( 
+    <div className="flex flex-col  px-6 pb-20">
+      {query.isLoading ? (
+        <div className="mt-10">Loading...</div>
+      ) : (
+        <div className="w-full">
+          {roles.map((role) => (
+            <>
+              <div className="mt-10 mb-4">{role} Roles</div>
+              <div className="flex gap-4 flex-wrap">
+                {users.map(
+                  (user) =>
+                    user.role == role && <User key={user.id} user={user} />
+                )}
+              </div>
+            </>
+          ))}
+        </div>
+      )}
       <Toaster />
     </div>
   );
 };
 
+const UsersContainer = () => {
+  return <div></div>;
+};
+
 const User = ({ user }: { user: IUser }) => {
   return (
     <div className="flex flex-col bg-gray-900 rounded-lg px-2 py-2 min-w-44">
-      <div className="text-sm text-gray-300">Full Name</div>
-      <div>{user.fullName}</div>
-
-      <div className="text-sm text-gray-300 mt-2">Role</div>
-      <div>{user.role || "UNKNOWN"}</div>
-
-      <Button className="mt-3">Update Role</Button>
+      <div className="text-xs text-gray-500 ">Full Name</div>
+      <div className="capitalize">{user.fullName}</div>
+      <div className="text-xs text-gray-500 mt-2">Role</div>
+      <div>{(user.role, "UNKNOWN")}</div>
+      <UpdateRole user={user} />
+      {/* {user.role == "UNKNOWN" && ( */}
+      {/* )} */}
     </div>
   );
 };

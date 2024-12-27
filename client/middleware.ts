@@ -2,8 +2,10 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  return NextResponse.next()
   const cookieStore = await cookies()
   const token = cookieStore.get('token')
+
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if(token){
       return NextResponse.next()

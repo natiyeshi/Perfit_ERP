@@ -2,7 +2,7 @@ import * as Yup from "yup";
 
 export const createProductSchema = Yup.object({
   name: Yup.string()
-    // .required("Product name is required.")
+    .required("Product name is required.")
     .typeError("Product name must be a string."),
   unitPrice: Yup.number()
     .positive("Unit price must be a positive number.")

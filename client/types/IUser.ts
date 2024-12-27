@@ -11,7 +11,7 @@ export interface IUser{
     id: string,
     fullName: string,
     email: string,
-    role: ROLE,
+    role: "UNKNOWN" | "DATA_AGGREGATOR" | "SALES_PERSON" | "ADMIN",
     salesPerson: null,
     flag: {
       userId: string,

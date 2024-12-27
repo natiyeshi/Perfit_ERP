@@ -1,3 +1,4 @@
+"use client";
 import CompetitorMenu from "@/components/custom/competitor/CompetitorMenu";
 import CustomerMenu from "@/components/custom/customer/CustomerMenu";
 import CustomLink from "@/components/custom/CustomLink";
@@ -6,6 +7,15 @@ import ProductMenu from "@/components/custom/product/ProductMenu";
 import SupplierMenu from "@/components/custom/supplier/SupplierMenu";
 import { FaProductHunt, FaTruck } from "react-icons/fa";
 import { IoPersonSharp } from "react-icons/io5";
+import Cookies from "js-cookie";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface LinkInf {
   name: string;
@@ -52,16 +62,38 @@ const InnerSideBar = ({
               <SupplierMenu />
               <CompetitorMenu />
             </div>
-            <div className="my-auto me-4">
-              <div className="bg-foreground w-8 h-8 rounded-full text-background font-black  flex ">
-                <div className="m-auto">N</div>
-              </div>
-            </div>
+            <Profile />
           </div>
           {children}
         </div>
       </div>
     </>
+  );
+};
+
+const Profile = () => {
+  const handleLogout = () => {
+    Cookies.remove("token");
+    
+  };
+  return (
+    <Popover>
+      <PopoverTrigger className="my-auto me-4">
+        <div className="bg-foreground w-8 h-8 rounded-full text-background font-black  flex ">
+          <div className="m-auto">N</div>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="shadow shadow-gray-500 w-32 me-4">
+        <div className="flex flex-col ">
+          <Button className="w-fit" variant="link">
+            <Link href="/dashboard/settings">Settings</Link>
+          </Button>
+          <Button onClick={handleLogout} className="w-fit" variant="link">
+            Logout
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

@@ -83,7 +83,7 @@ const SideBarLink = ({ link }: { link: MainLinkInf }) => {
 const SettingSideBarLink = () => {
   const link = {
     Icon: CiSettings,
-    link: "/dashboard/setting",
+    link: "/dashboard/settings",
   };
   const Icon = link.Icon;
   const pathname = usePathname();
