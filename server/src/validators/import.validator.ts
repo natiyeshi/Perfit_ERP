@@ -4,16 +4,16 @@ import {
   paginationsQueryValidator,
 } from "./query.validator";
 
-export const createCompetitorImportSchema = z.object({
-  quantity: z
-    .number({ message: "Quantity must be a number." })
-    .int({ message: "Quantity must be an integer." })
-    .positive({ message: "Quantity must be greater than zero." }),
+export const createImportSchema = z.object({
   unitPrice: z
     .number({
       message: "Product price must be a number.",
     })
     .positive({ message: "Unit price must be a positive number." }),
+  quantity: z
+    .number({ message: "Quantity must be a number." })
+    .int({ message: "Quantity must be an integer." })
+    .positive({ message: "Quantity must be greater than zero." }),
   orderDate: z.coerce.date({
     message: "Order date is invalid date format.",
   }),
@@ -41,10 +41,9 @@ export const createCompetitorImportSchema = z.object({
     .min(1, { message: "Competitor ID is required" }),
 });
 
-export const updateCompetitorImportSchema =
-  createCompetitorImportSchema.partial();
+export const updateImportSchema = createImportSchema.partial();
 
-export const getCompetitorImportsQuerySchema = paginationsQueryValidator
+export const getImportsQuerySchema = paginationsQueryValidator
   .extend(lastDaysQueryValidator.shape)
   .extend({
     populate: z

@@ -7,38 +7,34 @@ import {
 } from "../utils";
 import { db, zodErrorFmt } from "../libs";
 import { transactionValidator, queryValidator } from "../validators";
-import { Transaction } from "@prisma/client";
 
 // Get All Transactions
 export const getTransactionsController = asyncWrapper(async (req, res) => {
-  const paginationValiation =
-    queryValidator.paginationsQueryValidator.safeParse(req.query);
+  const queryValidation =
+    transactionValidator.getTransactionsQuerySchema.safeParse(req.query);
 
-  const lastDaysValidation = queryValidator.lastDaysQueryValidator.safeParse(
-    req.query
-  );
-
-  if (!paginationValiation.success)
+  if (!queryValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(paginationValiation.error)[0].message,
-      zodErrorFmt(paginationValiation.error)
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
     );
 
-  if (!lastDaysValidation.success)
-    throw RouteError.BadRequest(
-      zodErrorFmt(lastDaysValidation.error)[0].message,
-      zodErrorFmt(lastDaysValidation.error)
-    );
+  const isPopulate = queryValidation.data.populate === "true";
 
   let transactions = await db.transaction.findMany({
-    take: paginationValiation.data.limit,
-    skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    take: queryValidation.data.limit,
+    skip: (queryValidation.data.page || 1) - 1 || undefined,
+    include: {
+      product: isPopulate,
+      customer: isPopulate,
+      salesPerson: isPopulate,
+    },
   });
 
-  if (lastDaysValidation.success && lastDaysValidation.data.days)
-    transactions = filterByLastDays<Transaction>(
+  if (queryValidation.success && queryValidation.data.days)
+    transactions = filterByLastDays<(typeof transactions)[0]>(
       transactions,
-      lastDaysValidation.data.days
+      queryValidation.data.days
     );
 
   return sendApiResponse({
@@ -67,6 +63,7 @@ export const getTransactionByIDController = asyncWrapper(async (req, res) => {
       id: queryParamValidation.data.id,
     },
     include: {
+      product: true,
       customer: true,
       salesPerson: true,
     },

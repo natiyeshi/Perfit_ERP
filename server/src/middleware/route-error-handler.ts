@@ -14,6 +14,9 @@ const routeErrorHandlingMiddleware: ErrorRequestHandler = (
   res: Response,
   __: NextFunction
 ) => {
+  console.log("\nERROR: ", {
+    err,
+  });
   if (err instanceof RouteError)
     sendApiResponse({
       res,

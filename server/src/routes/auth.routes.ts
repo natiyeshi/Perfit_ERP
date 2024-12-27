@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/sign-up", signUpController);
 router.post("/sign-in", signInController);
-router.post(
+router.patch(
   "/change-password",
   middleware.auth.authenticationMiddleWare,
   changePasswordController
