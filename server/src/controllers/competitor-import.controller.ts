@@ -20,13 +20,15 @@ export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
       zodErrorFmt(queryValidation.error)
     );
 
+  const isPopulate = queryValidation.data.populate === "true";
+
   let competitorImports = await db.competitorImport.findMany({
     take: queryValidation.data.limit,
     skip: (queryValidation.data.page || 1) - 1 || undefined,
     include: {
-      product: queryValidation.data.populate,
-      supplier: queryValidation.data.populate,
-      competitor: queryValidation.data.populate,
+      product: isPopulate,
+      supplier: isPopulate,
+      competitor: isPopulate,
     },
   });
 

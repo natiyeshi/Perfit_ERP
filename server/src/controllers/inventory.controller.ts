@@ -18,12 +18,13 @@ export const getInventoriesController = asyncWrapper(async (req, res) => {
       zodErrorFmt(queryValidation.error)
     );
 
+  const isPopulate = queryValidation.data.populate === "true";
+
   let inventories = await db.inventory.findMany({
     take: queryValidation.data.limit,
     skip: (queryValidation.data.page || 1) - 1 || undefined,
     include: {
-      product: queryValidation.data.populate,
-      supplier: queryValidation.data.populate,
+      product: isPopulate,
     },
   });
 
@@ -59,7 +60,6 @@ export const getInventoryByIDController = asyncWrapper(async (req, res) => {
     },
     include: {
       product: true,
-      supplier: true,
     },
   });
 
@@ -72,30 +72,6 @@ export const getInventoryByIDController = asyncWrapper(async (req, res) => {
     success: true,
     message: "Inventory retrieved successfully.",
     result: inventory,
-  });
-});
-
-export const createInventoryController = asyncWrapper(async (req, res) => {
-  const bodyValidation = inventoryValidator.createInventorySchema.safeParse(
-    req.body
-  );
-
-  if (!bodyValidation.success)
-    throw RouteError.BadRequest(
-      zodErrorFmt(bodyValidation.error)[0].message,
-      zodErrorFmt(bodyValidation.error)
-    );
-
-  const newInventory = await db.inventory.create({
-    data: bodyValidation.data,
-  });
-
-  return sendApiResponse({
-    res,
-    statusCode: StatusCodes.CREATED,
-    success: true,
-    message: "Inventory created successfully.",
-    result: newInventory,
   });
 });
 

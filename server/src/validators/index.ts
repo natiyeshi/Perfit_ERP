@@ -9,6 +9,7 @@ import * as customerValidator from "./customer.validator";
 import * as transactionValidator from "./transaction.validator";
 import * as productCategoryValidator from "./product-category.validator";
 import * as queryValidator from "./query.validator";
+import * as importValidator from "./import.validator";
 
 export {
   queryValidator,
@@ -22,4 +23,5 @@ export {
   customerValidator,
   transactionValidator,
   productCategoryValidator,
+  importValidator,
 };
