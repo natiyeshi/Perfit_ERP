@@ -6,75 +6,173 @@ import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@/components/ui/input"; // ShadCN Input component
 import { Button } from "@/components/ui/button"; // ShadCN Button component
 import { Label } from "@/components/ui/label"; // ShadCN Label component
-import { VImport } from "@/validation/VImport";
+import { createCompetitorImportSchema } from "@/validators/competitor-import.validator";
+import { IImport } from "@/types/IImport";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useMutation, useQuery } from "react-query";
+import axios from "@/lib/axios";
+import { IDBProduct } from "@/types/IProduct";
+import { IDBSupplier } from "@/types/ISupplier";
+import { IDBCompetitor } from "@/types/ICompetitor";
+import { parseISO } from "date-fns";
 
 const page = () => {
-  const handleSubmit = () => {};
-  const initialValues = {
-    product: "",
-    supplier: "",
-    quantity: "",
-    unit: "",
-    unit_price: "",
-    total_price: "",
-    order_date: "",
-    shelf_life: "",
-    mode_of_shipment: "",
-    product_name: "",
-    product_brand: "",
-    company_name: "",
+  const { isLoading, mutate } = useMutation(
+    (data: any) => axios.post("/competitor-imports", data),
+    {
+      onSuccess() {
+        toast.success("Data Successfully Registered!");
+      },
+      onError(err) {
+        toast.error(
+          (err as any).response.data.message ?? "Something goes wrong!"
+        );
+      },
+    }
+  );
+  const handleSubmit = (data: IImport) => {
+    mutate({ ...data, orderDate: parseISO(data.orderDate!) });
+  };
+
+  const [products, setProducts] = useState<IDBProduct[]>([]);
+  const [suppliers, setSuppliers] = useState<IDBSupplier[]>([]);
+  const [competitors, setCompetitors] = useState<IDBCompetitor[]>([]);
+  const initialValues: IImport = {
     productId: "",
     supplierId: "",
+    competitorId: "",
+    quantity: 0,
+    unit: "",
+    unitPrice: 0,
+    totalPrice: 0,
+    orderDate: "",
+    shelfLife: 0,
+    modeOfShipment: "",
   };
+  const productQuery = useQuery("products", () => axios.get("/products"), {
+    onSuccess(data) {
+      setProducts(data.data.result || []);
+    },
+    onError(err) {
+      toast.error("Error while loading products!");
+    },
+  });
+
+  const competitorQuery = useQuery(
+    "competitors",
+    () => axios.get("/competitors"),
+    {
+      onSuccess(data) {
+        setCompetitors(data.data.result || []);
+      },
+      onError(err) {
+        toast.error("Error while loading competitors!");
+      },
+    }
+  );
+
+  const supplierQuery = useQuery("suppliers", () => axios.get("/suppliers"), {
+    onSuccess(data) {
+      setSuppliers(data.data.result || []);
+    },
+    onError(err) {
+      toast.error("Error while loading suppliers!");
+    },
+  });
+
   return (
     <div className="px-12 overflow-y-auto pb-20">
-      <div
-        onClick={() => {
-          toast.success("Here is your toast.", {
-            position: "top-right",
-          });
-        }}
-        className="big-topic py-8"
-      >
-        Register Import Data
-      </div>
+      <div className="big-topic py-8">Register Import Data</div>
       <Formik
         initialValues={initialValues}
-        validationSchema={VImport}
+        validationSchema={createCompetitorImportSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
             <div className="grid grid-cols-2 gap-4 w-full">
-              {/* Product Name */}
+              {/* competitor Name */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="product_name">Product Name</Label>
-                <Field
-                  name="product_name"
-                  as={Input}
-                  id="product_name"
-                  placeholder="Enter Product Name"
-                  className="w-full"
-                />
+                <Label htmlFor="competitorId">Competitor Name</Label>
+                <Select
+                  disabled={competitorQuery.isLoading}
+
+                  onValueChange={(value: string) =>
+                    setFieldValue("competitorId", value)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={` ${competitorQuery.isLoading ? "Loading..." : "Select"}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {competitors.map((pr) => {
+                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
                 <ErrorMessage
-                  name="product_name"
+                  name="productId"
                   component="p"
                   className="text-sm text-red-500"
                 />
               </div>
-
-              {/* Product Brand */}
+              {/* Product Name */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="product_brand">Product Brand</Label>
-                <Field
-                  name="product_brand"
-                  as={Input}
-                  id="product_brand"
-                  placeholder="Enter Product Brand"
-                  className="w-full"
-                />
+                <Label htmlFor="productId">Product Name</Label>
+                <Select
+                  disabled={productQuery.isLoading}
+
+                  onValueChange={(value: string) =>
+                    setFieldValue("productId", value)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={` ${productQuery.isLoading ? "Loading..." : "Select"}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((pr) => {
+                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
                 <ErrorMessage
-                  name="product_brand"
+                  name="productId"
+                  component="p"
+                  className="text-sm text-red-500"
+                />
+              </div>
+              {/* Supplier Name */}
+              <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="supplierId">Supplier Name</Label>
+                <Select
+                  disabled={supplierQuery.isLoading}
+                  onValueChange={(value: string) =>
+                    setFieldValue("supplierId", value)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={` ${supplierQuery.isLoading ? "Loading..." : "Select"}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {suppliers.map((pr) => {
+                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
+                <ErrorMessage
+                  name="supplierId"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -117,17 +215,17 @@ const page = () => {
 
               {/* Unit Price */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="unit_price">Unit Price</Label>
+                <Label htmlFor="unitPrice">Unit Price</Label>
                 <Field
-                  name="unit_price"
+                  name="unitPrice"
                   as={Input}
-                  id="unit_price"
+                  id="unitPrice"
                   type="number"
                   placeholder="Enter Unit Price"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="unit_price"
+                  name="unitPrice"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -135,17 +233,17 @@ const page = () => {
 
               {/* Total Price */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="total_price">Total Price</Label>
+                <Label htmlFor="totalPrice">Total Price</Label>
                 <Field
-                  name="total_price"
+                  name="totalPrice"
                   as={Input}
-                  id="total_price"
+                  id="totalPrice"
                   type="number"
                   placeholder="Enter Total Price"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="total_price"
+                  name="totalPrice"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -153,16 +251,16 @@ const page = () => {
 
               {/* Order Date */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="order_date">Order Date</Label>
+                <Label htmlFor="orderDate">Order Date</Label>
                 <Field
-                  name="order_date"
+                  name="orderDate"
                   as={Input}
-                  id="order_date"
+                  id="orderDate"
                   type="date"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="order_date"
+                  name="orderDate"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -170,16 +268,17 @@ const page = () => {
 
               {/* Shelf Life */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="shelf_life">Shelf Life</Label>
+                <Label htmlFor="shelfLife">Shelf Life</Label>
                 <Field
-                  name="shelf_life"
+                  name="shelfLife"
+                  type="number"
                   as={Input}
-                  id="shelf_life"
+                  id="shelfLife"
                   placeholder="Enter Shelf Life"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="shelf_life"
+                  name="shelfLife"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -187,67 +286,16 @@ const page = () => {
 
               {/* Mode of Shipment */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="mode_of_shipment">Mode of Shipment</Label>
+                <Label htmlFor="modeOfShipment">Mode of Shipment</Label>
                 <Field
-                  name="mode_of_shipment"
+                  name="modeOfShipment"
                   as={Input}
-                  id="mode_of_shipment"
+                  id="modeOfShipment"
                   placeholder="Enter Mode of Shipment"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="mode_of_shipment"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              {/* Company Name */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="company_name">Company Name</Label>
-                <Field
-                  name="company_name"
-                  as={Input}
-                  id="company_name"
-                  placeholder="Enter Company Name"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="company_name"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              {/* Product ID */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="productId">Product ID</Label>
-                <Field
-                  name="productId"
-                  as={Input}
-                  id="productId"
-                  placeholder="Enter Product ID"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="productId"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              {/* Supplier ID */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="supplierId">Supplier ID</Label>
-                <Field
-                  name="supplierId"
-                  as={Input}
-                  id="supplierId"
-                  placeholder="Enter Supplier ID"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="supplierId"
+                  name="modeOfShipment"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -255,8 +303,11 @@ const page = () => {
             </div>
 
             <Button
-              type="submit"
-              disabled={isSubmitting}
+              onClick={() => {
+                console.log(values);
+                mutate(values);
+              }}
+              disabled={isLoading}
               className="mx-auto mr-auto"
             >
               Submit

@@ -1,14 +1,47 @@
-import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useMutation } from "react-query";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+export default function Login() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { isLoading, isError, error, mutate } = useMutation(
+    () =>
+      axios.post("/auth/sign-in", formData, {
+        withCredentials: false,
+      }),
+    {
+      onSuccess: (res) => {
+        const token = res.data.result.token;
+        Cookies.set("token", token, {
+          expires: 7, // Expires in 7 days
+          secure: process.env.NODE_ENV === "production", // Secure cookie in production
+        });
+        toast.success("Signed in successfully");
+        router.push("/dashboard");
+      },
+    }
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate();
+  };
+
   return (
-    <form className="flex-1 flex flex-col min-w-64">
+    <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-w-64">
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-foreground">
         Don't have an account?{" "}
@@ -16,28 +49,36 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           Sign up
         </Link>
       </p>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+      <div className="flex flex-col gap-2 mt-4">
         <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            className="text-xs text-foreground underline"
-            href="/forgot-password"
-          >
-            Forgot Password?
-          </Link>
-        </div>
+        <Input
+          name="email"
+          placeholder="you@example.com"
+          type="email"
+          required
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        <Label htmlFor="password">Password</Label>
         <Input
           type="password"
           name="password"
           placeholder="Your password"
+          minLength={6}
           required
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
         />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
-        <FormMessage message={searchParams} />
+        <Button type={"submit"} disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign in"}
+        </Button>
+        {isError && (
+          <div className="mt-2 text-sm text-red-500">
+            {(error as any).response.data.message}
+          </div>
+        )}
       </div>
     </form>
   );

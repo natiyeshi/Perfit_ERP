@@ -1,9 +1,6 @@
 import { GeistSans } from "geist/font/sans";
-import { ThemeProvider } from "next-themes";
-import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
-
+import Providers from "@/providers/Providers";
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -21,16 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground ">
-        <NextTopLoader />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster />
-          {children}
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
