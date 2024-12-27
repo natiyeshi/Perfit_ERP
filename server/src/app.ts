@@ -13,7 +13,7 @@ const app = express();
 // Registering middlewares
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -30,9 +30,9 @@ app.use("/api/v1/suppliers", routes.supplierRouter);
 app.use("/api/v1/competitors", routes.competitorRouter);
 app.use("/api/v1/competitor-imports", routes.competitorImportRouter);
 app.use("/api/v1/inventories", routes.inventoryRouter);
+app.use("/api/v1/imports", routes.importRouter);
 app.use("/api/v1/customers", routes.customerRouter);
 app.use("/api/v1/transactions", routes.transactionRouter);
-app.use("/api/v1/product-categories", routes.productCategoryRouter);
 
 setupSwagger(app);
 

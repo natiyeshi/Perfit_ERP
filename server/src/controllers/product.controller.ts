@@ -55,17 +55,18 @@ export const getProductByIDController = asyncWrapper(async (req, res) => {
 });
 
 export const createProductController = asyncWrapper(async (req, res) => {
-  const { data, success, error } =
-    productValidator.createProductSchema.safeParse(req.body);
+  const bodyValidation = productValidator.createProductSchema.safeParse(
+    req.body
+  );
 
-  if (!success)
+  if (!bodyValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(error)[0].message,
-      zodErrorFmt(error)
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
     );
 
   const product = await db.product.create({
-    data,
+    data: bodyValidation.data,
   });
 
   return sendApiResponse({

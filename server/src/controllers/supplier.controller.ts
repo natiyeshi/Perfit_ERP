@@ -16,7 +16,7 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
   const suppliers = await db.supplier.findMany({
     include: {
       competitorImports: true,
-      inventories: true,
+      imports: true,
     },
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
@@ -49,7 +49,7 @@ export const getSupplierByIdController = asyncWrapper(async (req, res) => {
     },
     include: {
       competitorImports: true,
-      inventories: true,
+      imports: true,
     },
   });
 
@@ -126,7 +126,7 @@ export const updateSupplierController = asyncWrapper(async (req, res) => {
     data: bodyValidation.data,
     include: {
       competitorImports: true,
-      inventories: true,
+      imports: true,
     },
   });
 

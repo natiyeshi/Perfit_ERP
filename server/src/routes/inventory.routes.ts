@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  createInventoryController,
   deleteInventoryController,
   getInventoryByIDController,
   getInventoriesController,
@@ -10,7 +9,6 @@ import {
 const router = Router();
 
 router.get("/", getInventoriesController);
-router.post("/", createInventoryController);
 router.get("/:id", getInventoryByIDController);
 router.patch("/:id", updateInventoryController);
 router.delete("/:id", deleteInventoryController);
