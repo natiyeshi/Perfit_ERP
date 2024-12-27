@@ -3,34 +3,32 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import axios from "@/lib/axios";
 import { filterInf } from "../_components/Filter";
-import { IDBClientImport, IDBPopulatedImport } from "@/types/IImport";
+import { IDBClientInventory, IDBInventory, IDBPopulatedInventory } from "@/types/IInventory";
 import toast, { Toaster } from "react-hot-toast";
 
-export const useImportTable = () => {
+export const useInventoryTable = () => {
   const [filters, setFilters] = useState<filterInf>({
     name: "",
   });
   let toastId = "";
-  const [imports, setImports] = useState<IDBClientImport[]>([]);
-  const [importsData, setImportsData] = useState<IDBClientImport[]>([]);
+  const [inventorys, setInventorys] = useState<IDBClientInventory[]>([]);
+  const [inventorysData, setInventorysData] = useState<IDBClientInventory[]>([]);
 
   const filter = (name: string, value: any) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const nameFilter = (data: IDBClientImport) => {
+  const nameFilter = (data: IDBClientInventory) => {
     return (
       filters.name.length === 0 ||
       (data.productName &&
         data.productName.toLowerCase().includes(filters.name)) ||
-      (data.competitorName &&
-        data.competitorName.toLowerCase().includes(filters.name)) ||
       (data.supplierName &&
         data.supplierName.toLowerCase().includes(filters.name))
     );
   };
 
-  const statusFilter = (data: IDBClientImport) => {
+  const statusFilter = (data: IDBClientInventory) => {
     return (
       filters.status == null ||
       data.modeOfShipment?.toLowerCase() === filters.status.toLowerCase()
@@ -38,23 +36,22 @@ export const useImportTable = () => {
   };
 
   const query = useQuery(
-    "competitor-imports",
-    () => axios.get("/competitor-imports?populate=true"),
+    "inventories",
+    () => axios.get("/inventories"),
     {
       onSuccess(data) {
-        let k: IDBPopulatedImport[] = data.data.result || [];
-        const res: IDBClientImport[] = [];
+        let k: IDBPopulatedInventory[] = data.data.result || [];
+        const res: IDBClientInventory[] = [];
         k.map((d) => {
-          let r: IDBClientImport = {
+          let r: IDBClientInventory = {
             ...d,
             productName: d.product.name,
             supplierName: d.supplier.name,
-            competitorName: d.competitor.name,
           };
           res.push(r);
         });
-        setImports(res);
-        setImportsData(res);
+        setInventorys(res);
+        setInventorysData(res);
       },
       onError(err) {
         console.log(err, "EEEEEEEEEEEEEEEEEE ");
@@ -68,16 +65,16 @@ export const useImportTable = () => {
   };
 
   useEffect(() => {
-    setImports(() => {
-      return importsData.filter(
+    setInventorys(() => {
+      return inventorysData.filter(
         (data) => nameFilter(data) && statusFilter(data)
       );
     });
-  }, [filters, importsData]);
+  }, [filters, inventorysData]);
 
   return {
     filters,
-    imports,
+    inventorys,
     setFilters,
     filter,
     reload,

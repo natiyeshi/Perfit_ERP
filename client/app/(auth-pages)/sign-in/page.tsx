@@ -8,6 +8,8 @@ import { useMutation } from "react-query";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -16,10 +18,17 @@ export default function Login() {
   });
 
   const { isLoading, isError, error, mutate } = useMutation(
-    () => axios.post("/auth/sign-in", formData, { withCredentials: true }),
+    () =>
+      axios.post("/auth/sign-in", formData, {
+        withCredentials: false,
+      }),
     {
       onSuccess: (res) => {
-        console.log(res.data.result.user);
+        const token = res.data.result.token;
+        Cookies.set("token", token, {
+          expires: 7, // Expires in 7 days
+          secure: process.env.NODE_ENV === "production", // Secure cookie in production
+        });
         toast.success("Signed in successfully");
         router.push("/dashboard");
       },
