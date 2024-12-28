@@ -87,6 +87,28 @@ export const createImportController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
+  const existingSupplier = await db.supplier.findUnique({
+    where: {
+      id: bodyValidation.data.supplierId,
+    },
+  });
+
+  if (!existingSupplier)
+    throw RouteError.NotFound(
+      "Supplier not found with the provided supplier ID."
+    );
+
+  const existingProduct = await db.product.findUnique({
+    where: {
+      id: bodyValidation.data.productId,
+    },
+  });
+
+  if (!existingProduct)
+    throw RouteError.NotFound(
+      "Product not found with the provided product ID."
+    );
+
   const newImport = await db.import.create({
     data: bodyValidation.data,
   });
@@ -114,7 +136,11 @@ export const createImportController = asyncWrapper(async (req, res) => {
     });
   else
     await db.inventory.create({
-      data: bodyValidation.data,
+      data: {
+        unitPrice: bodyValidation.data.unitPrice,
+        quantity: bodyValidation.data.quantity,
+        productId: bodyValidation.data.productId,
+      },
     });
 
   return sendApiResponse({

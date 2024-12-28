@@ -93,6 +93,53 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
+  const existingCustomer = await db.customer.findUnique({
+    where: {
+      id: bodyValidation.data.customerId,
+    },
+  });
+
+  if (!existingCustomer)
+    throw RouteError.NotFound(
+      "Customer not found with the provided customer ID."
+    );
+
+  const existingProduct = await db.product.findUnique({
+    where: {
+      id: bodyValidation.data.productId,
+    },
+  });
+
+  if (!existingProduct)
+    throw RouteError.NotFound(
+      "Product not found with the provided product ID."
+    );
+
+  const existingSalesPerson = await db.salesPerson.findUnique({
+    where: {
+      id: bodyValidation.data.salesPersonId,
+    },
+  });
+
+  if (!existingSalesPerson)
+    throw RouteError.NotFound(
+      "Sales person not found with the provided sales person ID."
+    );
+
+  const existingInventory = await db.inventory.findUnique({
+    where: { productId: bodyValidation.data.productId },
+  });
+
+  if (!existingInventory)
+    throw RouteError.NotFound(
+      "Inventory not found with the provided product ID."
+    );
+
+  if (existingInventory.quantity < bodyValidation.data.quantity)
+    throw RouteError.BadRequest(
+      "Insufficient inventory to complete the transaction."
+    );
+
   const newTransaction = await db.transaction.create({
     data: bodyValidation.data,
   });
