@@ -46,7 +46,7 @@ function AddProduct() {
 
   const initialValues: IProduct = {
     name: "",
-    unitPrice: 0,
+    unit: "",
     shelfLife: 0,
     brand: "",
   };
@@ -97,19 +97,19 @@ function AddProduct() {
                       />
                     </div>
 
-                    {/* Unit Price */}
+                    {/* Unit */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="unitPrice">Unit Price</Label>
+                      <Label htmlFor="unit">Unit</Label>
                       <Field
-                        name="unitPrice"
+                        name="unit"
                         as={Input}
-                        id="unitPrice"
-                        type="number"
+                        id="unit"
+                        type="string"
                         placeholder="Enter Unit Price"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="unitPrice"
+                        name="unit"
                         component="p"
                         className="text-sm text-red-500"
                       />

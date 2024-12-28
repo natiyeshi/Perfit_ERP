@@ -37,7 +37,7 @@ const page = () => {
     }
   );
   const handleSubmit = (data: IImport) => {
-    mutate({ ...data, orderDate: parseISO(data.orderDate!) });
+    mutate({ ...data, orderDate: data.orderDate });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
@@ -48,12 +48,9 @@ const page = () => {
     supplierId: "",
     competitorId: "",
     quantity: 0,
-    unit: "",
     unitPrice: 0,
-    totalPrice: 0,
-    orderDate: "",
-    shelfLife: 0,
     modeOfShipment: "",
+    orderDate: "",
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -194,22 +191,7 @@ const page = () => {
                 />
               </div>
 
-              {/* Unit */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="unit">Unit</Label>
-                <Field
-                  name="unit"
-                  as={Input}
-                  id="unit"
-                  placeholder="Enter Unit"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="unit"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
+             
 
               {/* Unit Price */}
               <div className="flex flex-col space-y-2 w-full">
@@ -229,23 +211,7 @@ const page = () => {
                 />
               </div>
 
-              {/* Total Price */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="totalPrice">Total Price</Label>
-                <Field
-                  name="totalPrice"
-                  as={Input}
-                  id="totalPrice"
-                  type="number"
-                  placeholder="Enter Total Price"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="totalPrice"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
+             
 
               {/* Order Date */}
               <div className="flex flex-col space-y-2 w-full">
@@ -298,7 +264,13 @@ const page = () => {
                   className="text-sm text-red-500"
                 />
               </div>
+               {/* Total Price */}
+               <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="totalPrice">Total Price</Label>
+                <div>{values.quantity * values.unitPrice}</div>
+              </div>
             </div>
+            
 
             <Button
               onClick={() => {

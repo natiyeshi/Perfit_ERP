@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { JSXElementConstructor, ReactNode } from "react";
 import Loading from "../loading";
 import {
@@ -16,12 +16,15 @@ interface Header<T> {
 
 interface CustomeTableProps<T extends { id: string }> {
   query: {
-    data: any; isLoading: boolean; isRefetching: boolean; isSuccess: boolean 
-};
+    data: any;
+    isLoading: boolean;
+    isRefetching: boolean;
+    isSuccess: boolean;
+  };
   headers: Header<T>[];
   result: T[];
-  DeleteItem: JSXElementConstructor<{ id: string }>;
-  UpdateItem: JSXElementConstructor<{ initialValues: T }>;
+  DeleteItem?: JSXElementConstructor<{ id: string }>;
+  UpdateItem?: JSXElementConstructor<{ initialValues: T }>;
 }
 
 const CustomeTable = <T extends { id: string }>({
@@ -69,8 +72,10 @@ const CustomeTable = <T extends { id: string }>({
                     <PopoverContent className="shadow">
                       <div>Options</div>
                       <div className="flex flex-col gap-1">
-                        <DeleteItem id={String(item.id!) ?? "-"} />
-                        <UpdateItem initialValues={item} />
+                        {DeleteItem && (
+                          <DeleteItem id={String(item.id!) ?? "-"} />
+                        )}
+                        {UpdateItem && <UpdateItem initialValues={item} />}
                       </div>
                     </PopoverContent>
                   </Popover>

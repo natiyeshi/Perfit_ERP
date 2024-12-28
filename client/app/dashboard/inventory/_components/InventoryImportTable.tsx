@@ -2,24 +2,32 @@
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { IoCloseSharp } from "react-icons/io5";
-import Addproduct from "@/components/custom/product/AddProduct";
+// import Addimport from "@/components/custom/inventoryImport/AddInventoryImport";
 import { Button } from "@/components/ui/button";
-import { useProductTable } from "../hook/useProductTable";
+import { useInventoryImportTable } from "../hook/useInventoryImportTable";
 import FilterCard from "./Filter";
 import { IoMdRefresh } from "react-icons/io";
-import DeleteProduct from "@/components/custom/product/DeleteProduct";
-import UpdateProduct from "@/components/custom/product/UpdateProduct";
-import { IDBProduct } from "@/types/IProduct";
+// import DeleteInventoryImport from "@/components/custom/inventoryImport/DeleteInventoryImport";
+import {
+  IDBClientInventoryImport,
+  IInventoryImport,
+} from "@/types/IInventoryImportTable";
 import CustomeTable from "@/components/custom/table/CustomeTable";
-const ProductTable: React.FC = () => {
-  const headers: { name: string; key: keyof IDBProduct }[] = [
-    { name: "Product Name", key: "name" },
-    { name: "Brand", key: "brand" },
-    { name: "Unit", key: "unit" },
-    { name: "Shelf Life", key: "shelfLife" },
+import DeleteInventoryImport from "@/components/custom/InventoryImport/DeleteInventoryImport";
+import UpdateInventoryImport from "@/components/custom/InventoryImport/UpdateInventoryImport";
+const InventoryImportTable: React.FC = () => {
+  const headers: { name: string; key: keyof IDBClientInventoryImport }[] = [
+    { name: "Product Name", key: "productName" },
+    { name: "Supplier Name", key: "supplierName" },
+    { name: "Quantity", key: "quantity" },
+    { name: "unit", key: "unit" },
+    { name: "unitPrice", key: "unitPrice" },
+    { name: "totalPrice", key: "totalPrice" },
+    { name: "shelfLife(month)", key: "shelfLife" },
+    { name: "modeOfShipment", key: "modeOfShipment" },
   ];
-  const { filters, products, setFilters, filter, reload, query } =
-    useProductTable();
+  const { filters, inventoryImports, setFilters, filter, reload, query } =
+    useInventoryImportTable();
   return (
     <>
       <div className="w-full py-4 px-2 flex justify-between">
@@ -42,7 +50,7 @@ const ProductTable: React.FC = () => {
           >
             <IoMdRefresh className="text-xl" />
           </Button>
-          <Addproduct />
+          {/* <AddinventoryImport /> */}
           {/* <FilterCard setFilters={setFilters} filter={filters} /> */}
         </div>
       </div>
@@ -67,13 +75,13 @@ const ProductTable: React.FC = () => {
         <CustomeTable
           query={query}
           headers={headers}
-          result={products}
-          DeleteItem={DeleteProduct}
-          UpdateItem={UpdateProduct}
+          result={inventoryImports}
+          //   DeleteItem={DeleteInventoryImport}
+          //   UpdateItem={UpdateInventoryImport}
         />
       </div>
     </>
   );
 };
 
-export default ProductTable;
+export default InventoryImportTable;

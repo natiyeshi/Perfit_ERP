@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
+function UpdateInventoryImport({ initialValues }: { initialValues: IDBImport }) {
   const queryClient = useQueryClient();
   const [err, setErr] = useState<any>(null);
   const [open, setOpen] = useState(false); // State for dialog open/close
@@ -43,7 +43,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
 
   const { isLoading, isError, error, mutate } = useMutation(
     (data: Partial<IDBImport>) =>
-      axios.patch(`/competitor-imports/${initialValues.id}`, data),
+      axios.patch(`/imports/${initialValues.id}`, data),
     {
       onSuccess: () => {
         toast.success("Import successfully updated!");
@@ -260,9 +260,6 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                         className="text-sm text-red-500"
                       />
                     </div>
-
-                   
-
                     {/* Order Date */}
                     <div className="flex flex-col space-y-2 w-full">
                       <Label htmlFor="orderDate">Order Date</Label>
@@ -322,4 +319,4 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
   );
 }
 
-export default UpdateImport;
+export default UpdateInventoryImport;

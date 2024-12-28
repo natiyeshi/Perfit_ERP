@@ -9,6 +9,7 @@ export default async function Layout({ children }: { children: any }) {
           name: "Inventory",
           links: [
             { name: "data", link: "/dashboard/inventory" },
+            { name: "imports", link: "/dashboard/inventory/import" },
             { name: "register", link: "/dashboard/inventory/register" },
             { name: "Report", link: "/dashboard/inventory/report" },
           ],

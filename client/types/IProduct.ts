@@ -1,8 +1,8 @@
 export interface IProduct {
     name: string;
-    unitPrice: number;
     shelfLife: number;
-    brand?: string;
+    brand: string;
+    unit: string;
 }
   
 export interface IDBProduct extends IProduct {

@@ -1,11 +1,13 @@
 "use client";
-import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { FC, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@/components/ui/input"; // ShadCN Input component
 import { Button } from "@/components/ui/button"; // ShadCN Button component
 import { Label } from "@/components/ui/label"; // ShadCN Label component
-import { createInventorySchema } from "@/validators/inventory.validator";
+import { createCompetitorImportSchema } from "@/validators/competitor-import.validator";
+import { IInventoryImport } from "@/types/IInventoryImportTable";
 import {
   Select,
   SelectContent,
@@ -17,12 +19,12 @@ import { useMutation, useQuery } from "react-query";
 import axios from "@/lib/axios";
 import { IDBProduct } from "@/types/IProduct";
 import { IDBSupplier } from "@/types/ISupplier";
+import { IDBCompetitor } from "@/types/ICompetitor";
 import { parseISO } from "date-fns";
-import { IInventory } from "@/types/IInventory";
 
 const page = () => {
   const { isLoading, mutate } = useMutation(
-    (data: any) => axios.post("/inventories", data),
+    (data: any) => axios.post("/imports", data),
     {
       onSuccess() {
         toast.success("Data Successfully Registered!");
@@ -34,22 +36,22 @@ const page = () => {
       },
     }
   );
-  const handleSubmit = (data: IInventory) => {
-    mutate({ ...data, orderDate: parseISO(data.orderDate!) });
+  const handleSubmit = (data: IInventoryImport) => {
+    let newData = {...data};
+    mutate({ ...newData, orderDate: data.orderDate });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
   const [suppliers, setSuppliers] = useState<IDBSupplier[]>([]);
-  const initialValues: IInventory = {
+  const [competitors, setCompetitors] = useState<IDBCompetitor[]>([]);
+  const initialValues: IInventoryImport = {
     productId: "",
     supplierId: "",
+    competitorId: "",
     quantity: 0,
-    unit: "",
     unitPrice: 0,
-    totalPrice: 0,
-    orderDate: "",
-    shelfLife: 0,
     modeOfShipment: "",
+    orderDate: "",
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -59,6 +61,19 @@ const page = () => {
       toast.error("Error while loading products!");
     },
   });
+
+  const competitorQuery = useQuery(
+    "competitors",
+    () => axios.get("/competitors"),
+    {
+      onSuccess(data) {
+        setCompetitors(data.data.result || []);
+      },
+      onError(err) {
+        toast.error("Error while loading competitors!");
+      },
+    }
+  );
 
   const supplierQuery = useQuery("suppliers", () => axios.get("/suppliers"), {
     onSuccess(data) {
@@ -74,12 +89,38 @@ const page = () => {
       <div className="big-topic py-8">Register Import Data</div>
       <Formik
         initialValues={initialValues}
-        validationSchema={createInventorySchema}
+        validationSchema={createCompetitorImportSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
             <div className="grid grid-cols-2 gap-4 w-full">
+              {/* competitor Name */}
+              <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="competitorId">Competitor Name</Label>
+                <Select
+                  disabled={competitorQuery.isLoading}
+                  onValueChange={(value: string) =>
+                    setFieldValue("competitorId", value)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={` ${competitorQuery.isLoading ? "Loading..." : "Select"}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {competitors.map((pr) => {
+                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
+                <ErrorMessage
+                  name="productId"
+                  component="p"
+                  className="text-sm text-red-500"
+                />
+              </div>
               {/* Product Name */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="productId">Product Name</Label>
@@ -102,7 +143,7 @@ const page = () => {
                 </Select>
                 <ErrorMessage
                   name="productId"
-                  component="productId"
+                  component="p"
                   className="text-sm text-red-500"
                 />
               </div>
@@ -151,23 +192,6 @@ const page = () => {
                 />
               </div>
 
-              {/* Unit */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="unit">Unit</Label>
-                <Field
-                  name="unit"
-                  as={Input}
-                  id="unit"
-                  placeholder="Enter Unit"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="unit"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
               {/* Unit Price */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="unitPrice">Unit Price</Label>
@@ -181,24 +205,6 @@ const page = () => {
                 />
                 <ErrorMessage
                   name="unitPrice"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              {/* Total Price */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="totalPrice">Total Price</Label>
-                <Field
-                  name="totalPrice"
-                  as={Input}
-                  id="totalPrice"
-                  type="number"
-                  placeholder="Enter Total Price"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="totalPrice"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -254,6 +260,11 @@ const page = () => {
                   component="p"
                   className="text-sm text-red-500"
                 />
+              </div>
+              {/* Total Price */}
+              <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="totalPrice">Total Price</Label>
+                <div>{values.quantity * values.unitPrice}</div>
               </div>
             </div>
 
