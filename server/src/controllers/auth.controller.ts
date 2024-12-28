@@ -116,6 +116,12 @@ export const updateROLEController = asyncWrapper(async (req, res) => {
     },
     data: {
       role: bodyValidation.data.role,
+      salesPerson:
+        bodyValidation.data.role === "SALES_PERSON"
+          ? {
+              create: {},
+            }
+          : undefined,
     },
   });
 

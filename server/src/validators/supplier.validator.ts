@@ -6,9 +6,12 @@ export const createSupplierSchema = z.object({
   name: z.string({ message: "Supplier name must be a string." }).min(1, {
     message: "Supplier name is required.",
   }),
-  email: z.string({ message: "Email has to be a string" }).email({
-    message: "Invalid email.",
-  }),
+  email: z
+    .string({ message: "Email has to be a string" })
+    .email({
+      message: "Invalid email.",
+    })
+    .optional(),
   phoneNumber: z
     .string({
       message: "Phone number must be string",
@@ -23,7 +26,8 @@ export const createSupplierSchema = z.object({
     })
     .min(2, {
       message: "Country must be at least 2 characters long.",
-    }),
+    })
+    .optional(),
 });
 
 export const updateSupplierSchema = createSupplierSchema.partial();
