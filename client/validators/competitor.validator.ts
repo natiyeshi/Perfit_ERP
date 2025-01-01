@@ -32,4 +32,4 @@ export const createCompetitorImportSchema = Yup.object().shape({
     .required("Competitor ID must be a string."),
 });
 
-export const updateCompetitorImportSchema = createCompetitorImportSchema.noUnknown().nullable().defined();
+export const updateCompetitorImportSchema = createCompetitorImportSchema.noUnknown().optional().defined();
