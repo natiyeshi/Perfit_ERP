@@ -1,20 +1,34 @@
-import { CUSTOMER_LABEL } from "@prisma/client";
+import { Customer } from "@prisma/client";
 import * as z from "zod";
 
 export const createCustomerSchema = z.object({
-  fullName: z
-    .string({ message: "Full name is required and must be a string." })
+  organizationName: z
+    .string({ message: "Organization name must be a string." })
     .trim()
-    .min(1, { message: "Full name cannot be empty." })
-    .refine((name) => name.split(" ").length > 1, {
-      message: "Full name must include at least first and last names.",
+    .min(1, { message: "Organization name is required." }),
+  phoneNumber: z
+    .string({
+      message: "Phone number must be string",
+    })
+    .min(10, {
+      message: "Phone number must be at least 10 characters long.",
+    }),
+  city: z
+    .string({
+      message: "City has to be a string.",
+    })
+    .min(1, {
+      message: "City is required.",
     }),
 });
 
 export const updateCustomerSchema = createCustomerSchema.partial().extend({
-  label: z
-    .enum([...Object.values(CUSTOMER_LABEL)] as [keyof typeof CUSTOMER_LABEL], {
-      message: "Invalid label.",
+  catagory: z
+    .string({
+      message: "Catagory must be a string.",
+    })
+    .min(1, {
+      message: "Catagory is required.",
     })
     .optional(),
-});
+}) satisfies z.ZodType<Partial<Omit<Customer, "id" | "catagory">>>;

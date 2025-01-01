@@ -22,9 +22,9 @@ export const getUsersController = asyncWrapper(async (req, res) => {
 });
 
 export const getUserByIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "User ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("User ID not provided or invalid.")
+    .safeParse(req.params);
 
   if (!queryParamValidation.success)
     throw RouteError.BadRequest(
@@ -72,14 +72,6 @@ export const updateProfileController = asyncWrapper(async (req, res) => {
   if (!existingUser)
     throw RouteError.NotFound("User not found with the provide token.");
 
-  const isCorrectPassword = passwordCrypt.verifyPassword(
-    bodyValidation.data.password,
-    existingUser.password
-  );
-
-  if (!isCorrectPassword)
-    throw RouteError.Unauthorized("Invalid password provided.");
-
   const updatedUser = await db.user.update({
     where: {
       email: bodyValidation.data.email,
@@ -101,9 +93,9 @@ export const updateProfileController = asyncWrapper(async (req, res) => {
 });
 
 export const updateFlagsByUserIdController = asyncWrapper(async (req, res) => {
-  const queryParamValidation = queryValidator.queryParamIDValidator(
-    "User ID not provided or invalid."
-  ).safeParse(req.params);
+  const queryParamValidation = queryValidator
+    .queryParamIDValidator("User ID not provided or invalid.")
+    .safeParse(req.params);
   const bodyValidation = userValidator.updateFlags.safeParse(req.body);
 
   if (!queryParamValidation.success)

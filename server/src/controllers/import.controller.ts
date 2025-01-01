@@ -125,9 +125,9 @@ export const createImportController = asyncWrapper(async (req, res) => {
         productId: bodyValidation.data.productId,
       },
       data: {
-        unitPrice:
-          existingInventory.unitPrice > bodyValidation.data.unitPrice
-            ? existingInventory.unitPrice
+        possibleSellingPrice:
+          existingInventory.possibleSellingPrice > bodyValidation.data.unitPrice
+            ? existingInventory.possibleSellingPrice
             : bodyValidation.data.unitPrice,
         quantity: {
           increment: bodyValidation.data.quantity,
@@ -137,7 +137,7 @@ export const createImportController = asyncWrapper(async (req, res) => {
   else
     await db.inventory.create({
       data: {
-        unitPrice: bodyValidation.data.unitPrice,
+        possibleSellingPrice: bodyValidation.data.unitPrice,
         quantity: bodyValidation.data.quantity,
         productId: bodyValidation.data.productId,
       },

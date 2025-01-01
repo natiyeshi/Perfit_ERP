@@ -1,6 +1,5 @@
+import { Competitor } from "@prisma/client";
 import * as z from "zod";
-
-const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/;
 
 export const createCompetitorSchema = z.object({
   name: z.string({ message: "Competitor name must be a string." }).refine(
@@ -31,6 +30,12 @@ export const createCompetitorSchema = z.object({
       message: "Competitor country must be a valid country.",
     })
     .optional(),
+  isDirectCompetitor: z.boolean({
+    message: "Is direct competitor status must be a boolean.",
+  }),
 });
 
-export const updateCompetitorSchema = createCompetitorSchema.partial();
+export const updateCompetitorSchema =
+  createCompetitorSchema.partial() satisfies z.ZodType<
+    Partial<Omit<Competitor, "id">>
+  >;
