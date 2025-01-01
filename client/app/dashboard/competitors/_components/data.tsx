@@ -1,6 +1,6 @@
 import { IDBProduct } from "@/types/IProduct";
 
-const products: IDBProduct[] = [
+const products: any[] = [
   {
     id: "1",
     name: "Apple Juice",

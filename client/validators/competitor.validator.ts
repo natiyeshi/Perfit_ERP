@@ -1,35 +1,30 @@
 import * as Yup from "yup";
 
-export const createCompetitorImportSchema = Yup.object().shape({
-  quantity: Yup.number()
-    .integer("Quantity must be an integer.")
-    .positive("Quantity must be greater than zero.")
-    .required("Quantity must be a number."),
-  unit: Yup.string()
-    .min(1, "Unit must at least have one character.")
-    .notRequired(),
-  unitPrice: Yup.number()
-    .positive("Unit price must be a positive number.")
-    .notRequired(),
-  totalPrice: Yup.number()
-    .positive("Total price must be a positive number.")
-    .notRequired(),
-  orderDate: Yup.string().notRequired(),
-  shelfLife: Yup.number()
-    .positive("Shelf life must be a positive number.")
-    .notRequired(),
-  modeOfShipment: Yup.string()
-    .notRequired()
-    .typeError("Mode of shipment must be a string."),
-  productId: Yup.string()
-    .min(1, "Product ID is required.")
-    .required("Product ID must be a string."),
-  supplierId: Yup.string()
-    .min(1, "Supplier ID is required.")
-    .required("Supplier ID must be a string."),
-  competitorId: Yup.string()
-    .min(1, "Competitor ID is required.")
-    .required("Competitor ID must be a string."),
+const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/;
+
+export const createCompetitorSchema = Yup.object({
+  name: Yup.string()
+    .test(
+      "minLength",
+      "Competitor name has to have at least one character.",
+      (name) => !name || name.length > 1
+    )
+    .required("Competitor name must be a string."),
+  email: Yup.string()
+    .email("Competitor email isn't a valid email address")
+    .optional(),
+  phoneNumber: Yup.string()
+    .matches(PHONE_REGEX, "Phone number must be string")
+    .min(10, "Phone number must be at least 10 characters long.")
+    .optional(),
+  country: Yup.string()
+    .typeError("Competitor country must be a valid country.")
+    .optional(),
 });
 
-export const updateCompetitorImportSchema = createCompetitorImportSchema.noUnknown().nullable().defined();
+export const updateCompetitorSchema = createCompetitorSchema.shape({
+  name: Yup.string().optional(),
+  email: Yup.string().email().optional(),
+  phoneNumber: Yup.string().optional(),
+  country: Yup.string().optional(),
+});

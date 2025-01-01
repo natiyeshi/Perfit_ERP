@@ -6,8 +6,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@/components/ui/input"; // ShadCN Input component
 import { Button } from "@/components/ui/button"; // ShadCN Button component
 import { Label } from "@/components/ui/label"; // ShadCN Label component
-import { createCompetitorImportSchema } from "@/validators/competitor-import.validator";
-import { IInventoryImport } from "@/types/IInventoryImportTable";
+import { createInventoryImportSchema } from "@/validators/inventoryImport.validator";
+import { IInventoryImport } from "@/types/IInventoryImport";
 import {
   Select,
   SelectContent,
@@ -19,7 +19,6 @@ import { useMutation, useQuery } from "react-query";
 import axios from "@/lib/axios";
 import { IDBProduct } from "@/types/IProduct";
 import { IDBSupplier } from "@/types/ISupplier";
-import { IDBCompetitor } from "@/types/ICompetitor";
 import { parseISO } from "date-fns";
 
 const page = () => {
@@ -43,11 +42,9 @@ const page = () => {
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
   const [suppliers, setSuppliers] = useState<IDBSupplier[]>([]);
-  const [competitors, setCompetitors] = useState<IDBCompetitor[]>([]);
   const initialValues: IInventoryImport = {
     productId: "",
     supplierId: "",
-    competitorId: "",
     quantity: 0,
     unitPrice: 0,
     modeOfShipment: "",
@@ -62,18 +59,6 @@ const page = () => {
     },
   });
 
-  const competitorQuery = useQuery(
-    "competitors",
-    () => axios.get("/competitors"),
-    {
-      onSuccess(data) {
-        setCompetitors(data.data.result || []);
-      },
-      onError(err) {
-        toast.error("Error while loading competitors!");
-      },
-    }
-  );
 
   const supplierQuery = useQuery("suppliers", () => axios.get("/suppliers"), {
     onSuccess(data) {
@@ -89,38 +74,13 @@ const page = () => {
       <div className="big-topic py-8">Register Import Data</div>
       <Formik
         initialValues={initialValues}
-        validationSchema={createCompetitorImportSchema}
+        validationSchema={createInventoryImportSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
             <div className="grid grid-cols-2 gap-4 w-full">
-              {/* competitor Name */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="competitorId">Competitor Name</Label>
-                <Select
-                  disabled={competitorQuery.isLoading}
-                  onValueChange={(value: string) =>
-                    setFieldValue("competitorId", value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={` ${competitorQuery.isLoading ? "Loading..." : "Select"}`}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {competitors.map((pr) => {
-                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
-                    })}
-                  </SelectContent>
-                </Select>
-                <ErrorMessage
-                  name="productId"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
+             
               {/* Product Name */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="productId">Product Name</Label>

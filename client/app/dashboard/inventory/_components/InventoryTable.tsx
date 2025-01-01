@@ -14,13 +14,13 @@ import CustomeTable from "@/components/custom/table/CustomeTable";
 const InventoryTable: React.FC = () => {
   const headers: { name: string; key: keyof IDBClientInventory }[] = [
     { name: "Product Name", key: "productName" },
-    { name: "Supplier Name", key: "supplierName" },
+    // { name: "Supplier Name", key: "supplierName" },
     { name: "Quantity", key: "quantity" },
-    { name: "unit", key: "unit" },
+    // { name: "unit", key: "unit" },
     { name: "unitPrice", key: "unitPrice" },
-    { name: "totalPrice", key: "totalPrice" },
-    { name: "shelfLife(month)", key: "shelfLife" },
-    { name: "modeOfShipment", key: "modeOfShipment" },
+    // { name: "totalPrice", key: "totalPrice" },
+    // { name: "shelfLife(month)", key: "shelfLife" },
+    // { name: "modeOfShipment", key: "modeOfShipment" },
 
   ];
   const { filters, inventorys, setFilters, filter, reload, query } =
@@ -74,7 +74,7 @@ const InventoryTable: React.FC = () => {
           headers={headers}
           result={inventorys}
           DeleteItem={DeleteInventory}
-          UpdateItem={UpdateInventory}
+          // UpdateItem={UpdateInventory}
         />
       </div>
     </>

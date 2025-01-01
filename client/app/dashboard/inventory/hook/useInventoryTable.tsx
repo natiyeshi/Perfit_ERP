@@ -22,34 +22,34 @@ export const useInventoryTable = () => {
     return (
       filters.name.length === 0 ||
       (data.productName &&
-        data.productName.toLowerCase().includes(filters.name)) ||
-      (data.supplierName &&
-        data.supplierName.toLowerCase().includes(filters.name))
+        data.productName.toLowerCase().includes(filters.name)) 
     );
   };
 
   const statusFilter = (data: IDBClientInventory) => {
     return (
-      filters.status == null ||
-      data.modeOfShipment?.toLowerCase() === filters.status.toLowerCase()
+      filters.status == null
+      //  ||
+      // data.modeOfShipment?.toLowerCase() === filters.status.toLowerCase()
     );
   };
 
   const query = useQuery(
     "inventories",
-    () => axios.get("/inventories"),
+    () => axios.get("/inventories?populate=true"),
     {
       onSuccess(data) {
+
         let k: IDBPopulatedInventory[] = data.data.result || [];
         const res: IDBClientInventory[] = [];
         k.map((d) => {
           let r: IDBClientInventory = {
             ...d,
             productName: d.product.name,
-            supplierName: d.supplier.name,
           };
           res.push(r);
         });
+        console.log(k,"+++++++")
         setInventorys(res);
         setInventorysData(res);
       },

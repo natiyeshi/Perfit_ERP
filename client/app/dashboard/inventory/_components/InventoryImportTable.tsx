@@ -11,7 +11,7 @@ import { IoMdRefresh } from "react-icons/io";
 import {
   IDBClientInventoryImport,
   IInventoryImport,
-} from "@/types/IInventoryImportTable";
+} from "@/types/IInventoryImport";
 import CustomeTable from "@/components/custom/table/CustomeTable";
 import DeleteInventoryImport from "@/components/custom/InventoryImport/DeleteInventoryImport";
 import UpdateInventoryImport from "@/components/custom/InventoryImport/UpdateInventoryImport";
@@ -76,7 +76,7 @@ const InventoryImportTable: React.FC = () => {
           query={query}
           headers={headers}
           result={inventoryImports}
-          //   DeleteItem={DeleteInventoryImport}
+          DeleteItem={DeleteInventoryImport}
           //   UpdateItem={UpdateInventoryImport}
         />
       </div>

@@ -53,7 +53,7 @@ const User = ({ user }: { user: IUser }) => {
       <div className="text-xs text-gray-500 ">Full Name</div>
       <div className="capitalize">{user.fullName}</div>
       <div className="text-xs text-gray-500 mt-2">Role</div>
-      <div>{(user.role, "UNKNOWN")}</div>
+      <div>{user.role}</div>
       <UpdateRole user={user} />
       {/* {user.role == "UNKNOWN" && ( */}
       {/* )} */}

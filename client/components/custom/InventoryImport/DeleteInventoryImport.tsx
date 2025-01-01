@@ -24,7 +24,7 @@ function DeleteInventoryImport({ id }: { id: string }) {
     {
       onSuccess: (res) => {
         toast.success("Import Sucessfully Delete!");
-        queryClient.invalidateQueries("competitor-imports");
+        queryClient.invalidateQueries("imports");
         setOpen(false);
       },
       onError: (err) => {

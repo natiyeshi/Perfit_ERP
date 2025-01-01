@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import axios from "@/lib/axios";
 import { filterInf } from "../_components/Filter";
-import { IDBClientInventoryImport, IDBPopulatedInventoryImport } from "@/types/IInventoryImportTable";
+import { IDBClientInventoryImport, IDBPopulatedInventoryImport } from "@/types/IInventoryImport";
 import toast, { Toaster } from "react-hot-toast";
 
 export const useInventoryImportTable = () => {
@@ -23,8 +23,6 @@ export const useInventoryImportTable = () => {
       filters.name.length === 0 ||
       (data.productName &&
         data.productName.toLowerCase().includes(filters.name)) ||
-      (data.competitorName &&
-        data.competitorName.toLowerCase().includes(filters.name)) ||
       (data.supplierName &&
         data.supplierName.toLowerCase().includes(filters.name))
     );
@@ -49,7 +47,6 @@ export const useInventoryImportTable = () => {
             ...d,
             productName: d.product.name,
             supplierName: d.supplier.name,
-            competitorName: d.competitor.name,
             unit: d.product.unit,
             shelfLife: d.product.shelfLife,
             totalPrice: d.unitPrice * d.quantity,

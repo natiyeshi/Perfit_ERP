@@ -20,15 +20,16 @@ export const useSupplierTable = () => {
   const nameFilter = (data: IDBSupplier) => {
     return (
       filters.name.length === 0 ||
-      (data.fullName && data.fullName.toLowerCase().includes(filters.name)) ||
+      (data.name && data.name.toLowerCase().includes(filters.name)) ||
       (data.email && data.email.toLowerCase().includes(filters.name))
     );
   };
 
   const statusFilter = (data: IDBSupplier) => {
     return (
-      filters.status == null ||
-      data.fullName?.toLowerCase() === filters.status.toLowerCase()
+      filters.status == null
+      //  ||
+      // data.name?.toLowerCase() === filters.status.toLowerCase()
     );
   };
 
