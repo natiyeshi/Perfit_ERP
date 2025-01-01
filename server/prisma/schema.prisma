@@ -14,15 +14,6 @@ enum ROLE {
   ADMIN
 }
 
-enum CUSTOMER_LABEL {
-  A
-  B
-  C
-  D
-  E
-  F
-}
-
 model User {
   id          String       @id @unique @default(cuid())
   fullName    String
@@ -43,28 +34,35 @@ model Flag {
 }
 
 model Product {
-  id        String @id @unique @default(cuid())
-  name      String @unique
-  shelfLife Int    @map("shelf_life")
-  brand     String
-  unit      String
+  id    String @id @unique @default(cuid())
+  name  String
+  batch Int    @unique
+  unit  String
 
-  inventories       Inventory[]
-  IDOMs             IODM[]
-  pipelines         Pipeline[]
-  transactions      Transaction[]
-  competitorImports CompetitorImport[]
-  imports           Import[]
+  inventories         Inventory[]
+  IDOMs               IODM[]
+  pipelines           Pipeline[]
+  transactions        Transaction[]
+  competitorImports   CompetitorImport[]
+  imports             Import[]
+  CompetitorInventory CompetitorInventory?
 
   @@map("products")
 }
 
+model RegisteredProduct {
+  id String @id @unique @default(cuid())
+
+  @@map("registered_products")
+}
+
 model Supplier {
-  id                String             @id @unique @default(cuid())
-  name              String
-  email             String?            @unique
-  phoneNumber       String?            @map("phone_number")
-  country           String?
+  id               String  @id @unique @default(cuid())
+  manufacturerName String
+  email            String? @unique
+  phoneNumber      String? @map("phone_number")
+  country          String?
+
   competitorImports CompetitorImport[]
   imports           Import[]
 
@@ -72,22 +70,38 @@ model Supplier {
 }
 
 model Competitor {
-  id                String             @id @unique @default(cuid())
-  name              String
-  email             String?            @unique
-  phoneNumber       String?            @map("phone_number")
-  country           String?
-  competitorImports CompetitorImport[]
+  id                 String             @id @unique @default(cuid())
+  name               String
+  email              String?            @unique
+  phoneNumber        String?            @map("phone_number")
+  country            String?
+  isDirectCompetitor Boolean            @default(false) @map("is_direct_competitor")
+  competitorImports  CompetitorImport[]
 
   @@map("competitors")
 }
 
+model CompetitorInventory {
+  id           String @id @unique @default(cuid())
+  sellingPrice Float  @map("selling_price") // Saling price
+
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("competitor_inventories")
+}
+
 model CompetitorImport {
-  id             String   @id @unique @default(cuid())
-  quantity       Int
-  unitPrice      Float    @map("unit_price")
-  orderDate      DateTime @map("order_date")
-  modeOfShipment String?  @map("mode_of_shipment")
+  id        String @id @unique @default(cuid())
+  quantity  Int
+  unitPrice Float  @map("unit_price")
+
+  manufacturerDate DateTime @map("manufacturer_date")
+  expiryDate       DateTime @map("expiry_date")
+
+  modeOfShipment String? @map("mode_of_shipment")
 
   productId    String
   product      Product    @relation(fields: [productId], references: [id])
@@ -102,9 +116,9 @@ model CompetitorImport {
 }
 
 model Inventory {
-  id        String @id @unique @default(cuid())
-  unitPrice Float  @map("unit_price") // Saling price
-  quantity  Int
+  id                   String @id @unique @default(cuid())
+  possibleSellingPrice Float  @map("possible_selling_price") // Saling price
+  quantity             Int
 
   productId String  @unique
   product   Product @relation(fields: [productId], references: [id])
@@ -113,11 +127,13 @@ model Inventory {
 }
 
 model Import {
-  id             String   @id @unique @default(cuid())
-  unitPrice      Float    @map("unit_price") // The cost of a product
+  id             String  @id @unique @default(cuid())
+  unitPrice      Float   @map("unit_price") // The cost of a product
   quantity       Int
-  modeOfShipment String?  @map("mode_of_shipment")
-  orderDate      DateTime @map("order_date")
+  modeOfShipment String? @map("mode_of_shipment")
+
+  manufacturerDate DateTime @map("manufacturer_date")
+  expiryDate       DateTime @map("expiry_date")
 
   supplierId String
   supplier   Supplier @relation(fields: [supplierId], references: [id])
@@ -125,15 +141,20 @@ model Import {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
+  transactions Transaction[]
+
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("imports")
 }
 
 model Customer {
-  id           String         @id @unique @default(cuid())
-  fullName     String
-  label        CUSTOMER_LABEL @default(F)
+  id               String @id @unique @default(cuid())
+  organizationName String @map("organization_name")
+  catagory         String
+  city             String
+  phoneNumber      String @map("phone_number")
+
   transactions Transaction[]
 
   @@map("customers")
@@ -148,6 +169,8 @@ model Transaction {
   customer   Customer @relation(fields: [customerId], references: [id])
   productId  String   @map("product_id")
   product    Product  @relation(fields: [productId], references: [id])
+  importId   String   @unique
+  import     Import   @relation(fields: [importId], references: [id])
 
   salesPersonId String      @map("sales_person_id")
   salesPerson   SalesPerson @relation(fields: [salesPersonId], references: [userId])

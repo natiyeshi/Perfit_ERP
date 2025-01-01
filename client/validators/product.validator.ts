@@ -12,7 +12,7 @@ export const createProductSchema = Yup.object({
   .required("Shelf Life is required.")
   .typeError("Shelf Life must be a number."),
   brand: Yup.string()
-    .nullable()
+    .optional()
     .optional()
     .typeError("Brand must be a string."),
 });

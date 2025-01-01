@@ -1,4 +1,4 @@
-import { ROLE } from "@prisma/client";
+import { ROLE, User } from "@prisma/client";
 import * as z from "zod";
 
 export const signUpSchema = z.object({
@@ -17,7 +17,7 @@ export const signUpSchema = z.object({
   password: z.string({ message: "Password has to be a string" }).trim().min(1, {
     message: "Password field is required.",
   }),
-});
+}) satisfies z.ZodType<Omit<User, "id" | "role">>;
 
 export const signInSchema = z.object({
   email: z.string({ message: "Email has to be a string" }).email({
@@ -26,7 +26,7 @@ export const signInSchema = z.object({
   password: z.string({ message: "Password has to be a string" }).trim().min(1, {
     message: "Password field is required.",
   }),
-});
+}) satisfies z.ZodType<Pick<User, "email" | "password">>;
 
 export const updateROLESchema = z.object({
   userId: z

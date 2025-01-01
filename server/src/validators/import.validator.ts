@@ -3,6 +3,7 @@ import {
   lastDaysQueryValidator,
   paginationsQueryValidator,
 } from "./query.validator";
+import { Import } from "@prisma/client";
 
 export const createImportSchema = z.object({
   unitPrice: z
@@ -14,8 +15,11 @@ export const createImportSchema = z.object({
     .number({ message: "Quantity must be a number." })
     .int({ message: "Quantity must be an integer." })
     .positive({ message: "Quantity must be greater than zero." }),
-  orderDate: z.coerce.date({
-    message: "Order date is invalid date format.",
+  manufacturerDate: z.coerce.date({
+    message: "Manufacturer date is invalid date format.",
+  }),
+  expiryDate: z.coerce.date({
+    message: "Expiry date is invalid date format.",
   }),
   modeOfShipment: z
     .string({
@@ -36,7 +40,8 @@ export const createImportSchema = z.object({
     }),
 });
 
-export const updateImportSchema = createImportSchema.partial();
+export const updateImportSchema =
+  createImportSchema.partial() satisfies z.ZodType<Partial<Omit<Import, "id">>>;
 
 export const getImportsQuerySchema = paginationsQueryValidator
   .extend(lastDaysQueryValidator.shape)

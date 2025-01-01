@@ -1,11 +1,12 @@
+import { Supplier } from "@prisma/client";
 import * as z from "zod";
 
-// const PHONE_REGEX = /^[0-9+\-()\s]{7,20}$/; // Adjust the regex for your phone number format
-
 export const createSupplierSchema = z.object({
-  name: z.string({ message: "Supplier name must be a string." }).min(1, {
-    message: "Supplier name is required.",
-  }),
+  manufacturerName: z
+    .string({ message: "Manufacturer name must be a string." })
+    .min(1, {
+      message: "Manufacturer name is required.",
+    }),
   email: z
     .string({ message: "Email has to be a string" })
     .email({
@@ -30,4 +31,7 @@ export const createSupplierSchema = z.object({
     .optional(),
 });
 
-export const updateSupplierSchema = createSupplierSchema.partial();
+export const updateSupplierSchema =
+  createSupplierSchema.partial() satisfies z.ZodType<
+    Partial<Omit<Supplier, "id">>
+  >;

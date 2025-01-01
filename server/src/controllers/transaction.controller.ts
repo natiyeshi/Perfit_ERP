@@ -117,7 +117,7 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
 
   const existingSalesPerson = await db.salesPerson.findUnique({
     where: {
-      id: bodyValidation.data.salesPersonId,
+      userId: bodyValidation.data.salesPersonId,
     },
   });
 

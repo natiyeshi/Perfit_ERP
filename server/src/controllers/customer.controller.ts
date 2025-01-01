@@ -63,7 +63,10 @@ export const createCustomerController = asyncWrapper(async (req, res) => {
     );
 
   const newCustomer = await db.customer.create({
-    data: bodyValidation.data,
+    data: {
+      ...bodyValidation.data,
+      catagory: "UNKNOWN",
+    },
   });
 
   return sendApiResponse({
