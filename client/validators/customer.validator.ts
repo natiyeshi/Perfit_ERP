@@ -14,11 +14,11 @@ export const createCustomerSchema = Yup.object().shape({
 export const updateCustomerSchema = Yup.object().shape({
   fullName: Yup.string()
     .trim()
-    .nullable()
+    .optional()
     .test(
       "is-full-name",
       "Full name must include at least first and last names.",
       (value) => !value || value.split(" ").length > 1
     ),
-  label: Yup.string().nullable(),
+  label: Yup.string().optional(),
 });

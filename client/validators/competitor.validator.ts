@@ -22,9 +22,5 @@ export const createCompetitorSchema = Yup.object({
     .optional(),
 });
 
-export const updateCompetitorSchema = createCompetitorSchema.shape({
-  name: Yup.string().optional(),
-  email: Yup.string().email().optional(),
-  phoneNumber: Yup.string().optional(),
-  country: Yup.string().optional(),
-});
+
+export const updateCompetitorImportSchema = createCompetitorSchema.noUnknown().optional().defined();
