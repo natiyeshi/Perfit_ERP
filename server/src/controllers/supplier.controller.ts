@@ -17,6 +17,7 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
     include: {
       competitorImports: true,
       imports: true,
+      deliverableProducts: true,
     },
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
@@ -50,6 +51,7 @@ export const getSupplierByIdController = asyncWrapper(async (req, res) => {
     include: {
       competitorImports: true,
       imports: true,
+      deliverableProducts: true,
     },
   });
 
@@ -76,8 +78,29 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
+  const products =
+    bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
+      ? await db.product.findMany({
+          where: {
+            id: { in: bodyValidation.data.productIDs },
+          },
+        })
+      : undefined;
+
+  console.log({
+    products,
+    productIDs: bodyValidation.data.productIDs,
+  });
+
+  const { productIDs, ...supplierDTO } = bodyValidation.data;
+
   const supplier = await db.supplier.create({
-    data: bodyValidation.data,
+    data: {
+      ...supplierDTO,
+      deliverableProducts: {
+        connect: products,
+      },
+    },
   });
 
   return sendApiResponse({

@@ -98,9 +98,73 @@ export const createCompetitorImportController = asyncWrapper(
         zodErrorFmt(bodyValidation.error)
       );
 
+    const existingProduct = await db.product.findUnique({
+      where: {
+        id: bodyValidation.data.productId,
+      },
+    });
+
+    if (!existingProduct)
+      throw RouteError.BadRequest("Invalid product ID. Product not found.");
+
+    const existingCompetitor = await db.competitor.findUnique({
+      where: {
+        id: bodyValidation.data.competitorId,
+      },
+    });
+
+    if (!existingCompetitor)
+      throw RouteError.BadRequest(
+        "Invalid competitor ID. Competitor not found."
+      );
+
+    const existingSupplier = await db.supplier.findUnique({
+      where: {
+        id: bodyValidation.data.supplierId,
+      },
+    });
+
+    if (!existingSupplier)
+      throw RouteError.BadRequest("Invalid supplier ID. Supplier not found.");
+
     const competitorImport = await db.competitorImport.create({
       data: bodyValidation.data,
     });
+
+    console.log({
+      competitorImport,
+    });
+
+    if (existingCompetitor.isDirectCompetitor) {
+      const existingCompetitorInventory =
+        await db.competitorInventory.findUnique({
+          where: {
+            productId: competitorImport.productId,
+          },
+        });
+
+      if (!existingCompetitorInventory) {
+        await db.competitorInventory.create({
+          data: {
+            productId: competitorImport.productId,
+            sellingPrice: competitorImport.unitPrice,
+          },
+        });
+      } else {
+        await db.competitorInventory.update({
+          where: {
+            productId: competitorImport.productId,
+          },
+          data: {
+            sellingPrice:
+              existingCompetitorInventory.sellingPrice >
+              competitorImport.unitPrice
+                ? existingCompetitorInventory.sellingPrice
+                : competitorImport.unitPrice,
+          },
+        });
+      }
+    }
 
     return sendApiResponse({
       res,
