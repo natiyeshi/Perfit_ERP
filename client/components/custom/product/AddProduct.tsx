@@ -47,7 +47,7 @@ function AddProduct() {
   const initialValues: IProduct = {
     name: "",
     unit: "",
-    shelfLife: 0,
+    batch: 0,
     brand: "",
   };
 
@@ -117,17 +117,17 @@ function AddProduct() {
 
                     {/* Shelf Life */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="shelfLife">Shelf Life</Label>
+                      <Label htmlFor="batch">Batch </Label>
                       <Field
-                        name="shelfLife"
+                        name="batch"
                         as={Input}
-                        id="shelfLife"
+                        id="batch"
                         type="number"
-                        placeholder="Enter Shelf Life"
+                        placeholder="batch number"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="shelfLife"
+                        name="batch"
                         component="p"
                         className="text-sm text-red-500"
                       />

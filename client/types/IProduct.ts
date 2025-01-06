@@ -1,6 +1,6 @@
 export interface IProduct {
     name: string;
-    shelfLife: number;
+    batch: number;
     brand: string;
     unit: string;
 }

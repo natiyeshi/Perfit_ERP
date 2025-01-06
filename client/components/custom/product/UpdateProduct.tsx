@@ -108,18 +108,18 @@ function UpdateProduct({ initialValues }: { initialValues: IDBProduct }) {
 
                     {/* Shelf Life */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="shelfLife">Shelf Life</Label>
+                      <Label htmlFor="batch">Batch</Label>
                       <Field
-                        name="shelfLife"
+                        name="batch"
                         type="number"
                         as={Input}
-                        id="shelfLife"
-                        placeholder="Enter Shelf Life"
+                        id="batch"
+                        placeholder="batch number"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="shelfLife"
-                        component="shelfLife"
+                        name="batch"
+                        component="batch"
                         className="text-sm text-red-500"
                       />
                     </div>

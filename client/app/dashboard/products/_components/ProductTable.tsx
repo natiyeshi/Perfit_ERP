@@ -16,7 +16,7 @@ const ProductTable: React.FC = () => {
     { name: "Product Name", key: "name" },
     { name: "Brand", key: "brand" },
     { name: "Unit", key: "unit" },
-    { name: "Shelf Life", key: "shelfLife" },
+    { name: "Batch", key: "batch" },
   ];
   const { filters, products, setFilters, filter, reload, query } =
     useProductTable();
