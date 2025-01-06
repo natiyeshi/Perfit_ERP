@@ -36,27 +36,21 @@ model Flag {
 model Product {
   id    String @id @unique @default(cuid())
   name  String
-  batch Int
+  batch String
   unit  String
   brand String
 
-  supplier            Supplier?            @relation(fields: [supplierId], references: [id])
-  supplierId          String?
-  inventories         Inventory[]
-  IDOMs               IODM[]
-  pipelines           Pipeline[]
-  transactions        Transaction[]
-  competitorImports   CompetitorImport[]
-  imports             Import[]
-  CompetitorInventory CompetitorInventory?
+  supplier              Supplier?             @relation(fields: [supplierId], references: [id])
+  supplierId            String?
+  inventories           Inventory[]
+  IDOMs                 IODM[]
+  pipelines             Pipeline[]
+  transactions          Transaction[]
+  competitorImports     CompetitorImport[]
+  imports               Import[]
+  competitorInventories CompetitorInventory[]
 
   @@map("products")
-}
-
-model RegisteredProduct {
-  id String @id @unique @default(cuid())
-
-  @@map("registered_products")
 }
 
 model Supplier {
@@ -75,13 +69,14 @@ model Supplier {
 }
 
 model Competitor {
-  id                 String             @id @unique @default(cuid())
-  name               String
-  email              String?            @unique
-  phoneNumber        String?            @map("phone_number")
-  country            String?
-  isDirectCompetitor Boolean            @default(false) @map("is_direct_competitor")
-  competitorImports  CompetitorImport[]
+  id                  String                @id @unique @default(cuid())
+  name                String
+  email               String?               @unique
+  phoneNumber         String?               @map("phone_number")
+  country             String?
+  isDirectCompetitor  Boolean               @default(false) @map("is_direct_competitor")
+  competitorImports   CompetitorImport[]
+  competitorInventory CompetitorInventory[]
 
   @@map("competitors")
 }
@@ -90,11 +85,14 @@ model CompetitorInventory {
   id           String @id @unique @default(cuid())
   sellingPrice Float  @map("selling_price") // Saling price
 
-  productId String  @unique
-  product   Product @relation(fields: [productId], references: [id])
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  competitorId String
+  competitor   Competitor @relation(fields: [competitorId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@unique([productId, competitorId])
   @@map("competitor_inventories")
 }
 

@@ -137,9 +137,10 @@ export const createCompetitorImportController = asyncWrapper(
 
     if (existingCompetitor.isDirectCompetitor) {
       const existingCompetitorInventory =
-        await db.competitorInventory.findUnique({
+        await db.competitorInventory.findFirst({
           where: {
-            productId: competitorImport.productId,
+            productId: bodyValidation.data.productId,
+            competitorId: bodyValidation.data.competitorId,
           },
         });
 
@@ -148,19 +149,7 @@ export const createCompetitorImportController = asyncWrapper(
           data: {
             productId: competitorImport.productId,
             sellingPrice: competitorImport.unitPrice,
-          },
-        });
-      } else {
-        await db.competitorInventory.update({
-          where: {
-            productId: competitorImport.productId,
-          },
-          data: {
-            sellingPrice:
-              existingCompetitorInventory.sellingPrice >
-              competitorImport.unitPrice
-                ? existingCompetitorInventory.sellingPrice
-                : competitorImport.unitPrice,
+            competitorId: competitorImport.competitorId,
           },
         });
       }
