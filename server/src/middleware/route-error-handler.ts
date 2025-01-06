@@ -35,7 +35,7 @@ const routeErrorHandlingMiddleware: ErrorRequestHandler = (
       res,
       statusCode: StatusCodes.BAD_REQUEST,
       success: false,
-      message: err.message,
+      message: "Database error occurred. please try again",
       result: err.name,
     });
   } else
@@ -43,7 +43,7 @@ const routeErrorHandlingMiddleware: ErrorRequestHandler = (
       res,
       statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
-      message: err.message,
+      message: "Something went wrong, please try again",
       result: err.data || null,
     });
 };

@@ -36,9 +36,12 @@ model Flag {
 model Product {
   id    String @id @unique @default(cuid())
   name  String
-  batch Int    @unique
+  batch Int
   unit  String
+  brand String
 
+  supplier            Supplier?            @relation(fields: [supplierId], references: [id])
+  supplierId          String?
   inventories         Inventory[]
   IDOMs               IODM[]
   pipelines           Pipeline[]
@@ -62,6 +65,8 @@ model Supplier {
   email            String? @unique
   phoneNumber      String? @map("phone_number")
   country          String?
+
+  deliverableProducts Product[]
 
   competitorImports CompetitorImport[]
   imports           Import[]

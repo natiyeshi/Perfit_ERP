@@ -29,6 +29,11 @@ export const createSupplierSchema = z.object({
       message: "Country must be at least 2 characters long.",
     })
     .optional(),
+  productIDs: z
+    .array(z.string(), {
+      message: "Product ID must be an array of strings.",
+    })
+    .optional(),
 });
 
 export const updateSupplierSchema =
