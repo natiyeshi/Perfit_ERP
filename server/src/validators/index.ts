@@ -7,9 +7,9 @@ import * as competitorImportValidator from "./competitor-import.validator";
 import * as inventoryValidator from "./inventory.validator";
 import * as customerValidator from "./customer.validator";
 import * as transactionValidator from "./transaction.validator";
-import * as productCategoryValidator from "./product-category.validator";
 import * as queryValidator from "./query.validator";
 import * as importValidator from "./import.validator";
+import * as competitorInventoryValidator from "./competitor-inventory.validator";
 
 export {
   queryValidator,
@@ -22,6 +22,6 @@ export {
   inventoryValidator,
   customerValidator,
   transactionValidator,
-  productCategoryValidator,
   importValidator,
+  competitorInventoryValidator,
 };

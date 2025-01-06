@@ -108,7 +108,10 @@ export const updateInventoryController = asyncWrapper(async (req, res) => {
     where: {
       id: queryParamValidation.data.id,
     },
-    data: bodyValidation.data,
+    data: {
+      possibleSellingPrice: bodyValidation.data.possibleSellingPrice,
+      quantity: bodyValidation.data.quantity,
+    },
   });
 
   return sendApiResponse({
