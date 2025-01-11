@@ -4,6 +4,7 @@ import {
   signInController,
   signUpController,
   updateROLEController,
+  verifyUser,
 } from "../controllers/auth.controller";
 import middleware from "../middleware";
 import { ROLE } from "@prisma/client";
@@ -17,6 +18,9 @@ router.patch(
   middleware.auth.authenticationMiddleWare,
   changePasswordController
 );
+
+router.get("/verify", middleware.auth.authenticationMiddleWare, verifyUser);
+
 router.patch(
   "/role",
   middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN]),
