@@ -34,6 +34,7 @@ app.use("/api/v1/imports", routes.importRouter);
 app.use("/api/v1/customers", routes.customerRouter);
 app.use("/api/v1/transactions", routes.transactionRouter);
 app.use("/api/v1/competitor-inventories", routes.competitorInventoryRouter);
+app.use("/api/v1/pipelines", routes.pipelineRouter);
 
 setupSwagger(app);
 

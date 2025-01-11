@@ -9,6 +9,7 @@ import customerRouter from "./customer.routes";
 import transactionRouter from "./transaction.routes";
 import importRouter from "./import.routes";
 import competitorInventoryRouter from "./competitor-inventory.routes";
+import pipelineRouter from "./pipeline.routes";
 
 export default {
   authRouter,
@@ -22,4 +23,5 @@ export default {
   transactionRouter,
   importRouter,
   competitorInventoryRouter,
+  pipelineRouter,
 };

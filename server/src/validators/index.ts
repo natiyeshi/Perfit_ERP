@@ -10,7 +10,7 @@ import * as transactionValidator from "./transaction.validator";
 import * as queryValidator from "./query.validator";
 import * as importValidator from "./import.validator";
 import * as competitorInventoryValidator from "./competitor-inventory.validator";
-
+import * as pipelineValidator from "./pipeline.validator";
 export {
   queryValidator,
   authValidator,
@@ -24,4 +24,5 @@ export {
   transactionValidator,
   importValidator,
   competitorInventoryValidator,
+  pipelineValidator,
 };
