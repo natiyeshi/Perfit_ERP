@@ -95,6 +95,37 @@ export const signInController = asyncWrapper(async (req, res) => {
   });
 });
 
+export const verifyUser = asyncWrapper(async (req, res) => {
+  const user = req.user!;
+
+  const existingUser = await db.user.findUnique({
+    where: {
+      id: user._id,
+    },
+    include: {
+      flag: true,
+    },
+  });
+
+  if (!existingUser) throw RouteError.NotFound("User not found.");
+
+  return sendApiResponse({
+    res,
+    statusCode: 200,
+    success: true,
+    message: "User verified successfully",
+    result: {
+      user: {
+        id: existingUser.id,
+        fullName: existingUser.fullName,
+        email: existingUser.email,
+        role: existingUser.role,
+        flag: existingUser.flag,
+      },
+    },
+  });
+});
+
 export const updateROLEController = asyncWrapper(async (req, res) => {
   const bodyValidation = authValidator.updateROLESchema.safeParse(req.body);
   if (!bodyValidation.success)
