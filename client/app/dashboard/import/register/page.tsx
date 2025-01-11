@@ -24,7 +24,11 @@ import { parseISO } from "date-fns";
 
 const page = () => {
   const { isLoading, mutate } = useMutation(
-    (data: any) => axios.post("/competitor-imports", data),
+    (data: any) =>
+      axios.post("/competitor-imports", {
+        ...data,
+        manufacturerDate: "2021-01-01",
+      }),
     {
       onSuccess() {
         toast.success("Data Successfully Registered!");
@@ -37,7 +41,7 @@ const page = () => {
     }
   );
   const handleSubmit = (data: IImport) => {
-    mutate({ ...data, orderDate: data.orderDate });
+    mutate({ ...data, expiryDate: data.expiryDate });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
@@ -50,7 +54,8 @@ const page = () => {
     quantity: 0,
     unitPrice: 0,
     modeOfShipment: "",
-    orderDate: "",
+    expiryDate: "",
+    manufacturerDate: ""
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -162,7 +167,11 @@ const page = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {suppliers.map((pr) => {
-                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                      return (
+                        <SelectItem value={pr.id}>
+                          {pr.manufacturerName}
+                        </SelectItem>
+                      );
                     })}
                   </SelectContent>
                 </Select>
@@ -191,8 +200,6 @@ const page = () => {
                 />
               </div>
 
-             
-
               {/* Unit Price */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="unitPrice">Unit Price</Label>
@@ -211,20 +218,18 @@ const page = () => {
                 />
               </div>
 
-             
-
               {/* Order Date */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="orderDate">Order Date</Label>
+                <Label htmlFor="expiryDate">Expiry Date</Label>
                 <Field
-                  name="orderDate"
+                  name="expiryDate"
                   as={Input}
-                  id="orderDate"
+                  id="expiryDate"
                   type="date"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="orderDate"
+                  name="expiryDate"
                   component="p"
                   className="text-sm text-red-500"
                 />
@@ -264,13 +269,12 @@ const page = () => {
                   className="text-sm text-red-500"
                 />
               </div>
-               {/* Total Price */}
-               <div className="flex flex-col space-y-2 w-full">
+              {/* Total Price */}
+              <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="totalPrice">Total Price</Label>
                 <div>{values.quantity * values.unitPrice}</div>
               </div>
             </div>
-            
 
             <Button
               onClick={() => {

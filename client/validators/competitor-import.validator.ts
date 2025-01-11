@@ -15,7 +15,7 @@ export const createCompetitorImportSchema = Yup.object({
   totalPrice: Yup.number()
     .positive("Total price must be a positive number.")
     .optional(),
-  orderDate: Yup.string().optional(),
+    expiryDate: Yup.string().optional(),
   shelfLife: Yup.string().optional(),
   modeOfShipment: Yup.string().optional(),
   productId: Yup.string()

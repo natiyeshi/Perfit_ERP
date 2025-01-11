@@ -1,24 +1,16 @@
 import * as Yup from "yup";
 
-export const createCustomerSchema = Yup.object().shape({
-  fullName: Yup.string()
-    .required("Full name is required and must be a string.")
+export const createCustomerSchema = Yup.object({
+  organizationName: Yup.string()
     .trim()
-    .test(
-      "is-full-name",
-      "Full name must include at least first and last names.",
-      (value) => value?.split(" ").length > 1
-    ),
+    .required("Organization name is required."),
+  phoneNumber: Yup.string()
+    .min(10, "Phone number must be at least 10 characters long.")
+    .required("Phone number is required."),
+  city: Yup.string()
+    .required("City is required."),
 });
 
-export const updateCustomerSchema = Yup.object().shape({
-  fullName: Yup.string()
-    .trim()
-    .optional()
-    .test(
-      "is-full-name",
-      "Full name must include at least first and last names.",
-      (value) => !value || value.split(" ").length > 1
-    ),
-  label: Yup.string().optional(),
+export const updateCustomerSchema = createCustomerSchema.shape({
+  catagory: Yup.string().optional(),
 });

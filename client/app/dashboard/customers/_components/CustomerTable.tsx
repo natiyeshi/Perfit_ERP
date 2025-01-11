@@ -13,8 +13,10 @@ import { IDBCustomer } from "@/types/ICustomer";
 import CustomeTable from "@/components/custom/table/CustomeTable";
 const CustomerTable: React.FC = () => {
   const headers: { name: string; key: keyof IDBCustomer }[] = [
-    { name: "Full Name", key: "fullName" },
-    { name: "Label", key: "label" },
+    { name: "Organization Name", key: "organizationName" },
+    { name: "City", key: "city" },
+    { name: "Catagory", key: "catagory" },
+    { name: "Phone Number", key: "phoneNumber" },
   ];
   const { filters, customers, setFilters, filter, reload, query } =
     useCustomerTable();

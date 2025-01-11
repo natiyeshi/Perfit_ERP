@@ -1,5 +1,5 @@
 export interface ISupplier {
-  name?: string;
+  manufacturerName: string;
   email?: string;
   phoneNumber?: string;
   country?: string;

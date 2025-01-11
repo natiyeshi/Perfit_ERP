@@ -3,9 +3,10 @@ import { IDBProduct } from "./IProduct";
 import { IDBSupplier } from "./ISupplier";
 
 export interface IImport {
-  quantity: number;
   unitPrice: number;
-  orderDate?: string;
+  quantity: number;
+  manufacturerDate: string;
+  expiryDate: string;
   modeOfShipment?: string;
   productId: string;
   supplierId: string;
@@ -28,6 +29,5 @@ export interface IDBClientImport extends IDBPopulatedImport {
   competitorName? : string;
   supplierName? : string;
   unit? : string,
-  shelfLife? : number,
   totalPrice? : number,
 }

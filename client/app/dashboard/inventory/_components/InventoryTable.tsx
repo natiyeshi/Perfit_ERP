@@ -17,7 +17,7 @@ const InventoryTable: React.FC = () => {
     // { name: "Supplier Name", key: "supplierName" },
     { name: "Quantity", key: "quantity" },
     // { name: "unit", key: "unit" },
-    { name: "unitPrice", key: "unitPrice" },
+    { name: "unitPrice", key: "possibleSellingPrice" },
     // { name: "totalPrice", key: "totalPrice" },
     // { name: "shelfLife(month)", key: "shelfLife" },
     // { name: "modeOfShipment", key: "modeOfShipment" },

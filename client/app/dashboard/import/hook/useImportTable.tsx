@@ -45,13 +45,14 @@ export const useImportTable = () => {
         let k: IDBPopulatedImport[] = data.data.result || [];
         const res: IDBClientImport[] = [];
         k.map((d) => {
+          const ex = new Date(d.expiryDate!);
           let r: IDBClientImport = {
             ...d,
             productName: d.product.name,
-            supplierName: d.supplier.name,
+            supplierName: d.supplier.manufacturerName,
             competitorName: d.competitor.name,
             unit: d.product.unit,
-            shelfLife: d.product.shelfLife,
+            expiryDate: ex.getFullYear().toString(),
             totalPrice: d.unitPrice * d.quantity,
           };
           res.push(r);

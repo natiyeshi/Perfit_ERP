@@ -37,7 +37,7 @@ const page = () => {
   );
   const handleSubmit = (data: IInventoryImport) => {
     let newData = {...data};
-    mutate({ ...newData, orderDate: data.orderDate });
+    mutate({ ...newData, expiryDate: data.expiryDate });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
@@ -48,7 +48,8 @@ const page = () => {
     quantity: 0,
     unitPrice: 0,
     modeOfShipment: "",
-    orderDate: "",
+    expiryDate: "",
+    manufacturerDate: ""
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -123,7 +124,7 @@ const page = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {suppliers.map((pr) => {
-                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                      return <SelectItem value={pr.id}>{pr.manufacturerName}</SelectItem>;
                     })}
                   </SelectContent>
                 </Select>
@@ -172,35 +173,34 @@ const page = () => {
 
               {/* Order Date */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="orderDate">Order Date</Label>
+                <Label htmlFor="expiryDate">Expiry Date</Label>
                 <Field
-                  name="orderDate"
+                  name="expiryDate"
                   as={Input}
-                  id="orderDate"
+                  id="expiryDate"
                   type="date"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="orderDate"
+                  name="expiryDate"
                   component="p"
                   className="text-sm text-red-500"
                 />
               </div>
 
-              {/* Shelf Life */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="shelfLife">Shelf Life</Label>
+               {/* Order Date */}
+               <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="manufacturerDate">Manufactur Date</Label>
                 <Field
-                  name="shelfLife"
-                  type="number"
+                  name="manufacturerDate"
                   as={Input}
-                  id="shelfLife"
-                  placeholder="Enter Shelf Life"
+                  id="manufacturerDate"
+                  type="date"
                   className="w-full"
                 />
                 <ErrorMessage
-                  name="shelfLife"
-                  component="p"
+                  name="manufacturerDate"
+                  component="manufacturerDate"
                   className="text-sm text-red-500"
                 />
               </div>

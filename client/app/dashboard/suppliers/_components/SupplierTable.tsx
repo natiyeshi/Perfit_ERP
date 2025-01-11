@@ -13,8 +13,8 @@ import { IDBSupplier } from "@/types/ISupplier";
 import CustomeTable from "@/components/custom/table/CustomeTable";
 const SupplierTable: React.FC = () => {
   const headers: { name: string; key: keyof IDBSupplier }[] = [
-    { name: "Name", key: "name" },
-    { name: "Brand", key: "email" },
+    { name: "Manufacturer Name", key: "manufacturerName" },
+    { name: "Email", key: "email" },
     { name: "Country", key: "country" },
     { name: "Phone Number", key: "phoneNumber" },
   ];

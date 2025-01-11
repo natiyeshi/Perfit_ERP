@@ -25,14 +25,13 @@ import axios from "@/lib/axios";
 import toast from "react-hot-toast";
 import { createCompetitorSchema } from "@/validators/competitor.validator";
 
-
-
 function AddCompetitor() {
   const queryClient = useQueryClient();
   const [err, setErr] = useState<any>(null);
   const [open, setOpen] = useState(false); // State for dialog open/close
   const { isLoading, isError, error, mutate, isSuccess } = useMutation(
-    (data: ICompetitor) => axios.post("/competitors", data),
+    (data: ICompetitor) =>
+      axios.post("/competitors", { ...data, isDirectCompetitor: false }),
     {
       onSuccess: (res) => {
         toast.success("Competitor Successfully Added!");

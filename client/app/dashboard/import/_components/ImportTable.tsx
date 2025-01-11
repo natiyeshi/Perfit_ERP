@@ -20,7 +20,7 @@ const ImportTable: React.FC = () => {
     { name: "unit", key: "unit" },
     { name: "unitPrice", key: "unitPrice" },
     { name: "totalPrice", key: "totalPrice" },
-    { name: "shelfLife(month)", key: "shelfLife" },
+    { name: "Expiry Date", key: "expiryDate" },
     { name: "modeOfShipment", key: "modeOfShipment" },
 
   ];

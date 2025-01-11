@@ -5,7 +5,7 @@ import { IDBSupplier } from "./ISupplier";
 export interface IInventory {
     productId: string;
     quantity: number;
-    unitPrice?: number;
+    possibleSellingPrice?: number;
 }
   
   export interface IDBInventory extends IInventory {

@@ -6,7 +6,8 @@ import { IDBSupplier } from "./ISupplier";
 export interface IInventoryImport {
   unitPrice: number;
   quantity: number;
-  orderDate: string;
+  manufacturerDate: string;
+  expiryDate: string;
   modeOfShipment?: string;
   productId: string;
   supplierId: string;
