@@ -9,7 +9,7 @@ export const updateInventorySchema = z.object({
     .number({ message: "Quantity must be a number." })
     .int({ message: "Quantity must be an integer." })
     .positive({ message: "Quantity must be positive number." }),
-  unitPrice: z
+    possibleSellingPrice: z
     .number()
     .positive({ message: "Unit price must be positive number." })
     .optional(),
