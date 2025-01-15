@@ -1,6 +1,6 @@
 export interface IProduct {
     name: string;
-    batch: number;
+    batch: string;
     brand: string;
     unit: string;
 }

@@ -26,7 +26,7 @@ const ProductMenu = () => {
             <p className="text-sm text-muted-foreground">Your Products Here!</p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/products">
+            <Link href="/dashboard/admin/products">
               <Button variant={"outline"} className="w-full">
                 See Products
               </Button>

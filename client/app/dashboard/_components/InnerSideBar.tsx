@@ -5,8 +5,6 @@ import CustomLink from "@/components/custom/CustomLink";
 import Nav from "@/components/custom/Nav";
 import ProductMenu from "@/components/custom/product/ProductMenu";
 import SupplierMenu from "@/components/custom/supplier/SupplierMenu";
-import { FaProductHunt, FaTruck } from "react-icons/fa";
-import { IoPersonSharp } from "react-icons/io5";
 import Cookies from "js-cookie";
 
 import {
@@ -74,7 +72,7 @@ const InnerSideBar = ({
 const Profile = () => {
   const handleLogout = () => {
     Cookies.remove("token");
-    
+    if (typeof location !== "undefined") location.href = "/sign-in";
   };
   return (
     <Popover>
@@ -86,7 +84,7 @@ const Profile = () => {
       <PopoverContent className="shadow shadow-gray-500 w-32 me-4">
         <div className="flex flex-col ">
           <Button className="w-fit" variant="link">
-            <Link href="/dashboard/settings">Settings</Link>
+            <Link href="/dashboard/admin/settings">Settings</Link>
           </Button>
           <Button onClick={handleLogout} className="w-fit" variant="link">
             Logout

@@ -6,10 +6,9 @@ export const createProductSchema = yup.object().shape({
     .required("Product name is required.")
     .typeError("Product name must be a string."),
   batch: yup
-    .number()
-    .positive("Product batch must be a positive number.")
+    .string()
     .required("Product batch is required.")
-    .typeError("Product batch must be a number."),
+    .typeError("Product batch must be a string."),
   brand: yup
     .string()
     .required("Brand for product is required.")

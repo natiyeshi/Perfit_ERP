@@ -47,7 +47,7 @@ function AddProduct() {
   const initialValues: IProduct = {
     name: "",
     unit: "",
-    batch: 0,
+    batch: "",
     brand: "",
   };
 
@@ -122,13 +122,12 @@ function AddProduct() {
                         name="batch"
                         as={Input}
                         id="batch"
-                        type="number"
                         placeholder="batch number"
                         className="w-full"
                       />
                       <ErrorMessage
                         name="batch"
-                        component="p"
+                        component="batch"
                         className="text-sm text-red-500"
                       />
                     </div>

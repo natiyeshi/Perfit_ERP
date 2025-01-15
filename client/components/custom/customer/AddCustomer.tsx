@@ -132,8 +132,8 @@ function AddCustomer() {
                       />
                     </div>
 
+                    {/* Catagory */}
                     {/* 
-                    Catagory
                     <div className="flex flex-col space-y-2 w-full">
                       <Label htmlFor="catagory">Catagory</Label>
                       <Field

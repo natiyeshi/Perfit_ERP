@@ -28,7 +28,7 @@ const CompetitorMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/competitors">
+            <Link href="/dashboard/admin/competitors">
               <Button variant={"outline"} className="w-full">
                 See Competitors
               </Button>

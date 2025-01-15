@@ -20,14 +20,24 @@ import { IoCloseSharp } from "react-icons/io5";
 import CustomeErrorMessage from "@/components/custom/ErrorMessage";
 import { createSupplierSchema } from "@/validators/supplier.validator";
 import { ISupplier } from "@/types/ISupplier"; // Updated to use correct interface
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
 import toast from "react-hot-toast";
+import { IDBProduct } from "@/types/IProduct";
 
 function AddSupplier() {
   const queryClient = useQueryClient();
+  const [products, setProducts] = useState<IDBProduct[]>([]);
   const [err, setErr] = useState<any>(null);
   const [open, setOpen] = useState(false); // State for dialog open/close
+  const productQuery = useQuery("products", () => axios.get("/products"), {
+    onSuccess(data) {
+      setProducts(data.data.result || []);
+    },
+    onError(err) {
+      toast.error("Error while loading products!");
+    },
+  });
   const { isLoading, isError, error, mutate } = useMutation(
     (data: ISupplier) => axios.post("/suppliers", data),
     {
@@ -50,6 +60,7 @@ function AddSupplier() {
     email: "",
     phoneNumber: "",
     country: "",
+    productIDs: [],
   };
 
   return (
@@ -83,7 +94,9 @@ function AddSupplier() {
                   <div className="grid grid-cols-1 gap-4 w-full">
                     {/* Full Name */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="manufacturerName">Manufacturer Name</Label>
+                      <Label htmlFor="manufacturerName">
+                        Manufacturer Name
+                      </Label>
                       <Field
                         name="manufacturerName"
                         as={Input}

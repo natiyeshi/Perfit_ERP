@@ -29,7 +29,7 @@ const SupplierMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/suppliers">
+            <Link href="/dashboard/admin/suppliers">
               <Button variant={"outline"} className="w-full">
                 See Suppliers
               </Button>

@@ -9,6 +9,7 @@ import { FaPersonCircleCheck } from "react-icons/fa6";
 import { PiMatrixLogoFill } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 import logo from "@/public/assets/logo/logo-1.svg";
+import { roleInf, useUser } from "@/context/userContext";
 
 interface MainLinkInf {
   name: string;
@@ -16,32 +17,62 @@ interface MainLinkInf {
   link: string;
 }
 
-const sideLinks: MainLinkInf[] = [
+const adminLinks: MainLinkInf[] = [
   {
     name: "Import Data",
     Icon: LuImport,
-    link: "/dashboard/import",
+    link: "/dashboard/admin/import",
   },
   {
     name: "Inventory",
     Icon: MdOutlineInventory2,
-    link: "/dashboard/inventory",
+    link: "/dashboard/admin/inventory",
   },
 
   {
     name: "CRM",
     Icon: FaPersonCircleCheck,
-    link: "/dashboard/crm",
+    link: "/dashboard/admin/crm",
   },
 
   {
     name: "IODM",
     Icon: PiMatrixLogoFill,
-    link: "/dashboard/iodm",
+    link: "/dashboard/admin/iodm",
+  },
+];
+const sellsLinks: MainLinkInf[] = [
+  {
+    name: "Inventory",
+    Icon: MdOutlineInventory2,
+    link: "/dashboard/sales/inventory",
+  },
+
+  {
+    name: "CRM",
+    Icon: FaPersonCircleCheck,
+    link: "/dashboard/sales/crm",
   },
 ];
 
+const aggregatorLinks: MainLinkInf[] = [
+  {
+    name: "Import Data",
+    Icon: LuImport,
+    link: "/dashboard/admin/import",
+  },
+];
+
+const sideLinks: any = {
+  admin: adminLinks,
+  sales: sellsLinks,
+  aggregator: aggregatorLinks,
+  any: [],
+};
 const MainSideBar = () => {
+  const { user } = useUser();
+  const roles = new Set(["admin", "sales", "aggregator"]);
+  const role: any = roles.has(user.role) ? user.role : "any";
   return (
     <div className="w-20 absolute  group pb-6 hover:w-[240px] duration-300 border-r bg-background  min-h-screen flex flex-col overflow-y-auto overflow-x-hidden ">
       <div className="w- h-12 min-h-12 max-h-12  flex">
@@ -50,7 +81,7 @@ const MainSideBar = () => {
         </div>
       </div>
       <div className="flex flex-col gap-3 px-2 pt-2  h-full flex-1">
-        {sideLinks.map((link, key) => (
+        {sideLinks[role].map((link: MainLinkInf, key: number) => (
           <SideBarLink key={key} link={link} />
         ))}
       </div>
@@ -83,7 +114,7 @@ const SideBarLink = ({ link }: { link: MainLinkInf }) => {
 const SettingSideBarLink = () => {
   const link = {
     Icon: CiSettings,
-    link: "/dashboard/settings",
+    link: "/dashboard/admin/settings",
   };
   const Icon = link.Icon;
   const pathname = usePathname();

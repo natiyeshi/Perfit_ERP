@@ -3,6 +3,7 @@ export interface ISupplier {
   email?: string;
   phoneNumber?: string;
   country?: string;
+  productIDs?: string[];
 }
 
 export interface IDBSupplier extends ISupplier {

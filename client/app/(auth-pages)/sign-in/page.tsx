@@ -10,13 +10,18 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { addTokenToCookie } from "./_action";
+import { roleMap, useUser } from "@/context/userContext";
 
 export default function Login() {
   const router = useRouter();
+  const { setUser } = useUser(); // Extract setUser from context
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  
 
   const { isLoading, isError, error, mutate } = useMutation(
     () =>
@@ -27,17 +32,21 @@ export default function Login() {
       onSuccess: (res) => {
         console.log({ res });
         const token = res.data.result.token;
+
+        // Use setUser to update the context
+        setUser({
+          ...res.data.result.user,
+          role: roleMap[res.data.result.user.role],
+        });
+
         addTokenToCookie(token).then(() => {
-          // Setting cookie header takes time
           setTimeout(() => {
-            router.replace("/dashboard");
             toast.success("Signed in successfully");
+            router.push(
+              "/dashboard/" + roleMap[res.data.result.user.role]
+            );
           }, 400);
         });
-        // Cookies.set("token", token, {
-        //   expires: 7, // Expires in 7 days
-        //   secure: process.env.NODE_ENV === "production", // Secure cookie in production
-        // });
       },
     }
   );

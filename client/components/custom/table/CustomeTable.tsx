@@ -1,5 +1,5 @@
 "use client";
-import { JSXElementConstructor, ReactNode } from "react";
+import { JSXElementConstructor, Key, ReactNode } from "react";
 import Loading from "../loading";
 import {
   Popover,
@@ -8,10 +8,12 @@ import {
 } from "@/components/ui/popover";
 import { CgOptions } from "react-icons/cg";
 import NothingFound from "@/components/custom/NothingFound";
+import ShowSchema from "./ShowSchema";
 
 interface Header<T> {
   name: string;
   key: keyof T;
+  showDetail?: keyof T;
 }
 
 interface CustomeTableProps<T extends { id: string }> {
@@ -59,7 +61,7 @@ const CustomeTable = <T extends { id: string }>({
           {query.isLoading ? (
             <></>
           ) : query.data ? (
-            result.map((item, index) => (
+            result.map((item: T, index: number) => (
               <tr
                 key={index}
                 className="group hover:bg-zinc-800/20 duration-200"
@@ -88,7 +90,15 @@ const CustomeTable = <T extends { id: string }>({
                     className="border-b whitespace-nowrap duration-200 px-4 py-2"
                     key={String(header.key)}
                   >
-                    {String(item[header.key]) ?? "-"}
+                    {header.showDetail ? (
+                      <ShowSchema
+                        type={header.showDetail}
+                        data={item[header.showDetail]}
+                        text={item[header.key]}
+                      />
+                    ) : (
+                      (String(item[header.key]) ?? "-")
+                    )}
                   </td>
                 ))}
               </tr>

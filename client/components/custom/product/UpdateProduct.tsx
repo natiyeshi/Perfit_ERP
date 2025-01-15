@@ -106,12 +106,11 @@ function UpdateProduct({ initialValues }: { initialValues: IDBProduct }) {
                       />
                     </div>
 
-                    {/* Shelf Life */}
+                    {/*batch */}
                     <div className="flex flex-col space-y-2 w-full">
                       <Label htmlFor="batch">Batch</Label>
                       <Field
                         name="batch"
-                        type="number"
                         as={Input}
                         id="batch"
                         placeholder="batch number"
