@@ -78,6 +78,14 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
+  const existingSupplier = await db.supplier.findUnique({
+    where: {
+      email: bodyValidation.data.email,
+    },
+  });
+
+  if (existingSupplier) throw RouteError.BadRequest("Email already exists.");
+
   const products =
     bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
       ? await db.product.findMany({
@@ -86,11 +94,6 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
           },
         })
       : undefined;
-
-  console.log({
-    products,
-    productIDs: bodyValidation.data.productIDs,
-  });
 
   const { productIDs, ...supplierDTO } = bodyValidation.data;
 

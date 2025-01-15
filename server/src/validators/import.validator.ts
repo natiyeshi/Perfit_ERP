@@ -15,6 +15,13 @@ export const createImportSchema = z.object({
     .number({ message: "Quantity must be a number." })
     .int({ message: "Quantity must be an integer." })
     .positive({ message: "Quantity must be greater than zero." }),
+  batch: z
+    .string({
+      message: "Batch must be a string",
+    })
+    .min(1, {
+      message: "Batch is required.",
+    }),
   manufacturerDate: z.coerce.date({
     message: "Manufacturer date is invalid date format.",
   }),

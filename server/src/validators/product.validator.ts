@@ -5,9 +5,6 @@ export const createProductSchema = z.object({
   name: z
     .string({ message: "Product name must be a string." })
     .min(1, { message: "Product name is required." }),
-  batch: z.string({
-    message: "Product batch must be a string",
-  }),
   brand: z.string({ message: "Brand must be a string." }).min(1, {
     message: "Brand for product is required.",
   }),
