@@ -1,3 +1,4 @@
+import { ROLE } from "@prisma/client";
 import { COOKIE_EXPIRATION } from "../config";
 import { db, jwt, passwordCrypt, zodErrorFmt } from "../libs";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
@@ -147,12 +148,13 @@ export const updateROLEController = asyncWrapper(async (req, res) => {
     },
     data: {
       role: bodyValidation.data.role,
-      salesPerson:
-        bodyValidation.data.role === "SALES_PERSON"
-          ? {
-              create: {},
-            }
-          : undefined,
+      salesPerson: ([ROLE.ADMIN, ROLE.SALES_PERSON] as string[]).includes(
+        bodyValidation.data.role
+      )
+        ? {
+            create: {},
+          }
+        : undefined,
     },
   });
 
