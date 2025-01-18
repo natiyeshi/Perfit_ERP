@@ -7,8 +7,8 @@ import Loading from "@/components/custom/loading";
 
 // Function to fetch user data
 const fetchUserData = async () => {
-  const response = await axios.get("/auth/getuser");
-  return response.data; // Adjust this depending on the response structure
+  const response = await axios.get("/auth/verify");
+  return response.data.result.user; // Adjust this depending on the response structure
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -17,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     onSuccess: (user) => {
       console.log(user, "__ROLE__");
     },
+    staleTime: 1000 * 60 * 10 * 2, // 20 minutes
   });
 
   useEffect(() => {

@@ -9,8 +9,10 @@ import {
 import { FaFilter, FaProductHunt } from "react-icons/fa";
 import AddProduct from "./AddProduct";
 import Link from "next/link";
+import { useUser } from "@/context/userContext";
 
 const ProductMenu = () => {
+  const { user } = useUser();
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,7 +28,7 @@ const ProductMenu = () => {
             <p className="text-sm text-muted-foreground">Your Products Here!</p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/admin/products">
+            <Link href={`/dashboard/${user.role}/products`}>
               <Button variant={"outline"} className="w-full">
                 See Products
               </Button>

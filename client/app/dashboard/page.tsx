@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
+"use client";
 const page = () => {
-  // redirect("/dashboard/admin/");
   return <>Dashboard</>;
 };
 

@@ -1,3 +1,4 @@
+"use client"
 // context/UserContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
@@ -23,7 +24,7 @@ interface RoleSet {
   [key: string]: string;
 }
 export const roleMap: RoleSet = {
-  DATA_AGGREGATOR: "aggregator",
+  DATA_AGGREGATOR: "feeder",
   SALES_PERSON: "sales",
   ADMIN: "admin",
 };

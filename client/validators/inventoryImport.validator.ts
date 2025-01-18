@@ -4,6 +4,7 @@ export const createInventoryImportSchema = Yup.object({
   unitPrice: Yup.number()
     .positive("Unit price must be a positive number.")
     .required("Product price must be a number."),
+    
   quantity: Yup.number()
     .integer("Quantity must be an integer.")
     .positive("Quantity must be greater than zero.")
@@ -21,6 +22,10 @@ export const createInventoryImportSchema = Yup.object({
   supplierId: Yup.string()
     .min(1, "Supplier ID is required.")
     .required("Supplier ID must be a string."),
+  batch: Yup
+        .string()
+        .required("Product batch is required.")
+        .typeError("Product batch must be a string."),
 });
 
 export const updateInventoryImportSchema = createInventoryImportSchema.noUnknown(true).nullable();

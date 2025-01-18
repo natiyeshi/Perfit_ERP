@@ -1,31 +1,30 @@
 import { IDBCompetitor } from "./ICompetitor";
+import { IDBCustomer } from "./ICustomer";
 import { IDBProduct } from "./IProduct";
 import { IDBSupplier } from "./ISupplier";
 
 export interface ITransaction {
-    unitPrice: number;
-    quantity: number;
-    productId: string;
-    customerId: string;
-    salesPersonId: string;
+  unitPrice: number;
+  quantity: number;
+  productId: string;
+  customerId: string;
+  salesPersonId: string;
+  importId: string;
 }
 
 export interface IDBTransaction extends ITransaction {
   id : string;
 }
 
-export interface IDBPopulatedITransaction extends IDBTransaction {
+export interface IDBPopulatedTransaction extends IDBTransaction {
   product : IDBProduct;
-  competitor : IDBCompetitor;
-  supplier : IDBSupplier;
+  customer : IDBCustomer;
+  import : IDBSupplier;
 }
 
 
-export interface IDBClientITransaction extends IDBPopulatedITransaction {
+export interface IDBClientTransaction extends IDBPopulatedTransaction {
   productName? : string;
-  competitorName? : string;
-  supplierName? : string;
-  unit? : string,
-  shelfLife? : number,
+  customerName? : string;
   totalPrice? : number,
 }

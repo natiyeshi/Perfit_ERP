@@ -18,7 +18,7 @@ const DashboardWrapper = ({
   ) : roleOptions.has(user.role) ? (
     <div>You don't have permission to view this page.</div>
   ) : (
-    <div>Invalid user role.</div>
+    <div>Invalid user role {role}{user.role} .</div>
   );
 };
 

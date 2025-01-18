@@ -54,24 +54,23 @@ const sellsLinks: MainLinkInf[] = [
     link: "/dashboard/sales/crm",
   },
 ];
-
 const aggregatorLinks: MainLinkInf[] = [
   {
     name: "Import Data",
     Icon: LuImport,
-    link: "/dashboard/admin/import",
+    link: "/dashboard/feeder/import",
   },
 ];
 
 const sideLinks: any = {
   admin: adminLinks,
   sales: sellsLinks,
-  aggregator: aggregatorLinks,
+  feeder: aggregatorLinks,
   any: [],
 };
 const MainSideBar = () => {
   const { user } = useUser();
-  const roles = new Set(["admin", "sales", "aggregator"]);
+  const roles = new Set(["admin", "sales", "feeder"]);
   const role: any = roles.has(user.role) ? user.role : "any";
   return (
     <div className="w-20 absolute  group pb-6 hover:w-[240px] duration-300 border-r bg-background  min-h-screen flex flex-col overflow-y-auto overflow-x-hidden ">
@@ -112,9 +111,10 @@ const SideBarLink = ({ link }: { link: MainLinkInf }) => {
 };
 
 const SettingSideBarLink = () => {
+  const { user } = useUser();
   const link = {
     Icon: CiSettings,
-    link: "/dashboard/admin/settings",
+    link: `/dashboard/${user.role}/settings`,
   };
   const Icon = link.Icon;
   const pathname = usePathname();

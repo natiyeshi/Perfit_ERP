@@ -9,8 +9,11 @@ import {
 import { IoPersonSharp } from "react-icons/io5";
 import AddCompetitor from "./AddCompetitor";
 import Link from "next/link";
+import { useUser } from "@/context/userContext";
 
 const CompetitorMenu = () => {
+  const { user } = useUser();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -28,7 +31,7 @@ const CompetitorMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/admin/competitors">
+            <Link href={`/dashboard/${user.role}/competitors`}>
               <Button variant={"outline"} className="w-full">
                 See Competitors
               </Button>

@@ -10,8 +10,11 @@ import { IoPersonSharp } from "react-icons/io5";
 import AddSupplier from "./AddSupplier";
 import Link from "next/link";
 import { FaTruck } from "react-icons/fa";
+import { useUser } from "@/context/userContext";
 
 const SupplierMenu = () => {
+  const { user } = useUser();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -29,7 +32,7 @@ const SupplierMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/admin/suppliers">
+            <Link href={`/dashboard/${user.role}/suppliers`}>
               <Button variant={"outline"} className="w-full">
                 See Suppliers
               </Button>

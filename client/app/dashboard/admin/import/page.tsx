@@ -1,13 +1,7 @@
-import { redirect } from "next/navigation";
-import data from "@/data/empdata";
-import ImportTable from "./_components/ImportTable";
+"use client"
+import ImportPage from "../../_modules/import/page";
 const page = () => {
-  // redirect("/dashboard/admin/hr/employees");
-  return (
-    <div className="overflow-y-auto w-full h-full flex-1   flex flex-col">
-      <ImportTable />
-    </div>
-  );
+  return <ImportPage />;
 };
 
 export default page;

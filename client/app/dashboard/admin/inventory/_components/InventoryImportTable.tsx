@@ -21,6 +21,7 @@ const InventoryImportTable: React.FC = () => {
     { name: "Supplier Name", key: "supplierName" },
     { name: "Quantity", key: "quantity" },
     { name: "unit", key: "unit" },
+    { name: "batch", key: "batch" },
     { name: "unitPrice", key: "unitPrice" },
     { name: "totalPrice", key: "totalPrice" },
     { name: "shelfLife(month)", key: "shelfLife" },

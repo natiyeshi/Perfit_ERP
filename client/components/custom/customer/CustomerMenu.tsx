@@ -9,8 +9,11 @@ import {
 import { IoPersonSharp } from "react-icons/io5";
 import AddCustomer from "./AddCustomer";
 import Link from "next/link";
+import { useUser } from "@/context/userContext";
 
 const CustomerMenu = () => {
+  const { user } = useUser();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -28,7 +31,7 @@ const CustomerMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/admin/customers">
+            <Link href={`/dashboard/${user.role}/customers`}>
               <Button variant={"outline"} className="w-full">
                 See Customers
               </Button>

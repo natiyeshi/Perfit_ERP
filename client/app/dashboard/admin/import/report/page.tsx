@@ -1,12 +1,7 @@
-import { redirect } from "next/navigation";
-import MostSold from "./_components/Sold/MostSold";
+import ReportPage from "../../../_modules/import/report/page";
 
 const page = () => {
-  return (
-    <div className="px-6 flex-1 overflow-auto">
-      <MostSold />
-    </div>
-  );
+  return <ReportPage />;
 };
 
 export default page;

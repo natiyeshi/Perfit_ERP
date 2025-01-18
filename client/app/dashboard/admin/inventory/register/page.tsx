@@ -47,6 +47,7 @@ const page = () => {
     supplierId: "",
     quantity: 0,
     unitPrice: 0,
+    batch: "",
     modeOfShipment: "",
     expiryDate: "",
     manufacturerDate: ""
@@ -148,6 +149,23 @@ const page = () => {
                 />
                 <ErrorMessage
                   name="quantity"
+                  component="p"
+                  className="text-sm text-red-500"
+                />
+              </div>
+
+              {/* Batch  */}
+              <div className="flex flex-col space-y-2 w-full">
+                <Label htmlFor="batch">Batch</Label>
+                <Field
+                  name="batch"
+                  as={Input}
+                  id="batch"
+                  placeholder="Enter batch"
+                  className="w-full"
+                />
+                <ErrorMessage
+                  name="batch"
                   component="p"
                   className="text-sm text-red-500"
                 />

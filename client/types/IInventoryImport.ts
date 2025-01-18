@@ -8,6 +8,7 @@ export interface IInventoryImport {
   quantity: number;
   manufacturerDate: string;
   expiryDate: string;
+  batch: string;
   modeOfShipment?: string;
   productId: string;
   supplierId: string;
