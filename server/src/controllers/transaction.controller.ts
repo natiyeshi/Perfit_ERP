@@ -27,7 +27,17 @@ export const getTransactionsController = asyncWrapper(async (req, res) => {
     include: {
       product: isPopulate,
       customer: isPopulate,
-      salesPerson: isPopulate,
+      salesPerson: {
+        include: {
+          user: isPopulate && {
+            select: {
+              fullName: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -65,7 +75,17 @@ export const getTransactionByIDController = asyncWrapper(async (req, res) => {
     include: {
       product: true,
       customer: true,
-      salesPerson: true,
+      salesPerson: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -86,6 +106,8 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
   const bodyValidation = transactionValidator.createTransactionSchema.safeParse(
     req.body
   );
+
+  const user = req.user!;
 
   if (!bodyValidation.success)
     throw RouteError.BadRequest(
@@ -117,7 +139,7 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
 
   const existingSalesPerson = await db.salesPerson.findUnique({
     where: {
-      userId: bodyValidation.data.salesPersonId,
+      userId: user._id,
     },
   });
 
@@ -140,8 +162,17 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
       "Insufficient inventory to complete the transaction."
     );
 
+  const { data } = bodyValidation;
+
   const newTransaction = await db.transaction.create({
-    data: bodyValidation.data,
+    data: {
+      unitPrice: data.unitPrice,
+      quantity: data.quantity,
+      productId: data.productId,
+      customerId: data.customerId,
+      importId: data.importId,
+      salesPersonId: user._id,
+    },
   });
 
   await db.inventory.update({
