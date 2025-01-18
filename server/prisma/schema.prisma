@@ -19,6 +19,12 @@ enum SHIPPING_METHOD {
   SEA
 }
 
+enum MOVEMENT {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 model User {
   id          String       @id @unique @default(cuid())
   fullName    String
@@ -65,9 +71,9 @@ model Supplier {
   country          String?
 
   deliverableProducts Product[]
-
-  competitorImports CompetitorImport[]
-  imports           Import[]
+  competitorImports   CompetitorImport[]
+  imports             Import[]
+  IODMs                IODM[]
 
   @@map("suppliers")
 }
@@ -196,14 +202,6 @@ model SalesPerson {
   @@map("sales_persons")
 }
 
-model IODM {
-  id        String   @id @unique @default(cuid())
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
-
-  @@map("IODMs")
-}
-
 model Pipeline {
   id                           String          @id @unique @default(cuid())
   productId                    String
@@ -221,4 +219,30 @@ model Pipeline {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("pipelines")
+}
+
+model IODM {
+  id                  String   @id @unique @default(cuid())
+  expiryDate          DateTime @map("expiry_date")
+  manufactureDate     DateTime @map("manufacturer_date")
+  purchasePriceUsd    Float    @map("purchase_price_usd")
+  currentSellingPrice Float    @map("current_selling_price") // in Birr
+  productMovement     MOVEMENT @map("product_movement") // Enum: HIGH, LOW, MEDIUM
+  transportCost       Float    @map("transport_cost")
+  grossWeight         Float    @map("gross_weight")
+  cbm                 Float // cubic meter
+  freightCost         Float    @map("freight_cost")
+  dutyTax             Float
+  bsc                 Float // could represent Bunker Surcharge, please confirm
+  loadingUnloading    Float    @map("loading_unloading")
+  exchangeRate        Float    @map("exchange_rate")
+  supplierId          String
+  productId           String
+  product             Product  @relation(fields: [productId], references: [id])
+  supplier            Supplier @relation(fields: [supplierId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("IODMs")
 }

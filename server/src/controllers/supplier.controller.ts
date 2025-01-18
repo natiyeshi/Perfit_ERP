@@ -78,11 +78,13 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
-  const existingSupplier = await db.supplier.findUnique({
-    where: {
-      email: bodyValidation.data.email,
-    },
-  });
+  const existingSupplier = bodyValidation.data.email
+    ? await db.supplier.findUnique({
+        where: {
+          email: bodyValidation.data.email,
+        },
+      })
+    : null;
 
   if (existingSupplier) throw RouteError.BadRequest("Email already exists.");
 
