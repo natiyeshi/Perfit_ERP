@@ -29,7 +29,7 @@ switch (NODE_ENV) {
 }
 
 const ENV = {
-  PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 4422, // Default to 4422 if PORT is not set
+  PORT: parseInt(process.env.PORT!),
   JWT_SECRET: process.env.JWT_SECRET as string,
   COOKIE_SECRET: process.env.JWT_SECRET as string,
 };

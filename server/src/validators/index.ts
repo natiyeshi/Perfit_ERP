@@ -11,6 +11,8 @@ import * as queryValidator from "./query.validator";
 import * as importValidator from "./import.validator";
 import * as competitorInventoryValidator from "./competitor-inventory.validator";
 import * as pipelineValidator from "./pipeline.validator";
+import * as IODM_Validator from "./IODM.validator";
+
 export {
   queryValidator,
   authValidator,
@@ -25,4 +27,5 @@ export {
   importValidator,
   competitorInventoryValidator,
   pipelineValidator,
+  IODM_Validator,
 };
