@@ -6,7 +6,7 @@
     "start": "npm run prisma && npm run build && cross-env NODE_ENV=production node ./dist/server.js",
     "dev": "cross-env NNODE_ENV=development nodemon",
     "build": "npm run clean && npx tsc",
-    "clean": "rimraf ./dist",
+    "clean": "npx rimraf ./dist",
     "prisma": "npx prisma generate"
   },
   "author": "Nesredin Getahun",
