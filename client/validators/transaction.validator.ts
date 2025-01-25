@@ -16,9 +16,10 @@ export const createTransactionSchema = Yup.object({
   customerId: Yup.string()
     .min(1, "Customer ID is required.")
     .required("Customer ID is required."),
-  salesPersonId: Yup.string()
-    .min(1, "SalesPerson ID is required.")
-    .required("SalesPerson ID is required."),
+  importId: Yup.string()
+    .min(1, "import ID is required.")
+    .required("import ID is required."),
+ 
 });
 
 export const updateTransactionSchema = createTransactionSchema.noUnknown(true).nullable();

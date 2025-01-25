@@ -9,11 +9,10 @@ export default async function Layout({ children }: { children: any }) {
       <InnerSideBar
         children={children}
         data={{
-          name: "Import",
+          name: "CRM",
           links: [
-            { name: "data", link: `/dashboard/${user.role}/import` },
-            { name: "register", link: `/dashboard/${user.role}/import/register` },
-            { name: "Report", link: `/dashboard/${user.role}/import/report` },
+            { name: "data", link: `/dashboard/${user.role}/crm` },
+            { name: "register", link: `/dashboard/${user.role}/crm/register` },
           ],
         }}
       />

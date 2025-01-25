@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import data from "@/data/empdata";
+"use client"
 import CompetitorTable from "./_components/CompetitorTable";
 const page = () => {
   return (

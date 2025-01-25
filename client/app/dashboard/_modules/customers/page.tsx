@@ -1,3 +1,5 @@
+"use client"
+
 import CustomerTable from "./_components/CustomerTable";
 const page = () => {
   return (

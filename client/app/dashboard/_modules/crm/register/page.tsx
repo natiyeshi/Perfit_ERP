@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"; // ShadCN Input component
 import { Button } from "@/components/ui/button"; // ShadCN Button component
 import { Label } from "@/components/ui/label"; // ShadCN Label component
 import { createCompetitorImportSchema } from "@/validators/competitor-import.validator";
-import { IImport } from "@/types/IImport";
+import { IDBImport, IImport } from "@/types/IImport";
 import {
   Select,
   SelectContent,
@@ -21,11 +21,14 @@ import { IDBProduct } from "@/types/IProduct";
 import { IDBSupplier } from "@/types/ISupplier";
 import { IDBCompetitor } from "@/types/ICompetitor";
 import { parseISO } from "date-fns";
+import { ITransaction } from "@/types/ITransaction";
+import { IDBCustomer } from "@/types/ICustomer";
+import { createTransactionSchema } from "@/validators/transaction.validator";
 
 const page = () => {
   const { isLoading, mutate } = useMutation(
     (data: any) =>
-      axios.post("/competitor-imports", {
+      axios.post("/transaction", {
         ...data,
       }),
     {
@@ -39,22 +42,20 @@ const page = () => {
       },
     }
   );
-  const handleSubmit = (data: IImport) => {
+  const handleSubmit = (data : ITransaction) => {
     mutate({ ...data });
   };
 
   const [products, setProducts] = useState<IDBProduct[]>([]);
-  const [suppliers, setSuppliers] = useState<IDBSupplier[]>([]);
-  const [competitors, setCompetitors] = useState<IDBCompetitor[]>([]);
-  const initialValues: IImport = {
+  const [imports, setImports] = useState<IDBImport[]>([]);
+  const [customers, setCustomers] = useState<IDBCustomer[]>([]);
+ 
+  const initialValues = {
     productId: "",
-    supplierId: "",
-    competitorId: "",
+    customerId: "",
+    importId: "",
     quantity: 0,
     unitPrice: 0,
-    modeOfShipment: "",
-    expiryDate: "",
-    manufacturerDate: "",
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -65,25 +66,25 @@ const page = () => {
     },
   });
 
-  const competitorQuery = useQuery(
-    "competitors",
-    () => axios.get("/competitors"),
+  const customerQuery = useQuery(
+    "customers",
+    () => axios.get("/customers"),
     {
       onSuccess(data) {
-        setCompetitors(data.data.result || []);
+        setCustomers(data.data.result || []);
       },
       onError(err) {
-        toast.error("Error while loading competitors!");
+        toast.error("Error while loading customers!");
       },
     }
   );
 
-  const supplierQuery = useQuery("suppliers", () => axios.get("/suppliers"), {
+  const importQuery = useQuery("imports", () => axios.get("/suppliers"), {
     onSuccess(data) {
-      setSuppliers(data.data.result || []);
+      setImports(data.data.result || []);
     },
     onError(err) {
-      toast.error("Error while loading suppliers!");
+      toast.error("Error while loading imports!");
     },
   });
 
@@ -92,29 +93,29 @@ const page = () => {
       <div className="big-topic py-8">Register Import Data</div>
       <Formik
         initialValues={initialValues}
-        validationSchema={createCompetitorImportSchema}
+        validationSchema={createTransactionSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
             <div className="grid grid-cols-2 gap-4 w-full">
-              {/* competitor Name */}
+              {/* customer Name */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="competitorId">Competitor Name</Label>
+                <Label htmlFor="customerId">Customer Name</Label>
                 <Select
-                  disabled={competitorQuery.isLoading}
+                  disabled={customerQuery.isLoading}
                   onValueChange={(value: string) =>
-                    setFieldValue("competitorId", value)
+                    setFieldValue("customerId", value)
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue
-                      placeholder={` ${competitorQuery.isLoading ? "Loading..." : "Select"}`}
+                      placeholder={` ${customerQuery.isLoading ? "Loading..." : "Select"}`}
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {competitors.map((pr) => {
-                      return <SelectItem value={pr.id}>{pr.name}</SelectItem>;
+                    {customers.map((pr) => {
+                      return <SelectItem value={pr.id}>{pr.organizationName}</SelectItem>;
                     })}
                   </SelectContent>
                 </Select>
@@ -150,25 +151,25 @@ const page = () => {
                   className="text-sm text-red-500"
                 />
               </div>
-              {/* Supplier Name */}
+              {/* import Name */}
               <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="supplierId">Supplier Name</Label>
+                <Label htmlFor="importId">import Name</Label>
                 <Select
-                  disabled={supplierQuery.isLoading}
+                  disabled={importQuery.isLoading}
                   onValueChange={(value: string) =>
-                    setFieldValue("supplierId", value)
+                    setFieldValue("importId", value)
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue
-                      placeholder={` ${supplierQuery.isLoading ? "Loading..." : "Select"}`}
+                      placeholder={` ${importQuery.isLoading ? "Loading..." : "Select"}`}
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {suppliers.map((pr) => {
+                    {imports.map((pr) => {
                       return (
                         <SelectItem value={pr.id}>
-                          {pr.manufacturerName}
+                          {pr.id}
                         </SelectItem>
                       );
                     })}
@@ -217,62 +218,6 @@ const page = () => {
                 />
               </div>
 
-              {/* Order Date */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="expiryDate">Expiry Date</Label>
-                <Field
-                  name="expiryDate"
-                  as={Input}
-                  id="expiryDate"
-                  type="date"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="expiryDate"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              {/* manufacturerDate Date */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="manufacturerDate">Manufacturing Date</Label>
-                <Field
-                  name="manufacturerDate"
-                  as={Input}
-                  id="manufacturerDate"
-                  type="date"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="manufacturerDate"
-                  component="manufacturerDate"
-                  className="text-sm text-red-500"
-                />
-              </div>
-            
-
-              {/* Mode of Shipment */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="modeOfShipment">Mode of Shipment</Label>
-                <Field
-                  name="modeOfShipment"
-                  as={Input}
-                  id="modeOfShipment"
-                  placeholder="Enter Mode of Shipment"
-                  className="w-full"
-                />
-                <ErrorMessage
-                  name="modeOfShipment"
-                  component="p"
-                  className="text-sm text-red-500"
-                />
-              </div>
-              {/* Total Price */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="totalPrice">Total Price</Label>
-                <div>{values.quantity * values.unitPrice}</div>
-              </div>
             </div>
 
             <Button

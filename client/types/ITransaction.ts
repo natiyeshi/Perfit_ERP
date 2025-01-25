@@ -8,7 +8,6 @@ export interface ITransaction {
   quantity: number;
   productId: string;
   customerId: string;
-  salesPersonId: string;
   importId: string;
 }
 
