@@ -73,7 +73,7 @@ model Supplier {
   deliverableProducts Product[]
   competitorImports   CompetitorImport[]
   imports             Import[]
-  IODMs                IODM[]
+  IODMs               IODM[]
 
   @@map("suppliers")
 }
@@ -225,24 +225,26 @@ model IODM {
   id                  String   @id @unique @default(cuid())
   expiryDate          DateTime @map("expiry_date")
   manufactureDate     DateTime @map("manufacturer_date")
-  purchasePriceUsd    Float    @map("purchase_price_usd")
-  currentSellingPrice Float    @map("current_selling_price") // in Birr
-  productMovement     MOVEMENT @map("product_movement") // Enum: HIGH, LOW, MEDIUM
-  transportCost       Float    @map("transport_cost")
-  grossWeight         Float    @map("gross_weight")
-  cbm                 Float // cubic meter
-  freightCost         Float    @map("freight_cost")
-  dutyTax             Float
-  bsc                 Float // could represent Bunker Surcharge, please confirm
-  loadingUnloading    Float    @map("loading_unloading")
-  exchangeRate        Float    @map("exchange_rate")
-  supplierId          String
-  productId           String
-  product             Product  @relation(fields: [productId], references: [id])
-  supplier            Supplier @relation(fields: [supplierId], references: [id])
+  purchasePriceUsd    Float    @map("purchase_price_usd") // Purchase price of the product in USD.
+  currentSellingPrice Float    @map("current_selling_price") // Current selling price of the product in Ethiopian Birr.
+  productMovement     MOVEMENT @map("product_movement") // Enum indicating the product's movement rate (HIGH, LOW, MEDIUM).
+  transportCost       Float    @map("transport_cost") // Cost incurred for transporting the product.
+  grossWeight         Float    @map("gross_weight") // Gross weight of the product in kilograms.
+  cbm                 Float // Cubic meter measurement of the product, representing its volume.
+  freightCost         Float    @map("freight_cost") // Cost incurred for shipping the product.
+  dutyTax             Float // Tax imposed on the product as part of customs duty.
+  bsc                 Float // Represents Bunker Surcharge, a fuel surcharge for shipping. Please confirm if this is correct.
+  shipmentAmount      Float    @map("shipment_amount") // Total amount charged for the shipment of the product.
+  insuranceCharge     Float    @map("insurance_charge") // Insurance cost for securing the product during shipment.
+  loadingUnloading    Float    @map("loading_unloading") // Cost for loading and unloading the product during transportation.
+  exchangeRate        Float    @map("exchange_rate") // Exchange rate applied for currency conversion.
+  supplierId          String // Foreign key referencing the supplier of the product.
+  productId           String // Foreign key referencing the product associated with this IODM.
+  product             Product  @relation(fields: [productId], references: [id]) // Relation to the `Product` model.
+  supplier            Supplier @relation(fields: [supplierId], references: [id]) // Relation to the `Supplier` model.
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") // Timestamp indicating when the record was created.
+  updatedAt DateTime @updatedAt @map("updated_at") // Timestamp indicating when the record was last updated.
 
-  @@map("IODMs")
+  @@map("IODMs") // Maps the table name in the database to "IODMs".
 }
