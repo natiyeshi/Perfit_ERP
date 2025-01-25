@@ -30,8 +30,11 @@ switch (NODE_ENV) {
 
 const ENV = {
   PORT: parseInt(process.env.PORT!),
+  // PORT: 4040,
   JWT_SECRET: process.env.JWT_SECRET as string,
   COOKIE_SECRET: process.env.JWT_SECRET as string,
 };
+
+console.log({ ENV });
 
 export default ENV;

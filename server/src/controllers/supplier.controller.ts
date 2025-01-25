@@ -95,7 +95,7 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
             id: { in: bodyValidation.data.productIDs },
           },
         })
-      : undefined;
+      : [];
 
   const { productIDs, ...supplierDTO } = bodyValidation.data;
 
@@ -105,6 +105,9 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
       deliverableProducts: {
         connect: products,
       },
+    },
+    include: {
+      deliverableProducts: true,
     },
   });
 
@@ -147,14 +150,31 @@ export const updateSupplierController = asyncWrapper(async (req, res) => {
   if (!existingSupplier)
     throw RouteError.NotFound("Supplier not found with the provided ID.");
 
+  const products =
+    bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
+      ? await db.product.findMany({
+          where: {
+            id: { in: bodyValidation.data.productIDs },
+          },
+        })
+      : [];
+
+  const { productIDs, ...restAtt } = bodyValidation.data;
+
   const updatedSupplier = await db.supplier.update({
     where: {
       id: queryParamValidation.data.id,
     },
-    data: bodyValidation.data,
+    data: {
+      ...restAtt,
+      deliverableProducts: {
+        set: products,
+      },
+    },
     include: {
       competitorImports: true,
       imports: true,
+      deliverableProducts: true,
     },
   });
 

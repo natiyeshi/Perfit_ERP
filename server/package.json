@@ -4,7 +4,7 @@
   "main": "./dist/server.js",
   "scripts": {
     "start": "npm run prisma && npm run build && cross-env NODE_ENV=production node ./dist/server.js",
-    "dev": "cross-env NNODE_ENV=development nodemon",
+    "dev": "cross-env NODE_ENV=development nodemon",
     "build": "npm run clean && npm install typescript && npx tsc",
     "clean": "npx rimraf ./dist",
     "prisma": "npx prisma generate"
