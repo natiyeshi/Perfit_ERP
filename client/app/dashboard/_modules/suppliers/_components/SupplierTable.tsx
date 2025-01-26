@@ -9,14 +9,23 @@ import FilterCard from "./Filter";
 import { IoMdRefresh } from "react-icons/io";
 import DeleteSupplier from "@/components/custom/supplier/DeleteSupplier";
 import UpdateSupplier from "@/components/custom/supplier/UpdateSupplier";
-import { IDBSupplier } from "@/types/ISupplier";
+import { IDBClientSupplier, IDBSupplier } from "@/types/ISupplier";
 import CustomeTable from "@/components/custom/table/CustomeTable";
 const SupplierTable: React.FC = () => {
-  const headers: { name: string; key: keyof IDBSupplier }[] = [
+  const headers: {
+    name: string;
+    key: keyof IDBClientSupplier;
+    showDetail?: keyof IDBClientSupplier;
+  }[] = [
     { name: "Manufacturer Name", key: "manufacturerName" },
     { name: "Email", key: "email" },
     { name: "Country", key: "country" },
     { name: "Phone Number", key: "phoneNumber" },
+    {
+      name: "Product Imports",
+      key: "productName",
+      showDetail: "clientDeliverableProducts",
+    },
   ];
   const { filters, suppliers, setFilters, filter, reload, query } =
     useSupplierTable();

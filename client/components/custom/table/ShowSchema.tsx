@@ -39,12 +39,16 @@ const ShowSchema: any = <T extends Record<string, any>>({
             </AlertDialogCancel>
           </div>
           <AlertDialogDescription className="flex flex-col gap-1">
-            {Object.entries(data).map(([key, value]) => (
-              <div className="capitalize border-b pb-1" key={key}>
-                <strong>{key}: </strong>
-                {String(value)}
-              </div>
-            ))}
+            {Object.entries(data).length == 0 ? (
+              <div>Nothing Found</div>
+            ) : (
+              Object.entries(data).map(([key, value]) => (
+                <div className="capitalize border-b pb-1" key={key}>
+                  <strong>{key}: </strong>
+                  {String(value)}
+                </div>
+              ))
+            )}
           </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

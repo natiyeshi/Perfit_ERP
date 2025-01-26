@@ -11,7 +11,6 @@ import DeleteImport from "@/components/custom/import/DeleteImport";
 import UpdateImport from "@/components/custom/import/UpdateImport";
 import { IDBClientImport } from "@/types/IImport";
 import CustomeTable from "@/components/custom/table/CustomeTable";
-import ShowSchema from "@/components/custom/table/ShowSchema";
 const ImportTable: React.FC = () => {
   const { filters, imports, setFilters, filter, reload, query } =
     useImportTable();
