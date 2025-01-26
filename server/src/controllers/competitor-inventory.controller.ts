@@ -119,16 +119,23 @@ export const createCompetitorInventoryController = asyncWrapper(
         "Competitor not found with the provided competitor ID."
       );
 
+    // Marking competitor as a direct competitor
+    if (!existingCompetitor.isDirectCompetitor)
+      await db.competitor.update({
+        where: {
+          id: existingCompetitor.id,
+        },
+        data: {
+          isDirectCompetitor: true,
+        },
+      });
+
     const competitorInventory = await db.competitorInventory.create({
       data: {
         sellingPrice: bodyValidation.data.sellingPrice,
         competitorId: bodyValidation.data.competitorId,
         productId: bodyValidation.data.productId,
       },
-    });
-
-    console.log({
-      competitorInventory,
     });
 
     return sendApiResponse({

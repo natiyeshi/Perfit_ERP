@@ -10,6 +10,7 @@ import transactionRouter from "./transaction.routes";
 import importRouter from "./import.routes";
 import competitorInventoryRouter from "./competitor-inventory.routes";
 import pipelineRouter from "./pipeline.routes";
+import IODM_Router from "./IODM.routes";
 
 export default {
   authRouter,
@@ -24,4 +25,5 @@ export default {
   importRouter,
   competitorInventoryRouter,
   pipelineRouter,
+  IODM_Router,
 };
