@@ -11,14 +11,17 @@ import AddSupplier from "./AddSupplier";
 import Link from "next/link";
 import { FaTruck } from "react-icons/fa";
 import { useUser } from "@/context/userContext";
+import { usePathname } from "next/navigation";
 
 const SupplierMenu = () => {
   const { user } = useUser();
 
+  const pathname = usePathname();
+  const isActive = pathname == "/dashboard/" + user.role + "/suppliers";
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div role="button" className="flex gap-2 items-center px-2 rounded">
+        <div role="button" className={`flex gap-2 items-center px-2 rounded ${isActive && "text-primary"}`}>
           <FaTruck className="text-xl" />
           <div>Suppliers</div>
         </div>

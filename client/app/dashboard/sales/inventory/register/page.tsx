@@ -36,7 +36,7 @@ const page = () => {
     }
   );
   const handleSubmit = (data: IInventoryImport) => {
-    let newData = {...data};
+    let newData = { ...data };
     mutate({ ...newData, expiryDate: data.expiryDate });
   };
 
@@ -44,12 +44,13 @@ const page = () => {
   const [suppliers, setSuppliers] = useState<IDBSupplier[]>([]);
   const initialValues: IInventoryImport = {
     productId: "",
+    batch: "",
     supplierId: "",
     quantity: 0,
     unitPrice: 0,
     modeOfShipment: "",
     expiryDate: "",
-    manufacturerDate: ""
+    manufacturerDate: "",
   };
   const productQuery = useQuery("products", () => axios.get("/products"), {
     onSuccess(data) {
@@ -59,7 +60,6 @@ const page = () => {
       toast.error("Error while loading products!");
     },
   });
-
 
   const supplierQuery = useQuery("suppliers", () => axios.get("/suppliers"), {
     onSuccess(data) {
@@ -81,7 +81,6 @@ const page = () => {
         {({ isSubmitting, setFieldValue, values }) => (
           <Form className="space-y-6">
             <div className="grid grid-cols-2 gap-4 w-full">
-             
               {/* Product Name */}
               <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="productId">Product Name</Label>
@@ -124,7 +123,11 @@ const page = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {suppliers.map((pr) => {
-                      return <SelectItem value={pr.id}>{pr.manufacturerName}</SelectItem>;
+                      return (
+                        <SelectItem value={pr.id}>
+                          {pr.manufacturerName}
+                        </SelectItem>
+                      );
                     })}
                   </SelectContent>
                 </Select>
@@ -188,8 +191,8 @@ const page = () => {
                 />
               </div>
 
-               {/* Order Date */}
-               <div className="flex flex-col space-y-2 w-full">
+              {/* Order Date */}
+              <div className="flex flex-col space-y-2 w-full">
                 <Label htmlFor="manufacturerDate">Manufactur Date</Label>
                 <Field
                   name="manufacturerDate"

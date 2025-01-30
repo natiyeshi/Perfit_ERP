@@ -15,6 +15,7 @@ export interface IImport {
 
 export interface IDBImport extends IImport {
   id : string;
+  createdAt : string;
 }
 
 export interface IDBPopulatedImport extends IDBImport {

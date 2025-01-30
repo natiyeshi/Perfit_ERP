@@ -7,7 +7,7 @@ import { IDBClientImport, IDBPopulatedImport } from "@/types/IImport";
 import toast, { Toaster } from "react-hot-toast";
 import { IDBClientTransaction, IDBPopulatedTransaction } from "@/types/ITransaction";
 
-export const useImportTable = () => {
+export const useTransactionTable = () => {
   const [filters, setFilters] = useState<filterInf>({
     name: "",
   });

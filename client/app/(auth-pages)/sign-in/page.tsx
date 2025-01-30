@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { addTokenToCookie } from "./_action";
 import { roleMap, useUser } from "@/context/userContext";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Login() {
   const router = useRouter();
@@ -20,8 +21,6 @@ export default function Login() {
     email: "",
     password: "",
   });
-
-  
 
   const { isLoading, isError, error, mutate } = useMutation(
     () =>
@@ -42,9 +41,7 @@ export default function Login() {
         addTokenToCookie(token).then(() => {
           setTimeout(() => {
             toast.success("Signed in successfully");
-            router.push(
-              "/dashboard/" + roleMap[res.data.result.user.role]
-            );
+            router.push("/dashboard/" + roleMap[res.data.result.user.role]);
           }, 400);
         });
       },
@@ -57,11 +54,11 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-w-64">
+    <form onSubmit={handleSubmit} className="flex-1  flex flex-col min-w-64">
       <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-sm text-foreground">
+      <p className="text-sm text-gray-600">
         Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
+        <Link className="text-primary font-medium underline" href="/sign-up">
           Sign up
         </Link>
       </p>
@@ -80,7 +77,6 @@ export default function Login() {
           type="password"
           name="password"
           placeholder="Your password"
-          minLength={6}
           required
           value={formData.password}
           onChange={(e) =>

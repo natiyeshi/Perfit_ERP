@@ -46,9 +46,9 @@ export const useInventoryImportTable = () => {
           let r: IDBClientInventoryImport = {
             ...d,
             productName: d.product.name,
-            supplierName: d.supplier.name,
+            supplierName: d.supplier.manufacturerName,
             unit: d.product.unit,
-            shelfLife: d.product.shelfLife,
+            // shelfLife: d.product.shelfLife,
             totalPrice: d.unitPrice * d.quantity,
           };
           res.push(r);

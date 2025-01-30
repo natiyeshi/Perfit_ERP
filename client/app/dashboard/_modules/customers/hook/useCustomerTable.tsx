@@ -20,14 +20,14 @@ export const useCustomerTable = () => {
   const nameFilter = (data: IDBCustomer) => {
     return (
       filters.name.length === 0 ||
-      data.fullName.toLowerCase().includes(filters.name)
+      data.organizationName.toLowerCase().includes(filters.name)
     );
   };
 
   const statusFilter = (data: IDBCustomer) => {
     return (
       filters.status == null ||
-      data.fullName.toLowerCase() === filters.status.toLowerCase()
+      data.organizationName.toLowerCase() === filters.status.toLowerCase()
     );
   };
 

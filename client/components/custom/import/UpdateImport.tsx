@@ -196,7 +196,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                         <SelectContent>
                           {suppliers.map((pr) => {
                             return (
-                              <SelectItem value={pr.id}>{pr.name}</SelectItem>
+                              <SelectItem value={pr.id}>{pr.manufacturerName}</SelectItem>
                             );
                           })}
                         </SelectContent>
@@ -272,7 +272,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                         id="orderDate"
                         type="date"
                         className="w-full"
-                        value={values["orderDate"]}
+                        // value={values["orderDate"]}
                       />
                       <ErrorMessage
                         name="orderDate"

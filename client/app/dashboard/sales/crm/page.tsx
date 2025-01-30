@@ -1,6 +1,6 @@
-import ImportPage from "../../_modules/import/page";
+import CrmPage from "../../_modules/crm/page";
 const page = () => {
-  return <ImportPage />;
+  return <CrmPage />;
 };
 
 export default page;

@@ -3,22 +3,18 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
-import { useImportTable } from "../hook/useTransactionTable";
+import { useTransactionTable } from "../hook/useTransactionTable";
 import FilterCard from "./Filter";
 import { IoMdRefresh } from "react-icons/io";
-import DeleteImport from "@/components/custom/import/DeleteImport";
-import UpdateImport from "@/components/custom/import/UpdateImport";
-import CustomeTable from "@/components/custom/table/CustomeTable";
+// import DeleteImport from "@/components/custom/import/DeleteImport";
+// import UpdateImport from "@/components/custom/import/UpdateImport";
+import CustomeTable, { Header } from "@/components/custom/table/CustomeTable";
 import { IDBClientTransaction } from "@/types/ITransaction";
 
 const TransactionTable: React.FC = () => {
   const { filters, imports, setFilters, filter, reload, query } =
-    useImportTable();
-  const headers: {
-    name: string;
-    key: keyof IDBClientTransaction;
-    showDetail?: keyof IDBClientTransaction;
-  }[] = [
+    useTransactionTable();
+  const headers: Header<IDBClientTransaction>[] = [
     {
       name: "Product Name",
       key: "productName",
@@ -77,13 +73,7 @@ const TransactionTable: React.FC = () => {
         )}
       </div>
       <div className="overflow-scroll flex-1">
-        <CustomeTable
-          query={query}
-          headers={headers}
-          result={imports}
-          DeleteItem={DeleteImport}
-          UpdateItem={UpdateImport}
-        />
+        <CustomeTable query={query} headers={headers} result={imports} />
       </div>
     </>
   );

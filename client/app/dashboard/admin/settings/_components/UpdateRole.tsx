@@ -64,7 +64,7 @@ function UpdateRole({ user }: { user: IUser }) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant={"outline"} size="sm" className="mt-3  text-xs">
+        <Button variant={"outline"} size="sm" className="mt-3 text-xs">
           Update Role
         </Button>
       </AlertDialogTrigger>

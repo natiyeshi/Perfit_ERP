@@ -73,7 +73,7 @@ const page = () => {
 
   return (
     <div className="px-12 overflow-y-auto pb-20">
-      <div className="big-topic py-8">Register Import Data</div>
+      <div className="big-topic py-8">Register Inventory</div>
       <Formik
         initialValues={initialValues}
         validationSchema={createInventoryImportSchema}

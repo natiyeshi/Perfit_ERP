@@ -10,13 +10,9 @@ import { IoMdRefresh } from "react-icons/io";
 import DeleteSupplier from "@/components/custom/supplier/DeleteSupplier";
 import UpdateSupplier from "@/components/custom/supplier/UpdateSupplier";
 import { IDBClientSupplier, IDBSupplier } from "@/types/ISupplier";
-import CustomeTable from "@/components/custom/table/CustomeTable";
+import CustomeTable, { Header } from "@/components/custom/table/CustomeTable";
 const SupplierTable: React.FC = () => {
-  const headers: {
-    name: string;
-    key: keyof IDBClientSupplier;
-    showDetail?: keyof IDBClientSupplier;
-  }[] = [
+  const headers: Header<IDBClientSupplier>[] = [
     { name: "Manufacturer Name", key: "manufacturerName" },
     { name: "Email", key: "email" },
     { name: "Country", key: "country" },

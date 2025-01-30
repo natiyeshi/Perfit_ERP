@@ -10,7 +10,7 @@ import { CgOptions } from "react-icons/cg";
 import NothingFound from "@/components/custom/NothingFound";
 import ShowSchema from "./ShowSchema";
 
-interface Header<T> {
+export interface Header<T> {
   name: string;
   key: keyof T;
   showDetail?: keyof T;
@@ -25,8 +25,8 @@ interface CustomeTableProps<T extends { id: string }> {
   };
   headers: Header<T>[];
   result: T[];
-  DeleteItem?: JSXElementConstructor<{ id: string }>;
-  UpdateItem?: JSXElementConstructor<{ initialValues: T }>;
+  DeleteItem?: JSXElementConstructor<{ id?: string }> | any;
+  UpdateItem?: JSXElementConstructor<{ initialValues?: T }> | any;
 }
 
 const CustomeTable = <T extends { id: string }>({
@@ -40,11 +40,11 @@ const CustomeTable = <T extends { id: string }>({
     <>
       <table className="min-w-full border-b shadow-lg">
         <thead>
-          <tr className="text-left bg-zinc-900 sticky top-0 z-20">
-            <th className="px-4 py-2 whitespace-nowrap border-b sticky left-0 bg-zinc-900">
+          <tr className="text-left bg-secondary text-white sticky top-0 z-20">
+            <th className="px-4 py-2 whitespace-nowrap border-b sticky left-0 bg-secondary">
               -
             </th>
-            <th className="px-4 py-2 whitespace-nowrap border-b sticky left-0 bg-zinc-900">
+            <th className="px-4 py-2 whitespace-nowrap border-b sticky left-0 bg-secondary">
               No
             </th>
             {headers.map((value) => (
@@ -64,11 +64,11 @@ const CustomeTable = <T extends { id: string }>({
             result.map((item: T, index: number) => (
               <tr
                 key={index}
-                className="group hover:bg-zinc-800/20 duration-200"
+                className="group hover:bg-secondary/20 duration-200"
               >
-                <td className="border-b group-hover:bg-zinc-800/20 whitespace-nowrap duration-200 sticky left-0 bg-background">
+                <td className="border-b group-hover:bg-secondary/20 whitespace-nowrap duration-200 sticky left-0 bg-background">
                   <Popover>
-                    <PopoverTrigger className="px-4 py-2 hover:bg-zinc-800">
+                    <PopoverTrigger className="px-4 py-2 hover:bg-secondary">
                       <CgOptions className="text-lg" />
                     </PopoverTrigger>
                     <PopoverContent className="shadow">

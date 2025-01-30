@@ -10,14 +10,20 @@ import { IoPersonSharp } from "react-icons/io5";
 import AddCustomer from "./AddCustomer";
 import Link from "next/link";
 import { useUser } from "@/context/userContext";
+import { usePathname } from "next/navigation";
 
 const CustomerMenu = () => {
   const { user } = useUser();
+  const pathname = usePathname();
+  const isActive = pathname == "/dashboard/" + user.role + "/customers";
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div role="button" className="flex gap-2 items-center px-2 rounded">
+        <div
+          role="button"
+          className={`flex gap-2 items-center px-2 rounded ${isActive && "text-primary"}`}
+        >
           <IoPersonSharp className="text-xl" />
           <div>Customers</div>
         </div>

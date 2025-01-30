@@ -269,11 +269,11 @@ const page = () => {
                 />
               </div>
               {/* Total Price */}
-              <div className="flex flex-col space-y-2 w-full">
-                <Label htmlFor="totalPrice">Total Price</Label>
-                <div>{values.quantity * values.unitPrice}</div>
-              </div>
             </div>
+              <div className="flex gap-2 w-fit px-6 py-2 border rounded items-center justify-center">
+                <Label htmlFor="totalPrice">Total Price:</Label>
+                <div>{values.quantity * values.unitPrice} Birr</div>
+              </div>
 
             <Button
               onClick={() => {

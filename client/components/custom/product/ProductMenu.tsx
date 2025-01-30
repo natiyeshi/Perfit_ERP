@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,13 +11,19 @@ import { FaFilter, FaProductHunt } from "react-icons/fa";
 import AddProduct from "./AddProduct";
 import Link from "next/link";
 import { useUser } from "@/context/userContext";
+import { usePathname } from "next/navigation";
 
 const ProductMenu = () => {
   const { user } = useUser();
+  const pathname = usePathname();
+  const isActive = pathname == "/dashboard/" + user.role + "/products";
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div role="button" className="flex gap-2 items-center px-2 rounded">
+        <div
+          role="button"
+          className={`flex gap-2 items-center px-2 rounded ${isActive && "text-primary"}`}
+        >
           <FaProductHunt className="text-xl" />
           <div>Products</div>
         </div>

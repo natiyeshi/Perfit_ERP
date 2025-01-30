@@ -49,10 +49,10 @@ const UsersContainer = () => {
 
 const User = ({ user }: { user: IUser }) => {
   return (
-    <div className="flex flex-col bg-gray-900 rounded-lg px-2 py-2 min-w-44">
-      <div className="text-xs text-gray-500 ">Full Name</div>
+    <div className="flex flex-col bg-secondary text-white rounded-lg px-2 py-2 min-w-44">
+      <div className="text-xs text-gray-300 ">Full Name</div>
       <div className="capitalize">{user.fullName}</div>
-      <div className="text-xs text-gray-500 mt-2">Role</div>
+      <div className="text-xs text-gray-300 mt-2">Role</div>
       <div>{user.role}</div>
       <UpdateRole user={user} />
       {/* {user.role == "UNKNOWN" && ( */}

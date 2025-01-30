@@ -1,5 +1,5 @@
-import ImportLayout from "../../_modules/import/layout";
+import CRMLayout from "../../_modules/crm/layout";
 
 export default async function Layout({ children }: { children: any }) {
-  return <ImportLayout children={children} />;
+  return <CRMLayout children={children} />;
 }
