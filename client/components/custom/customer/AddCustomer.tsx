@@ -12,7 +12,6 @@ import {
 import { FaPlus } from "react-icons/fa";
 import { FC, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { Input } from "@/components/ui/input"; // ShadCN Input component
 import { Button } from "@/components/ui/button"; // ShadCN Button component
 import { Label } from "@/components/ui/label"; // ShadCN Label component
@@ -46,8 +45,9 @@ function AddCustomer() {
   };
 
   const initialValues: ICustomer = {
-    fullName: "",
-    label: "",
+    organizationName: "",
+    phoneNumber: "",
+    city: "",
   };
 
   return (
@@ -79,39 +79,76 @@ function AddCustomer() {
               {({ isSubmitting }) => (
                 <Form className="space-y-6">
                   <div className="grid grid-cols-1 gap-4 w-full">
-                    {/* Full Name */}
+                    {/* Organization Name */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="fullName">Full Name</Label>
+                      <Label htmlFor="organizationName">
+                        Organization Name
+                      </Label>
                       <Field
-                        name="fullName"
+                        name="organizationName"
                         as={Input}
-                        id="fullName"
-                        placeholder="Enter Full Name"
+                        id="organizationName"
+                        placeholder="Enter Organization Name"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="fullName"
+                        name="organizationName"
                         component="p"
                         className="text-sm text-red-500"
                       />
                     </div>
 
-                    {/* Label */}
+                    {/* Phone Number */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="label">Label</Label>
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
                       <Field
-                        name="label"
+                        name="phoneNumber"
                         as={Input}
-                        id="label"
-                        placeholder="Enter Label"
+                        id="phoneNumber"
+                        placeholder="Enter Phone Number"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="label"
+                        name="phoneNumber"
                         component="p"
                         className="text-sm text-red-500"
                       />
                     </div>
+
+                    {/* City */}
+                    <div className="flex flex-col space-y-2 w-full">
+                      <Label htmlFor="city">City</Label>
+                      <Field
+                        name="city"
+                        as={Input}
+                        id="city"
+                        placeholder="Enter City"
+                        className="w-full"
+                      />
+                      <ErrorMessage
+                        name="city"
+                        component="p"
+                        className="text-sm text-red-500"
+                      />
+                    </div>
+
+                    {/* Catagory */}
+                    {/* 
+                    <div className="flex flex-col space-y-2 w-full">
+                      <Label htmlFor="catagory">Catagory</Label>
+                      <Field
+                        name="catagory"
+                        as={Input}
+                        id="catagory"
+                        placeholder="Enter Catagory"
+                        className="w-full"
+                      />
+                      <ErrorMessage
+                        name="catagory"
+                        component="p"
+                        className="text-sm text-red-500"
+                      />
+                    </div> */}
                   </div>
 
                   <Button
@@ -124,6 +161,7 @@ function AddCustomer() {
                 </Form>
               )}
             </Formik>
+
             {isError && (
               <div className="mt-2 text-sm text-red-500">
                 {(error as any).response.data.message}

@@ -1,8 +1,11 @@
 export interface ICustomer {
-    fullName: string; // Required for createCustomerSchema, optional for updateCustomerSchema
-    label?: string;   // Optional for updateCustomerSchema
-  }
+  organizationName: string;
+  phoneNumber: string;
+  city: string;
+  catagory?: string;
+}
 export interface IDBCustomer extends ICustomer {
   id: string; 
 }
   
+

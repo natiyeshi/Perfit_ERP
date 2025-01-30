@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    // fastRefresh: true,
+    // concurrentFeatures: true,
+    // swcMinify: true,
+};
 
 module.exports = nextConfig;

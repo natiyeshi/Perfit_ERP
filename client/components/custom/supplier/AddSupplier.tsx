@@ -20,14 +20,31 @@ import { IoCloseSharp } from "react-icons/io5";
 import CustomeErrorMessage from "@/components/custom/ErrorMessage";
 import { createSupplierSchema } from "@/validators/supplier.validator";
 import { ISupplier } from "@/types/ISupplier"; // Updated to use correct interface
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
 import toast from "react-hot-toast";
-
+import { IDBProduct } from "@/types/IProduct";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FaX } from "react-icons/fa6";
 function AddSupplier() {
   const queryClient = useQueryClient();
+  const [products, setProducts] = useState<IDBProduct[]>([]);
   const [err, setErr] = useState<any>(null);
   const [open, setOpen] = useState(false); // State for dialog open/close
+  const productQuery = useQuery("products", () => axios.get("/products"), {
+    onSuccess(data) {
+      setProducts(data.data.result || []);
+    },
+    onError(err) {
+      toast.error("Error while loading products!");
+    },
+  });
   const { isLoading, isError, error, mutate } = useMutation(
     (data: ISupplier) => axios.post("/suppliers", data),
     {
@@ -41,15 +58,16 @@ function AddSupplier() {
 
   const handleSubmit = async (values: ISupplier, { resetForm }: any) => {
     setErr(null);
-    mutate(values);
-    resetForm();
+    mutate(values, resetForm);
+
   };
 
   const initialValues: ISupplier = {
-    name: "",
+    manufacturerName: "",
     email: "",
     phoneNumber: "",
     country: "",
+    productIDs: [],
   };
 
   return (
@@ -78,22 +96,24 @@ function AddSupplier() {
               validationSchema={createSupplierSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting }) => (
+              {({ isSubmitting, values, setFieldValue }) => (
                 <Form className="space-y-6">
                   <div className="grid grid-cols-1 gap-4 w-full">
                     {/* Full Name */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="name">Name</Label>
+                      <Label htmlFor="manufacturerName">
+                        Manufacturer Name
+                      </Label>
                       <Field
-                        name="name"
+                        name="manufacturerName"
                         as={Input}
-                        id="name"
+                        id="manufacturerName"
                         placeholder="Enter Full Name"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="name"
-                        component="p"
+                        name="manufacturerName"
+                        component="manufacturerName"
                         className="text-sm text-red-500"
                       />
                     </div>
@@ -148,6 +168,14 @@ function AddSupplier() {
                         className="text-sm text-red-500"
                       />
                     </div>
+
+                    {/* Product Name */}
+                    <ProductSelectCheckBox
+                      isLoading={productQuery.isLoading}
+                      products={products}
+                      setFieldValue={setFieldValue}
+                      selectedProductIds={values.productIDs ?? []}
+                    />
                   </div>
 
                   <Button
@@ -173,3 +201,87 @@ function AddSupplier() {
 }
 
 export default AddSupplier;
+
+const ProductSelectCheckBox = ({
+  isLoading,
+  setFieldValue,
+  products,
+  selectedProductIds,
+}: {
+  isLoading: boolean;
+  setFieldValue: Function;
+  products: IDBProduct[];
+  selectedProductIds: string[];
+}) => {
+  const selectProducts = products.filter((pr) =>
+    selectedProductIds.includes(pr.id)
+  );
+
+  const SelectedProductDiv = ({
+    pr,
+    onClick,
+  }: {
+    onClick: Function;
+    pr: IDBProduct;
+  }) => {
+    return (
+      <div className="bg-gray-200 w-fit text-gray-800 flex gap-2 px-2 py-1 rounded-full">
+        <div>{pr.name}</div>
+        <div
+          onClick={() => onClick()}
+          role="button"
+          className="p-1 rounded-full hover:bg-gray-500"
+        >
+          <FaX className="text-xs" />
+        </div>
+      </div>
+    );
+  };
+  return (
+    <div className="flex flex-col space-y-2 w-full">
+      <Label htmlFor="productId">Product Name</Label>
+      <div className="flex gap-2 overflow-auto">
+        {selectProducts.map((pr, ind) => (
+          <SelectedProductDiv
+            key={ind}
+            pr={pr}
+            onClick={() => {
+              setFieldValue(
+                "productIDs",
+                selectedProductIds.filter((id) => id !== pr.id)
+              );
+            }}
+          />
+        ))}
+      </div>
+
+      <Select
+        disabled={isLoading}
+        onValueChange={(value: string) =>
+          !selectedProductIds.includes(value) &&
+          setFieldValue("productIDs", [...selectedProductIds, value])
+        }
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue
+            placeholder={` ${isLoading ? "Loading..." : "Select"}`}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          {products.map((pr, ind) => {
+            return (
+              <SelectItem key={ind} value={pr.id}>
+                {pr.name}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+      <ErrorMessage
+        name="productIDs"
+        component="p"
+        className="text-sm text-red-500"
+      />
+    </div>
+  );
+};

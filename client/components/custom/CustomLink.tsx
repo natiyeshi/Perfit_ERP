@@ -7,17 +7,18 @@ import React from "react";
 interface CustomComponentProps {
   link: string;
   name: string;
+  base?: boolean;
 }
 
-const CustomLink: React.FC<CustomComponentProps> = ({ link, name }) => {
+const CustomLink: React.FC<CustomComponentProps> = ({ link, name,base = false }) => {
   const pathname = usePathname();
 
-  const isActive = name == "data" ? pathname == link : pathname.includes(link);
+  const isActive = base || name == "data" ? pathname == link : pathname.includes(link);
 
   return (
     <Link
       href={link}
-      className={`capitalize py-1 px-2 hover:bg-zinc-800 ${isActive && "bg-zinc-800"} rounded mx-2 duration-200`}
+      className={`capitalize py-1 px-2  ${isActive ? "bg-primary text-white" : "hover:bg-primary/40"} rounded mx-2 duration-200`}
     >
       {name}
     </Link>

@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation";
-
+"use client";
 const page = () => {
-  redirect("/dashboard/import");
-  // return <>Some content here</>;
+  return <>Dashboard</>;
 };
 
 export default page;
