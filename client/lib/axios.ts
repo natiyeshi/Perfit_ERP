@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const localApi = "http://localhost:4040/api/v1/"
+const mainApi = "https://perfit-erp.onrender.com/api/v1/"
+
 const instance = axios.create({
-  baseURL: "http://localhost:4040/api/v1/",
+  baseURL: mainApi,
   // headers: {
   //     'Content-Type': 'application/json',
   //     'Access-Control-Allow-Headers': 'X-PINGOTHER, Content-Type',

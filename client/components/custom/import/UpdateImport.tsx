@@ -196,7 +196,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                         <SelectContent>
                           {suppliers.map((pr) => {
                             return (
-                              <SelectItem value={pr.id}>{pr.name}</SelectItem>
+                              <SelectItem value={pr.id}>{pr.manufacturerName}</SelectItem>
                             );
                           })}
                         </SelectContent>
@@ -261,23 +261,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                       />
                     </div>
 
-                    {/* Total Price */}
-                    <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="totalPrice">Total Price</Label>
-                      <Field
-                        name="totalPrice"
-                        as={Input}
-                        id="totalPrice"
-                        type="number"
-                        placeholder="Enter Total Price"
-                        className="w-full"
-                      />
-                      <ErrorMessage
-                        name="totalPrice"
-                        component="p"
-                        className="text-sm text-red-500"
-                      />
-                    </div>
+                   
 
                     {/* Order Date */}
                     <div className="flex flex-col space-y-2 w-full">
@@ -288,7 +272,7 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                         id="orderDate"
                         type="date"
                         className="w-full"
-                        value={values["orderDate"]}
+                        // value={values["orderDate"]}
                       />
                       <ErrorMessage
                         name="orderDate"
@@ -297,23 +281,6 @@ function UpdateImport({ initialValues }: { initialValues: IDBImport }) {
                       />
                     </div>
 
-                    {/* Shelf Life */}
-                    <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="shelfLife">Shelf Life</Label>
-                      <Field
-                        name="shelfLife"
-                        type="number"
-                        as={Input}
-                        id="shelfLife"
-                        placeholder="Enter Shelf Life"
-                        className="w-full"
-                      />
-                      <ErrorMessage
-                        name="shelfLife"
-                        component="p"
-                        className="text-sm text-red-500"
-                      />
-                    </div>
 
                     {/* Mode of Shipment */}
                     <div className="flex flex-col space-y-2 w-full">

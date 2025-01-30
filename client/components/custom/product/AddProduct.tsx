@@ -46,8 +46,7 @@ function AddProduct() {
 
   const initialValues: IProduct = {
     name: "",
-    unitPrice: 0,
-    shelfLife: 0,
+    unit: "",
     brand: "",
   };
 
@@ -97,41 +96,25 @@ function AddProduct() {
                       />
                     </div>
 
-                    {/* Unit Price */}
+                    {/* Unit */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="unitPrice">Unit Price</Label>
+                      <Label htmlFor="unit">Unit</Label>
                       <Field
-                        name="unitPrice"
+                        name="unit"
                         as={Input}
-                        id="unitPrice"
-                        type="number"
+                        id="unit"
+                        type="string"
                         placeholder="Enter Unit Price"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="unitPrice"
+                        name="unit"
                         component="p"
                         className="text-sm text-red-500"
                       />
                     </div>
 
-                    {/* Shelf Life */}
-                    <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="shelfLife">Shelf Life</Label>
-                      <Field
-                        name="shelfLife"
-                        as={Input}
-                        id="shelfLife"
-                        type="number"
-                        placeholder="Enter Shelf Life"
-                        className="w-full"
-                      />
-                      <ErrorMessage
-                        name="shelfLife"
-                        component="p"
-                        className="text-sm text-red-500"
-                      />
-                    </div>
+                    
 
                     {/* Brand */}
                     <div className="flex flex-col space-y-2 w-full">

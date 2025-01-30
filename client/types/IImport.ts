@@ -3,12 +3,10 @@ import { IDBProduct } from "./IProduct";
 import { IDBSupplier } from "./ISupplier";
 
 export interface IImport {
+  unitPrice: number;
   quantity: number;
-  unit?: string;
-  unitPrice?: number;
-  totalPrice?: number;
-  orderDate?: string;
-  shelfLife?: number;
+  manufacturerDate: string;
+  expiryDate: string;
   modeOfShipment?: string;
   productId: string;
   supplierId: string;
@@ -17,6 +15,7 @@ export interface IImport {
 
 export interface IDBImport extends IImport {
   id : string;
+  createdAt : string;
 }
 
 export interface IDBPopulatedImport extends IDBImport {
@@ -30,4 +29,6 @@ export interface IDBClientImport extends IDBPopulatedImport {
   productName? : string;
   competitorName? : string;
   supplierName? : string;
+  unit? : string,
+  totalPrice? : number,
 }

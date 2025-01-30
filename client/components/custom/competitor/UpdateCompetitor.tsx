@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { IoCloseSharp } from "react-icons/io5";
 import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { updateCompetitorSchema } from "@/validators/competitor.validator";
+import { updateCompetitorImportSchema } from "@/validators/competitor.validator";
 import { IDBCompetitor } from "@/types/ICompetitor";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "@/lib/axios";
@@ -70,7 +70,7 @@ function UpdateCompetitor({ initialValues }: { initialValues: IDBCompetitor }) {
 
             <Formik
               initialValues={initialValues}
-              validationSchema={updateCompetitorSchema}
+              validationSchema={updateCompetitorImportSchema}
               onSubmit={handleSubmit}
             >
               {({ isSubmitting }) => (

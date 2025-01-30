@@ -83,43 +83,42 @@ function UpdateProduct({ initialValues }: { initialValues: IDBProduct }) {
                       />
                       <ErrorMessage
                         name="name"
-                        component="p"
+                        component="name"
                         className="text-sm text-red-500"
                       />
                     </div>
 
-                    {/* Unit Price */}
+                    {/* Unit */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="unitPrice">Unit Price</Label>
+                      <Label htmlFor="unit">Unit</Label>
                       <Field
-                        name="unitPrice"
+                        name="unit"
                         as={Input}
-                        id="unitPrice"
-                        type="number"
-                        placeholder="Enter Unit Price"
+                        id="unit"
+                        type="string"
+                        placeholder="Enter Unit"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="unitPrice"
-                        component="p"
+                        name="unit"
+                        component="unit"
                         className="text-sm text-red-500"
                       />
                     </div>
 
-                    {/* Shelf Life */}
+                    {/*batch */}
                     <div className="flex flex-col space-y-2 w-full">
-                      <Label htmlFor="shelfLife">Shelf Life</Label>
+                      <Label htmlFor="batch">Batch</Label>
                       <Field
-                        name="shelfLife"
-                        type="number"
+                        name="batch"
                         as={Input}
-                        id="shelfLife"
-                        placeholder="Enter Shelf Life"
+                        id="batch"
+                        placeholder="batch number"
                         className="w-full"
                       />
                       <ErrorMessage
-                        name="shelfLife"
-                        component="p"
+                        name="batch"
+                        component="batch"
                         className="text-sm text-red-500"
                       />
                     </div>
@@ -136,7 +135,7 @@ function UpdateProduct({ initialValues }: { initialValues: IDBProduct }) {
                       />
                       <ErrorMessage
                         name="brand"
-                        component="p"
+                        component="brand"
                         className="text-sm text-red-500"
                       />
                     </div>

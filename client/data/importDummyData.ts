@@ -162,6 +162,111 @@
 //       }
 //     ]
 
+export const newDummy = [
+      {
+          "id": "cm5y2pagy0008sbgg75v1qvbh",
+          "quantity": 4,
+          "unitPrice": 3,
+          "manufacturerDate": "2021-01-01T00:00:00.000Z",
+          "expiryDate": "2025-01-23T00:00:00.000Z",
+          "modeOfShipment": "adsads",
+          "productId": "cm5y1ung10002sbz40hq2p50k",
+          "supplierId": "cm5y2nbf10003sbgg2xh3hmfv",
+          "competitorId": "cm5y2od9j0005sbggvfwtgaeh",
+          "createdAt": "2025-01-15T15:45:10.948Z",
+          "product": {
+              "id": "cm5y1ung10002sbz40hq2p50k",
+              "name": "abcd",
+              "unit": "lit",
+              "brand": "newone",
+              "supplierId": "cm6bxihhy0001sblcc4njqzin"
+          },
+          "supplier": {
+              "id": "cm5y2nbf10003sbgg2xh3hmfv",
+              "manufacturerName": "Working",
+              "email": "aa@gmail.com",
+              "phoneNumber": "0945954712",
+              "country": "Ethiopia"
+          },
+          "competitor": {
+              "id": "cm5y2od9j0005sbggvfwtgaeh",
+              "name": "Muhammed Salim",
+              "email": "s6@gmail.com",
+              "phoneNumber": "07562317578",
+              "country": "United Kingdom",
+              "isDirectCompetitor": false
+          }
+      },
+      {
+          "id": "cm61xkrfe0002sb28zr2epdte",
+          "quantity": 4,
+          "unitPrice": 8,
+          "manufacturerDate": "2021-01-01T00:00:00.000Z",
+          "expiryDate": "2025-01-29T00:00:00.000Z",
+          "modeOfShipment": "AAAAAAAAAAAAAAAA",
+          "productId": "cm5y2on8i0006sbgg7ichf0zo",
+          "supplierId": "cm5y2nbf10003sbgg2xh3hmfv",
+          "competitorId": "cm5y2od9j0005sbggvfwtgaeh",
+          "createdAt": "2025-01-18T08:32:45.661Z",
+          "product": {
+              "id": "cm5y2on8i0006sbgg7ichf0zo",
+              "name": "dass",
+              "unit": "aaaaaefsaddffda",
+              "brand": "1",
+              "supplierId": "cm6bxihhy0001sblcc4njqzin"
+          },
+          "supplier": {
+              "id": "cm5y2nbf10003sbgg2xh3hmfv",
+              "manufacturerName": "Working",
+              "email": "aa@gmail.com",
+              "phoneNumber": "0945954712",
+              "country": "Ethiopia"
+          },
+          "competitor": {
+              "id": "cm5y2od9j0005sbggvfwtgaeh",
+              "name": "Muhammed Salim",
+              "email": "s6@gmail.com",
+              "phoneNumber": "07562317578",
+              "country": "United Kingdom",
+              "isDirectCompetitor": false
+          }
+      },
+      {
+          "id": "cm650ps8m0001sb7sb3b77u7r",
+          "quantity": 8,
+          "unitPrice": 12,
+          "manufacturerDate": "2025-01-17T00:00:00.000Z",
+          "expiryDate": "2025-02-04T00:00:00.000Z",
+          "modeOfShipment": "AAAAAAAAAAAAAAAA",
+          "productId": "cm5y2on8i0006sbgg7ichf0zo",
+          "supplierId": "cm5y2nbf10003sbgg2xh3hmfv",
+          "competitorId": "cm5y2od9j0005sbggvfwtgaeh",
+          "createdAt": "2025-01-20T12:23:57.797Z",
+          "product": {
+              "id": "cm5y2on8i0006sbgg7ichf0zo",
+              "name": "dass",
+              "unit": "aaaaaefsaddffda",
+              "brand": "1",
+              "supplierId": "cm6bxihhy0001sblcc4njqzin"
+          },
+          "supplier": {
+              "id": "cm5y2nbf10003sbgg2xh3hmfv",
+              "manufacturerName": "Working",
+              "email": "aa@gmail.com",
+              "phoneNumber": "0945954712",
+              "country": "Ethiopia"
+          },
+          "competitor": {
+              "id": "cm5y2od9j0005sbggvfwtgaeh",
+              "name": "Muhammed Salim",
+              "email": "s6@gmail.com",
+              "phoneNumber": "07562317578",
+              "country": "United Kingdom",
+              "isDirectCompetitor": false
+          }
+      }
+  ]
+
 export default [
   {
     id: "cid1",

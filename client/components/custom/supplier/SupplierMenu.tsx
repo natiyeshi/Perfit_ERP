@@ -10,12 +10,18 @@ import { IoPersonSharp } from "react-icons/io5";
 import AddSupplier from "./AddSupplier";
 import Link from "next/link";
 import { FaTruck } from "react-icons/fa";
+import { useUser } from "@/context/userContext";
+import { usePathname } from "next/navigation";
 
 const SupplierMenu = () => {
+  const { user } = useUser();
+
+  const pathname = usePathname();
+  const isActive = pathname == "/dashboard/" + user.role + "/suppliers";
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div role="button" className="flex gap-2 items-center px-2 rounded">
+        <div role="button" className={`flex gap-2 items-center px-2 rounded ${isActive && "text-primary"}`}>
           <FaTruck className="text-xl" />
           <div>Suppliers</div>
         </div>
@@ -29,7 +35,7 @@ const SupplierMenu = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/dashboard/suppliers">
+            <Link href={`/dashboard/${user.role}/suppliers`}>
               <Button variant={"outline"} className="w-full">
                 See Suppliers
               </Button>
