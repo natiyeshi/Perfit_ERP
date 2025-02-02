@@ -13,7 +13,9 @@ const app = express();
 // Registering middlewares
 app.use(
   cors({
-    origin: "*",
+    origin: (origin, callback) => {
+      callback(null, origin);
+    },
     credentials: true,
   })
 );
