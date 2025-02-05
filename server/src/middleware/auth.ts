@@ -15,7 +15,10 @@ declare global {
 }
 
 const authenticationMiddleWare = asyncWrapper(async (req, _, next) => {
-  const token = req.signedCookies.token ?? req.cookies.token;
+  const authHeader = req.headers.authorization;
+  if (!authHeader) throw RouteError.Unauthorized("You are't authenticated");
+
+  const token = authHeader.replace("Bearer ", "");
 
   if (!token) throw RouteError.Unauthorized("You are't authenticated");
 
@@ -32,8 +35,11 @@ const authenticationMiddleWare = asyncWrapper(async (req, _, next) => {
 
 const roleAuthenticationMiddleware = (roles: ROLE[]) => {
   return asyncWrapper(async (req, _, next) => {
-    const token = req.signedCookies.token ?? req.cookies.token;
-    
+    const authHeader = req.headers.authorization;
+    if (!authHeader) throw RouteError.Unauthorized("You are't authenticated");
+
+    const token = authHeader.replace("Bearer ", "");
+
     if (!token) throw RouteError.Unauthorized("You are't authenticated");
 
     const payload = jwt.isValidToken<{
