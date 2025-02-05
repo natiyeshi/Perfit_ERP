@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import axios from "@/lib/axios"; // Axios setup
 import { roleMap, useUser } from "@/context/userContext"; // Custom hook to access context
 import Loading from "@/components/custom/loading";
+import { handleLogout } from "./_components/functions/helper";
 
 // Function to fetch user data
 const fetchUserData = async () => {
@@ -16,6 +17,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, isLoading, isError, error } = useQuery("user", fetchUserData, {
     onSuccess: (user) => {
       console.log(user, "__ROLE__");
+    },
+    onError: (err) => {
+      if ((err as any).status == 401) {
+        console.log("Redirecting...")
+        handleLogout();
+      }
     },
     staleTime: 1000 * 60 * 10 * 2, // 20 minutes
   });
@@ -36,7 +43,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Loading className="m-auto" />
     </div>
   ) : isError ? (
-    <div>Error: {(error as any).message}</div>
+    <div>
+      Error: {(error as any).message}
+    </div>
   ) : (
     <div>
       {/* Render your layout content */}
