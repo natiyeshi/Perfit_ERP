@@ -7,32 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ROLE {
-  UNKNOWN
-  DATA_AGGREGATOR
-  SALES_PERSON
-  ADMIN
-}
-
-enum SHIPPING_METHOD {
-  AIR
-  SEA
-}
-
-enum MOVEMENT {
-  HIGH
-  MEDIUM
-  LOW
-}
-
 model User {
   id          String       @id @unique @default(cuid())
   fullName    String
   email       String       @unique
   password    String
-  salesPerson SalesPerson?
   role        ROLE         @default(UNKNOWN)
   flag        Flag?
+  salesPerson SalesPerson?
 
   @@index([email])
   @@map("users")
@@ -40,40 +22,38 @@ model User {
 
 model Flag {
   userId      String  @unique
-  user        User    @relation(fields: [userId], references: [id])
   isSuspended Boolean @default(false) @map("is_suspended")
+  user        User    @relation(fields: [userId], references: [id])
 }
 
 model Product {
-  id    String @id @unique @default(cuid())
-  name  String
-  unit  String
-  brand String
-
-  supplier              Supplier?             @relation(fields: [supplierId], references: [id])
+  id                    String                @id @unique @default(cuid())
+  name                  String
+  unit                  String
+  brand                 String
   supplierId            String?
-  inventories           Inventory[]
   IDOMs                 IODM[]
-  pipelines             Pipeline[]
-  transactions          Transaction[]
+  inventories           Inventory?
   competitorImports     CompetitorImport[]
-  imports               Import[]
   competitorInventories CompetitorInventory[]
+  imports               Import[]
+  pipelines             Pipeline[]
+  supplier              Supplier?             @relation(fields: [supplierId], references: [id])
+  transactions          Transaction[]
 
   @@map("products")
 }
 
 model Supplier {
-  id               String  @id @unique @default(cuid())
-  manufacturerName String
-  email            String? @unique
-  phoneNumber      String? @map("phone_number")
-  country          String?
-
-  deliverableProducts Product[]
+  id                  String             @id @unique @default(cuid())
+  manufacturerName    String
+  email               String?            @unique
+  phoneNumber         String?            @map("phone_number")
+  country             String?
+  IODMs               IODM[]
   competitorImports   CompetitorImport[]
   imports             Import[]
-  IODMs               IODM[]
+  deliverableProducts Product[]
 
   @@map("suppliers")
 }
@@ -92,104 +72,87 @@ model Competitor {
 }
 
 model CompetitorInventory {
-  id           String @id @unique @default(cuid())
-  sellingPrice Float  @map("selling_price") // Saling price
-
+  id           String     @id @unique @default(cuid())
+  sellingPrice Float      @map("selling_price")
   productId    String
-  product      Product    @relation(fields: [productId], references: [id])
   competitorId String
+  createdAt    DateTime   @default(now()) @map("created_at")
   competitor   Competitor @relation(fields: [competitorId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
+  product      Product    @relation(fields: [productId], references: [id])
 
   @@unique([productId, competitorId])
   @@map("competitor_inventories")
 }
 
 model CompetitorImport {
-  id        String @id @unique @default(cuid())
-  quantity  Int
-  unitPrice Float  @map("unit_price")
-
-  manufacturerDate DateTime @map("manufacturer_date")
-  expiryDate       DateTime @map("expiry_date")
-
-  modeOfShipment String? @map("mode_of_shipment")
-
-  productId    String
-  product      Product    @relation(fields: [productId], references: [id])
-  supplierId   String
-  supplier     Supplier   @relation(fields: [supplierId], references: [id])
-  competitorId String
-  competitor   Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
+  id               String     @id @unique @default(cuid())
+  quantity         Int
+  unitPrice        Float      @map("unit_price")
+  manufacturerDate DateTime   @map("manufacturer_date")
+  expiryDate       DateTime   @map("expiry_date")
+  modeOfShipment   String?    @map("mode_of_shipment")
+  productId        String
+  supplierId       String
+  competitorId     String
+  createdAt        DateTime   @default(now()) @map("created_at")
+  competitor       Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  product          Product    @relation(fields: [productId], references: [id])
+  supplier         Supplier   @relation(fields: [supplierId], references: [id])
 
   @@map("competitor_imports")
 }
 
 model Inventory {
-  id                   String @id @unique @default(cuid())
-  possibleSellingPrice Float  @map("possible_selling_price") // Saling price
+  id                   String   @id @unique @default(cuid())
+  possibleSellingPrice Float    @map("possible_selling_price")
   quantity             Int
-
-  productId String  @unique
-  product   Product @relation(fields: [productId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
+  productId            String   @unique
+  createdAt            DateTime @default(now()) @map("created_at")
+  product              Product  @relation(fields: [productId], references: [id])
 }
 
 model Import {
-  id             String  @id @unique @default(cuid())
-  unitPrice      Float   @map("unit_price") // The cost of a product
-  quantity       Int
-  batch          String
-  modeOfShipment String? @map("mode_of_shipment")
-
-  manufacturerDate DateTime @map("manufacturer_date")
-  expiryDate       DateTime @map("expiry_date")
-
-  supplierId String
-  supplier   Supplier @relation(fields: [supplierId], references: [id])
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-
-  transactions Transaction[]
-
-  createdAt DateTime @default(now()) @map("created_at")
+  id               String       @id @unique @default(cuid())
+  unitPrice        Float        @map("unit_price")
+  quantity         Int
+  batch            String
+  modeOfShipment   String?      @map("mode_of_shipment")
+  manufacturerDate DateTime     @map("manufacturer_date")
+  expiryDate       DateTime     @map("expiry_date")
+  supplierId       String
+  productId        String
+  createdAt        DateTime     @default(now()) @map("created_at")
+  product          Product      @relation(fields: [productId], references: [id])
+  supplier         Supplier     @relation(fields: [supplierId], references: [id])
+  transactions     Transaction?
 
   @@map("imports")
 }
 
 model Customer {
-  id               String @id @unique @default(cuid())
-  organizationName String @map("organization_name")
+  id               String        @id @unique @default(cuid())
+  organizationName String        @map("organization_name")
   catagory         String
   city             String
-  phoneNumber      String @map("phone_number")
-
-  transactions Transaction[]
+  phoneNumber      String        @map("phone_number")
+  transactions     Transaction[]
 
   @@map("customers")
 }
 
 model Transaction {
-  id        String @id @unique @default(cuid())
-  quantity  Int
-  unitPrice Float  @map("unit_price") // Default from inventory price
-
-  customerId String   @map("customer_id")
-  customer   Customer @relation(fields: [customerId], references: [id])
-  productId  String   @map("product_id")
-  product    Product  @relation(fields: [productId], references: [id])
-  importId   String   @unique
-  import     Import   @relation(fields: [importId], references: [id])
-
+  id            String      @id @unique @default(cuid())
+  quantity      Int
+  unitPrice     Float       @map("unit_price")
+  customerId    String      @map("customer_id")
+  productId     String      @map("product_id")
+  importId      String      @unique
   salesPersonId String      @map("sales_person_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  import        Import      @relation(fields: [importId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id])
   salesPerson   SalesPerson @relation(fields: [salesPersonId], references: [userId])
-
-  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("transactions")
 }
@@ -205,7 +168,6 @@ model SalesPerson {
 model Pipeline {
   id                           String          @id @unique @default(cuid())
   productId                    String
-  product                      Product         @relation(fields: [productId], references: [id])
   quantity                     Int
   invoice                      Float
   openingDate                  DateTime
@@ -214,37 +176,54 @@ model Pipeline {
   portArrivalDate              DateTime?
   warehouseExpectedArrivalDate DateTime
   warehouseArrivalDate         DateTime?
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt                    DateTime        @default(now()) @map("created_at")
+  updatedAt                    DateTime        @updatedAt @map("updated_at")
+  product                      Product         @relation(fields: [productId], references: [id])
 
   @@map("pipelines")
 }
 
 model IODM {
   id                  String   @id @unique @default(cuid())
+  productId           String
+  bsc                 Float
+  cbm                 Float
+  createdAt           DateTime @default(now()) @map("created_at")
+  currentSellingPrice Float    @map("current_selling_price")
+  dutyTax             Float
+  exchangeRate        Float    @map("exchange_rate")
   expiryDate          DateTime @map("expiry_date")
+  freightCost         Float    @map("freight_cost")
+  grossWeight         Float    @map("gross_weight")
+  insuranceCharge     Float    @map("insurance_charge")
+  loadingUnloading    Float    @map("loading_unloading")
   manufactureDate     DateTime @map("manufacturer_date")
-  purchasePriceUsd    Float    @map("purchase_price_usd") // Purchase price of the product in USD.
-  currentSellingPrice Float    @map("current_selling_price") // Current selling price of the product in Ethiopian Birr.
-  productMovement     MOVEMENT @map("product_movement") // Enum indicating the product's movement rate (HIGH, LOW, MEDIUM).
-  transportCost       Float    @map("transport_cost") // Cost incurred for transporting the product.
-  grossWeight         Float    @map("gross_weight") // Gross weight of the product in kilograms.
-  cbm                 Float // Cubic meter measurement of the product, representing its volume.
-  freightCost         Float    @map("freight_cost") // Cost incurred for shipping the product.
-  dutyTax             Float // Tax imposed on the product as part of customs duty.
-  bsc                 Float // Represents Bunker Surcharge, a fuel surcharge for shipping. Please confirm if this is correct.
-  shipmentAmount      Float    @map("shipment_amount") // Total amount charged for the shipment of the product.
-  insuranceCharge     Float    @map("insurance_charge") // Insurance cost for securing the product during shipment.
-  loadingUnloading    Float    @map("loading_unloading") // Cost for loading and unloading the product during transportation.
-  exchangeRate        Float    @map("exchange_rate") // Exchange rate applied for currency conversion.
-  supplierId          String // Foreign key referencing the supplier of the product.
-  productId           String // Foreign key referencing the product associated with this IODM.
-  product             Product  @relation(fields: [productId], references: [id]) // Relation to the `Product` model.
-  supplier            Supplier @relation(fields: [supplierId], references: [id]) // Relation to the `Supplier` model.
+  productMovement     MOVEMENT @map("product_movement")
+  purchasePriceUsd    Float    @map("purchase_price_usd")
+  shipmentAmount      Float    @map("shipment_amount")
+  supplierId          String
+  transportCost       Float    @map("transport_cost")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+  product             Product  @relation(fields: [productId], references: [id])
+  supplier            Supplier @relation(fields: [supplierId], references: [id])
 
-  createdAt DateTime @default(now()) @map("created_at") // Timestamp indicating when the record was created.
-  updatedAt DateTime @updatedAt @map("updated_at") // Timestamp indicating when the record was last updated.
+  @@map("IODMs")
+}
 
-  @@map("IODMs") // Maps the table name in the database to "IODMs".
+enum ROLE {
+  UNKNOWN
+  DATA_AGGREGATOR
+  SALES_PERSON
+  ADMIN
+}
+
+enum SHIPPING_METHOD {
+  AIR
+  SEA
+}
+
+enum MOVEMENT {
+  HIGH
+  MEDIUM
+  LOW
 }
