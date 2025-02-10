@@ -166,11 +166,14 @@ model SalesPerson {
 }
 
 model Pipeline {
-  id                           String          @id @unique @default(cuid())
-  productId                    String
+  id                           String          @id @default(cuid())
+  productId                    String          // Removed @unique
+  lcNumber                     String          @unique
+  proformaInvoiceNumber        String
   quantity                     Int
+  isArrived                    Boolean         @default(false)
   invoice                      Float
-  openingDate                  DateTime
+  lcOpeningDate                DateTime
   shippingMethod               SHIPPING_METHOD
   portExpectedArrivalDate      DateTime
   portArrivalDate              DateTime?
@@ -182,6 +185,7 @@ model Pipeline {
 
   @@map("pipelines")
 }
+
 
 model IODM {
   id                  String   @id @unique @default(cuid())

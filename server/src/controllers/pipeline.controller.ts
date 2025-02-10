@@ -98,6 +98,21 @@ export const createPipelineController = asyncWrapper(async (req, res) => {
       "Product not found with the provided product ID."
     );
 
+  const existingPipeline = await db.pipeline.findFirst({
+      where: {
+        OR: [
+        { proformaInvoiceNumber: bodyValidation.data.proformaInvoiceNumber },
+        { lcNumber: bodyValidation.data.lcNumber },
+      ],
+      },
+    });
+  
+  if (existingPipeline) {
+    throw RouteError.BadRequest("The same Proforma Invoice Number or Lc Number already exists.")
+  }
+  
+  
+
   const newPipeline = await db.pipeline.create({
     data: bodyValidation.data,
   });

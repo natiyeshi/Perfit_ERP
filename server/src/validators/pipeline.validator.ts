@@ -9,12 +9,12 @@ export const createPipelineSchema = z.object({
     .number({ message: "Quantity must be a number." })
     .int({ message: "Quantity must be an integer." })
     .positive({ message: "Quantity must be greater than zero." }),
-
+  isArrived : z.boolean().default(false),
   invoice: z
     .number({ message: "Invoice must be a number." })
     .positive({ message: "Invoice must be a positive number." }),
 
-  openingDate: z.coerce.date({ message: "Opening date must be a valid date." }),
+  lcOpeningDate: z.coerce.date({ message: "Opening date must be a valid date." }),
 
   shippingMethod: z.enum(["AIR", "SEA"], {
     message: "Shipping method must be either 'AIR' or 'SEA'.",
@@ -38,6 +38,14 @@ export const createPipelineSchema = z.object({
   productId: z
     .string({ message: "Product ID must be a string." })
     .min(1, { message: "Product ID is required." }),
+
+  lcNumber: z
+    .string({ message: "Lc Number must be a string." })
+    .min(1, { message: "Lc Number is required." }),
+
+  proformaInvoiceNumber: z
+    .string({ message: "Proforma Invoice Number must be a string." })
+    .min(1, { message: "Proforma Invoice Number is required." }),
 });
 
 export const updatePipelineSchema = createPipelineSchema.partial();
