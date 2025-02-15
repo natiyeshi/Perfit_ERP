@@ -17,6 +17,8 @@ export const createProductSchema = z.object({
     }),
 });
 
+export const createProductsArraySchema = z.array(createProductSchema);
+
 export const updateProductSchema =
   createProductSchema.partial() satisfies z.ZodType<
     Partial<Omit<Product, "id">>

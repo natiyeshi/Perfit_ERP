@@ -55,7 +55,8 @@ export const getProductByIDController = asyncWrapper(async (req, res) => {
 });
 
 export const createProductController = asyncWrapper(async (req, res) => {
-  const bodyValidation = productValidator.createProductSchema.safeParse(
+  // Validator expects array of products
+  const bodyValidation = productValidator.createProductsArraySchema.safeParse(
     req.body
   );
 
@@ -65,7 +66,7 @@ export const createProductController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
-  const product = await db.product.create({
+  const products = await db.product.createMany({
     data: bodyValidation.data,
   });
 
@@ -73,8 +74,10 @@ export const createProductController = asyncWrapper(async (req, res) => {
     res,
     statusCode: StatusCodes.CREATED,
     success: true,
-    message: "Product created successfully",
-    result: product,
+    message: `${
+      products.count > 1 ? "Products" : "Product"
+    } created successfully`,
+    result: products,
   });
 });
 
