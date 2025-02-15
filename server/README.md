@@ -1,6 +1,6 @@
 # Node.js TypeScript Template
 
-A modern Node.js TypeScript template with essential configurations for building RESTful APIs. This template includes support for environment variable management, logging, and development tooling.
+A modern Node.js TypeScript template with essential configurations for building RESTful API's. This template includes support for environment variable management, logging, and development tooling.
 
 ## Features
 
