@@ -170,7 +170,6 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
       quantity: data.quantity,
       productId: data.productId,
       customerId: data.customerId,
-      importId: data.importId,
       salesPersonId: user._id,
     },
   });

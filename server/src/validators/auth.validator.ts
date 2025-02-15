@@ -1,4 +1,4 @@
-import { ROLE, User } from "@prisma/client";
+import { USER_ROLE, User } from "@prisma/client";
 import * as z from "zod";
 
 export const signUpSchema = z.object({
@@ -37,7 +37,7 @@ export const updateROLESchema = z.object({
       message: "UserId field is required.",
     }),
   role: z.enum(
-    [ROLE.UNKNOWN, ROLE.SALES_PERSON, ROLE.DATA_AGGREGATOR, ROLE.ADMIN],
+    [USER_ROLE.UNKNOWN, USER_ROLE.SALES_PERSON, USER_ROLE.DATA_AGGREGATOR, USER_ROLE.ADMIN],
     {
       message: "Invalid user role.",
     }

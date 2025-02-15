@@ -1,6 +1,6 @@
 import { asyncWrapper, RouteError } from "../utils";
 import { jwt } from "../libs";
-import { ROLE } from "@prisma/client";
+import { USER_ROLE } from "@prisma/client";
 
 // To satisfy ts compiler
 declare global {
@@ -8,7 +8,7 @@ declare global {
     interface Request {
       user?: {
         _id: string;
-        _role: ROLE;
+        _role: USER_ROLE;
       };
     }
   }
@@ -24,7 +24,7 @@ const authenticationMiddleWare = asyncWrapper(async (req, _, next) => {
 
   const payload = jwt.isValidToken<{
     userId: string;
-    role: ROLE;
+    role: USER_ROLE;
   }>(token);
 
   if (!payload) throw RouteError.Unauthorized("Invalid token");
@@ -33,7 +33,7 @@ const authenticationMiddleWare = asyncWrapper(async (req, _, next) => {
   next();
 });
 
-const roleAuthenticationMiddleware = (roles: ROLE[]) => {
+const roleAuthenticationMiddleware = (roles: USER_ROLE[]) => {
   return asyncWrapper(async (req, _, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) throw RouteError.Unauthorized("You are't authenticated");
@@ -44,7 +44,7 @@ const roleAuthenticationMiddleware = (roles: ROLE[]) => {
 
     const payload = jwt.isValidToken<{
       userId: string;
-      role: ROLE;
+      role: USER_ROLE;
     }>(token);
 
     if (!payload) throw RouteError.Unauthorized("Invalid token");
