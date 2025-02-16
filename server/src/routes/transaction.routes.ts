@@ -7,14 +7,14 @@ import {
   updateTransactionController,
 } from "../controllers/transaction.controller";
 import middleware from "../middleware";
-import { ROLE } from "@prisma/client";
+import { USER_ROLE } from "@prisma/client";
 
 const router = Router();
 
 router.get("/", getTransactionsController);
 router.post(
   "/",
-  middleware.auth.roleAuthenticationMiddleware([ROLE.ADMIN, ROLE.SALES_PERSON]),
+  middleware.auth.roleAuthenticationMiddleware([USER_ROLE.ADMIN, USER_ROLE.SALES_PERSON]),
   createTransactionController
 );
 router.get("/:id", getTransactionByIDController);

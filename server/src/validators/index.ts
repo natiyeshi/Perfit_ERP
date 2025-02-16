@@ -12,6 +12,7 @@ import * as importValidator from "./import.validator";
 import * as competitorInventoryValidator from "./competitor-inventory.validator";
 import * as pipelineValidator from "./pipeline.validator";
 import * as IODM_Validator from "./IODM.validator";
+import * as weeklySalesValidator from "./weekly-sales.validator";
 
 export {
   queryValidator,
@@ -28,4 +29,5 @@ export {
   competitorInventoryValidator,
   pipelineValidator,
   IODM_Validator,
+  weeklySalesValidator,
 };

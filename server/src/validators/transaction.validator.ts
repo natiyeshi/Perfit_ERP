@@ -16,11 +16,6 @@ export const createTransactionSchema = z.object({
   }),
   productId: z.string().min(1, "Product ID is required."),
   customerId: z.string().min(1, "Customer ID is required."),
-  importId: z
-    .string({
-      message: "Import ID must be a string.",
-    })
-    .min(1, "Import ID is required."),
 });
 
 export const updateTransactionSchema =
