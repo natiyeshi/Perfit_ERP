@@ -30,6 +30,7 @@ export const createCompetitorSchema = z.object({
       message: "Competitor country must be a valid country.",
     })
     .optional(),
+
   isDirectCompetitor: z.boolean({
     message: "Is direct competitor status must be a boolean.",
   }),

@@ -20,6 +20,10 @@ export const createCustomerSchema = z.object({
     .min(1, {
       message: "City is required.",
     }),
+    tinNumber: z
+      .string({
+        message: "Tin Number is Required",
+      }),
 });
 
 export const updateCustomerSchema = createCustomerSchema.partial().extend({

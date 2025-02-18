@@ -133,6 +133,7 @@ model Customer {
   organizationName String        @map("organization_name")
   catagory         String
   city             String
+  tinNumber        String
   phoneNumber      String        @map("phone_number")
   transactions     Transaction[]
 
