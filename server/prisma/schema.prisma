@@ -143,6 +143,9 @@ model Customer {
 model Transaction {
   id            String      @id @unique @default(cuid())
   quantity      Int
+  withCredit    Boolean     @default(false)
+  isFinalized   Boolean     @default(true)
+  finalizedDate DateTime?
   unitPrice     Float       @map("unit_price")
   customerId    String      @map("customer_id")
   productId     String      @map("product_id")

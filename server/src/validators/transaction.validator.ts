@@ -16,7 +16,8 @@ export const createTransactionSchema = z.object({
   }),
   productId: z.string().min(1, "Product ID is required."),
   customerId: z.string().min(1, "Customer ID is required."),
-});
+  withCredit: z.boolean({ message: "With credit must be a boolean." }),
+})
 
 export const updateTransactionSchema =
   createTransactionSchema.partial() satisfies z.ZodType<

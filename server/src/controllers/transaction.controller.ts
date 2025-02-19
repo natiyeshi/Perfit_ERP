@@ -147,6 +147,10 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
     throw RouteError.NotFound(
       "Sales person not found with the provided sales person ID."
     );
+  
+    
+    
+
 
   const existingInventory = await db.inventory.findUnique({
     where: { productId: bodyValidation.data.productId },
@@ -171,6 +175,9 @@ export const createTransactionController = asyncWrapper(async (req, res) => {
       productId: data.productId,
       customerId: data.customerId,
       salesPersonId: user._id,
+      withCredit : data.withCredit,
+      isFinalized: !data.withCredit,
+      finalizedDate : data.withCredit ? null : new Date(),
     },
   });
 
