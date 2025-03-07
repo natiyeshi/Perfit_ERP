@@ -86,10 +86,17 @@ app.use(
   authMiddleware.authenticationMiddleWare,
   routes.IODM_Router
 );
+
 app.use(
   "/api/v1/weekly-sales",
   authMiddleware.authenticationMiddleWare,
   routes.weeklySalesRouter
+);
+
+app.use(
+  "/api/v1/sales-persons",
+  authMiddleware.authenticationMiddleWare,
+  routes.salesPersonRouter
 );
 
 setupSwagger(app);

@@ -12,6 +12,7 @@ import competitorInventoryRouter from "./competitor-inventory.routes";
 import pipelineRouter from "./pipeline.routes";
 import IODM_Router from "./IODM.routes";
 import weeklySalesRouter from "./weekly-sales.routes";
+import salesPersonRouter from "./sales-person.routes";
 
 export default {
   authRouter,
@@ -28,4 +29,6 @@ export default {
   pipelineRouter,
   IODM_Router,
   weeklySalesRouter,
+  salesPersonRouter
+  
 };

@@ -17,7 +17,7 @@ router.get(
   getUsersController
 );
 router.get(
-  "/id:",
+  "/:id",
   middleware.auth.roleAuthenticationMiddleware([USER_ROLE.ADMIN]),
   getUserByIdController
 );

@@ -30,13 +30,11 @@ export const createWeeklySalesSchema = z.object({
     .int({ message: "Planned transactions must be an integer." })
     .nonnegative({ message: "Planned transactions must be zero or greater." }),
 
-  startDate: z.coerce.date({ message: "Start date must be a valid date." }),
+  // startDate: z.coerce.date({ message: "Start date must be a valid date." }),
 
-  endDate: z.coerce.date({ message: "End date must be a valid date." }),
+  // endDate: z.coerce.date({ message: "End date must be a valid date." }),
 
-  salesPersonId: z
-    .string({ message: "Sales person ID must be a string." })
-    .min(1, { message: "Sales person ID is required." }),
+ 
 });
 
 export const updateWeeklySalesSchema = createWeeklySalesSchema

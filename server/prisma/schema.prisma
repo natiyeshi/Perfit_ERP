@@ -107,8 +107,8 @@ model Inventory {
   possibleSellingPrice Float    @map("possible_selling_price")
   quantity             Int
   productId            String   @unique
-  product              Product  @relation(fields: [productId], references: [id])
   createdAt            DateTime @default(now()) @map("created_at")
+  product              Product  @relation(fields: [productId], references: [id])
 }
 
 model Import {
@@ -169,7 +169,7 @@ model SalesPerson {
 
 model Pipeline {
   id                           String          @id @default(cuid())
-  productId                    String // Removed @unique
+  productId                    String
   lcNumber                     String          @unique
   proformaInvoiceNumber        String
   quantity                     Int
@@ -222,10 +222,10 @@ model WeeklySales {
   plannedVisits       Int
   plannedNewCustomers Int
   plannedTransactions Int
-  actualContacts      Int?
-  actualVisits        Int?
-  actualNewCustomers  Int?
-  actualTransactions  Int?
+  actualContacts      Int? @default(0)
+  actualVisits        Int? @default(0)
+  actualNewCustomers  Int? @default(0)
+  actualTransactions  Int? @default(0)
   startDate           DateTime
   endDate             DateTime
   updatedAt           DateTime    @updatedAt
