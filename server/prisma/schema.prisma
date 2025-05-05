@@ -32,7 +32,6 @@ model Product {
   unit                  String
   brand                 String
   supplierId            String?
-  IDOMs                 IODM[]
   inventory             Inventory?
   competitorImports     CompetitorImport[]
   competitorInventories CompetitorInventory[]
@@ -40,6 +39,8 @@ model Product {
   pipelines             Pipeline[]
   supplier              Supplier?             @relation(fields: [supplierId], references: [id])
   transactions          Transaction[]
+  CostBuildUp           CostBuildUp[]
+  IODMProduct           IODMProduct[]
 
   @@map("products")
 }
@@ -189,30 +190,37 @@ model Pipeline {
 }
 
 model IODM {
-  id                  String   @id @unique @default(cuid())
-  productId           String
-  bsc                 Float
-  cbm                 Float
-  createdAt           DateTime @default(now()) @map("created_at")
-  currentSellingPrice Float    @map("current_selling_price")
-  dutyTax             Float
-  exchangeRate        Float    @map("exchange_rate")
-  expiryDate          DateTime @map("expiry_date")
-  freightCost         Float    @map("freight_cost")
-  grossWeight         Float    @map("gross_weight")
-  insuranceCharge     Float    @map("insurance_charge")
-  loadingUnloading    Float    @map("loading_unloading")
-  manufactureDate     DateTime @map("manufacturer_date")
-  productMovement     MOVEMENT @map("product_movement")
-  purchasePriceUsd    Float    @map("purchase_price_usd")
-  shipmentAmount      Float    @map("shipment_amount")
-  supplierId          String
-  transportCost       Float    @map("transport_cost")
-  updatedAt           DateTime @updatedAt @map("updated_at")
-  product             Product  @relation(fields: [productId], references: [id])
-  supplier            Supplier @relation(fields: [supplierId], references: [id])
+  id               String        @id @unique @default(cuid())
+  createdAt        DateTime      @default(now()) @map("created_at")
+  bsc              Float
+  dutyTax          Float
+  supplierId       String
+  freightCost      Float         @default(0.0)
+  miscellaneousTax Float         @default(0.0)
+  loadingUnloading Float         @map("loading_unloading")
+  exchangeRate     Float         @map("exchange_rate")
+  insuranceCharge  Float         @map("insurance_charge")
+  supplier         Supplier      @relation(fields: [supplierId], references: [id])
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  IODMProducts     IODMProduct[]
 
   @@map("IODMs")
+}
+
+model IODMProduct {
+  id                  String   @id @unique @default(cuid())
+  productId           String?  @map("product_id")
+  product             Product? @relation(fields: [productId], references: [id])
+  purchasePriceUsd    Float    @map("purchase_price_usd")
+  currentSellingPrice Float    @map("current_selling_price")
+  createdAt           DateTime @default(now()) @map("created_at")
+  productMovement     MOVEMENT @map("product_movement")
+  expiryDate          DateTime @map("expiry_date")
+  manufactureDate     DateTime @map("manufacture_date")
+  quantity            Int
+  updatedAt           DateTime @updatedAt @map("updated_at")
+  IODMId              String   @map("IODM_id")
+  IODM                IODM     @relation(fields: [IODMId], references: [id])
 }
 
 model WeeklySales {
@@ -222,10 +230,10 @@ model WeeklySales {
   plannedVisits       Int
   plannedNewCustomers Int
   plannedTransactions Int
-  actualContacts      Int? @default(0)
-  actualVisits        Int? @default(0)
-  actualNewCustomers  Int? @default(0)
-  actualTransactions  Int? @default(0)
+  actualContacts      Int?        @default(0)
+  actualVisits        Int?        @default(0)
+  actualNewCustomers  Int?        @default(0)
+  actualTransactions  Int?        @default(0)
   startDate           DateTime
   endDate             DateTime
   updatedAt           DateTime    @updatedAt
@@ -253,4 +261,26 @@ enum MOVEMENT {
   HIGH
   MEDIUM
   LOW
+}
+
+model CostBuildUp {
+  id                       Int      @id @default(autoincrement())
+  fobPriceUSD              Float // e.g. 47400
+  exchangeRate             Float // e.g. 125
+  totalFobCostBirr         Float // e.g. 5925000
+  fcPurchase               Float // e.g. 2370000
+  bankServiceCharges       Float // e.g. 173337.10
+  insuranceCharge          Float // e.g. 2820.56
+  seaFreightCharge         Float // e.g. 485186
+  customsDuty              Float // e.g. 677147.24
+  storageCharges           Float // e.g. 15000
+  inlandTransport          Float // e.g. 30000
+  transitAgentCharge       Float // e.g. 5500
+  loadingUnloadingExpenses Float // e.g. 20000
+  totalCost                Float // e.g. 9703990.90
+  usdPurchasePrice         Float
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  product                  Product  @relation(fields: [productId], references: [id])
+  productId                String
 }

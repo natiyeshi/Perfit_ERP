@@ -139,10 +139,12 @@ export const updateROLEController = asyncWrapper(async (req, res) => {
   const existingUser = await db.user.findUnique({
     where: { id: bodyValidation.data.userId },
   });
-
-  if (!existingUser)
-    throw RouteError.NotFound("User not found with the provided ID.");
-
+  console.log("working.....")
+  if (!existingUser){
+    console.log(bodyValidation.data.userId)
+    throw RouteError.NotFound(`User not found with the provided ID....`);
+  }
+  console.log("abcd.....")
   const updatedUser = await db.user.update({
     where: {
       id: bodyValidation.data.userId,

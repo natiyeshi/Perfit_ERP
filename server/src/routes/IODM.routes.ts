@@ -4,7 +4,7 @@ import {
   deleteIODMController,
   getIODMByIDController,
   getIODMsController,
-  updateIODMController,
+  // updateIODMController,
 } from "../controllers/IODM.controller";
 
 const router = Router();
@@ -12,7 +12,7 @@ const router = Router();
 router.get("/", getIODMsController);
 router.post("/", createIODMController);
 router.get("/:id", getIODMByIDController);
-router.patch("/:id", updateIODMController);
+// router.patch("/:id", updateIODMController);
 router.delete("/:id", deleteIODMController);
 
 export default router;

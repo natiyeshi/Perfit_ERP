@@ -41,6 +41,6 @@
     "cross-env": "^7.0.3",
     "prisma": "^6.0.1",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   }
 }
