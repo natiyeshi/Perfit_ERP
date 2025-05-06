@@ -10,7 +10,7 @@ export const createCustomerSchema = z.object({
     .string({
       message: "Phone number must be string",
     })
-    .min(10, {
+    .min(8, {
       message: "Phone number must be at least 10 characters long.",
     }),
   city: z
