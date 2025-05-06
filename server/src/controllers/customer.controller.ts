@@ -78,6 +78,33 @@ export const createCustomerController = asyncWrapper(async (req, res) => {
   });
 });
 
+export const createManyCustomersController = asyncWrapper(async (req, res) => {
+  const bodyValidation = customerValidator.createManyCustomersSchema.safeParse(
+    req.body
+  );
+
+  if (!bodyValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
+    );
+
+  const newCustomers = await db.customer.createMany({
+    data: bodyValidation.data.customers.map(customer => ({
+      ...customer,
+      catagory: "UNKNOWN",
+    })),
+  });
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: "Customers created successfully.",
+    result: newCustomers,
+  });
+});
+
 export const updateCustomerController = asyncWrapper(async (req, res) => {
   const queryParamValidation = queryValidator
     .queryParamIDValidator("Customer ID not provided or invalid.")

@@ -20,10 +20,18 @@ export const createCustomerSchema = z.object({
     .min(1, {
       message: "City is required.",
     }),
-    tinNumber: z
-      .string({
-        message: "Tin Number is Required",
-      }),
+  tinNumber: z
+    .string({
+      message: "Tin Number is Required",
+    }),
+});
+
+export const createManyCustomersSchema = z.object({
+  customers: z.array(createCustomerSchema, {
+    message: "Customers must be an array of valid customer objects.",
+  }).min(1, {
+    message: "At least one customer must be provided.",
+  }),
 });
 
 export const updateCustomerSchema = createCustomerSchema.partial().extend({
