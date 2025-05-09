@@ -2,20 +2,17 @@ import { Competitor } from "@prisma/client";
 import * as z from "zod";
 
 export const createCompetitorSchema = z.object({
-  name: z.string({ message: "Competitor name must be a string." }).refine(
-    (name) => {
-      if (!name) return true;
-      return name.length > 1;
-    },
-    {
-      message: "Competitor name has to have at least one character.",
-    }
-  ),
+  name: z
+    .string({ message: "Name must be a string." })
+    .min(1, {
+      message: "Name is required.",
+    }),
   email: z
-    .string()
+    .string({ message: "Email has to be a string" })
     .email({
-      message: "Competitor email isn't a valid email address",
+      message: "Invalid email.",
     })
+    .nullable()
     .optional(),
   phoneNumber: z
     .string({
@@ -27,16 +24,31 @@ export const createCompetitorSchema = z.object({
     .optional(),
   country: z
     .string({
-      message: "Competitor country must be a valid country.",
+      message: "Country has to be a string.",
+    })
+    .min(2, {
+      message: "Country must be at least 2 characters long.",
     })
     .optional(),
-
-  isDirectCompetitor: z.boolean({
-    message: "Is direct competitor status must be a boolean.",
-  }),
+  isDirectCompetitor: z
+    .boolean({
+      message: "Is direct competitor must be a boolean.",
+    })
+    .optional(),
 });
 
 export const updateCompetitorSchema =
   createCompetitorSchema.partial() satisfies z.ZodType<
     Partial<Omit<Competitor, "id">>
   >;
+
+export const createMultipleCompetitorsSchema = z.union([
+  z.object({
+    competitors: z.array(createCompetitorSchema).min(1, {
+      message: "At least one competitor is required.",
+    }),
+  }),
+  z.array(createCompetitorSchema).min(1, {
+    message: "At least one competitor is required.",
+  }),
+]);

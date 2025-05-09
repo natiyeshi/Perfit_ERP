@@ -149,9 +149,6 @@ export const deleteCompetitorController = asyncWrapper(async (req, res) => {
     where: {
       id: queryParamValidation.data.id,
     },
-    include: {
-      competitorImports: true,
-    },
   });
 
   if (!existingCompetitor)
@@ -169,5 +166,63 @@ export const deleteCompetitorController = asyncWrapper(async (req, res) => {
     success: true,
     message: "Competitor deleted successfully",
     result: null,
+  });
+});
+
+export const createMultipleCompetitorsController = asyncWrapper(async (req, res) => {
+  const bodyValidation = competitorValidator.createMultipleCompetitorsSchema.safeParse(
+    req.body
+  );
+
+  if (!bodyValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
+    );
+
+  // Get the competitors array from either format
+  const competitors = Array.isArray(bodyValidation.data) 
+    ? bodyValidation.data 
+    : bodyValidation.data.competitors;
+
+  // Check for duplicate emails
+  const emails = competitors
+    .map((competitor) => competitor.email)
+    .filter((email): email is string => email !== null && email !== undefined);
+
+  if (emails.length > 0) {
+    const existingCompetitors = await db.competitor.findMany({
+      where: {
+        email: {
+          in: emails,
+        },
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    if (existingCompetitors.length > 0) {
+      throw RouteError.BadRequest(
+        `Emails already exist: ${existingCompetitors.map((c) => c.email).join(", ")}`
+      );
+    }
+  }
+
+  // Create all competitors in a transaction
+  const createdCompetitors = await db.$transaction(
+    competitors.map((competitor) =>
+      db.competitor.create({
+        data: competitor,
+      })
+    )
+  );
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: "Competitors created successfully",
+    result: createdCompetitors,
   });
 });

@@ -78,15 +78,15 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
-  const existingSupplier = bodyValidation.data.email
-    ? await db.supplier.findUnique({
-        where: {
-          email: bodyValidation.data.email,
-        },
-      })
-    : null;
+  if (bodyValidation.data.email) {
+    const existingSupplier = await db.supplier.findFirst({
+      where: {
+        email: bodyValidation.data.email,
+      },
+    });
 
-  if (existingSupplier) throw RouteError.BadRequest("Email already exists.");
+    if (existingSupplier) throw RouteError.BadRequest("Email already exists.");
+  }
 
   const products =
     bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
@@ -220,5 +220,88 @@ export const deleteSupplierController = asyncWrapper(async (req, res) => {
     success: true,
     message: "Supplier deleted successfully",
     result: null,
+  });
+});
+
+export const createMultipleSuppliersController = asyncWrapper(async (req, res) => {
+  const bodyValidation = supplierValidator.createMultipleSuppliersSchema.safeParse(
+    req.body
+  );
+
+  if (!bodyValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(bodyValidation.error)[0].message,
+      zodErrorFmt(bodyValidation.error)
+    );
+
+  // Get the suppliers array from either format
+  const suppliers = Array.isArray(bodyValidation.data) 
+    ? bodyValidation.data 
+    : bodyValidation.data.suppliers;
+
+  // Check for duplicate emails
+  const emails = suppliers
+    .map((supplier) => supplier.email)
+    .filter((email): email is string => email !== undefined);
+
+  if (emails.length > 0) {
+    const existingSuppliers = await db.supplier.findMany({
+      where: {
+        email: {
+          in: emails,
+        },
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    if (existingSuppliers.length > 0) {
+      throw RouteError.BadRequest(
+        `Emails already exist: ${existingSuppliers.map((s) => s.email).join(", ")}`
+      );
+    }
+  }
+
+  // Process products for each supplier
+  const suppliersWithProducts = await Promise.all(
+    suppliers.map(async (supplier) => {
+      const { productIDs, ...supplierData } = supplier;
+      const products =
+        productIDs && productIDs.length > 0
+          ? await db.product.findMany({
+              where: {
+                id: { in: productIDs },
+              },
+            })
+          : [];
+
+      return {
+        ...supplierData,
+        deliverableProducts: {
+          connect: products,
+        },
+      };
+    })
+  );
+
+  // Create all suppliers in a transaction
+  const createdSuppliers = await db.$transaction(
+    suppliersWithProducts.map((supplier) =>
+      db.supplier.create({
+        data: supplier,
+        include: {
+          deliverableProducts: true,
+        },
+      })
+    )
+  );
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: "Suppliers created successfully",
+    result: createdSuppliers,
   });
 });

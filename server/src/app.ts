@@ -7,6 +7,9 @@ import routes from "./routes";
 import middlewares from "./middleware";
 import { ENV } from "./config";
 import { setupSwagger } from "./libs";
+import { sendApiResponse } from "./utils";
+import { StatusCodes } from "http-status-codes";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 
 const app = express();
 
@@ -99,7 +102,19 @@ app.use(
   routes.salesPersonRouter
 );
 
-setupSwagger(app);
+const notFoundHandler: RequestHandler = (req, res) => {
+  sendApiResponse({
+    res,
+    statusCode: StatusCodes.NOT_FOUND,
+    success: false,
+    message: `Route not found: ${req.method} ${req.originalUrl}`,
+    result: null,
+  });
+};
+
+app.use("*", notFoundHandler);
+
+// setupSwagger(app);
 
 // Error handling middleware
 app.use(middlewares.routeErrorHandlingMiddleware);

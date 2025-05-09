@@ -40,3 +40,14 @@ export const updateSupplierSchema =
   createSupplierSchema.partial() satisfies z.ZodType<
     Partial<Omit<Supplier, "id">>
   >;
+
+export const createMultipleSuppliersSchema = z.union([
+  z.object({
+    suppliers: z.array(createSupplierSchema).min(1, {
+      message: "At least one supplier is required.",
+    }),
+  }),
+  z.array(createSupplierSchema).min(1, {
+    message: "At least one supplier is required.",
+  }),
+]);

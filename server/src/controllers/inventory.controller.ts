@@ -43,6 +43,28 @@ export const getInventoriesController = asyncWrapper(async (req, res) => {
   });
 });
 
+export const getAvailableProductsController = asyncWrapper(async (req, res) => {
+  const products = await db.inventory.findMany({
+    where: {
+      quantity: {
+        gt: 0,
+      },
+
+      },
+      select: {
+        product: true,
+        quantity: true,
+      },
+    });
+
+    return sendApiResponse({
+      res,
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Available products retrieved successfully.",
+      result: products,
+    });
+  });
 export const getInventoryByIDController = asyncWrapper(async (req, res) => {
   const queryParamValidation = queryValidator
     .queryParamIDValidator("Inventory ID not provided or invalid.")

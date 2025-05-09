@@ -48,7 +48,7 @@ model Product {
 model Supplier {
   id                  String             @id @unique @default(cuid())
   manufacturerName    String
-  email               String?            @unique
+  email               String?            
   phoneNumber         String?            @map("phone_number")
   country             String?
   IODMs               IODM[]
