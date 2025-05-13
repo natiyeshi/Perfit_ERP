@@ -18,8 +18,8 @@ export const createCompetitorSchema = z.object({
     .string({
       message: "Phone number must be string",
     })
-    .min(10, {
-      message: "Phone number must be at least 10 characters long.",
+    .min(7, {
+      message: "Phone number must be at least 7 characters long.",
     })
     .optional(),
   country: z
@@ -52,3 +52,4 @@ export const createMultipleCompetitorsSchema = z.union([
     message: "At least one competitor is required.",
   }),
 ]);
+
