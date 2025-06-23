@@ -16,6 +16,9 @@ export const getProductsController = asyncWrapper(async (req, res) => {
   const products = await db.product.findMany({
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    orderBy: {
+      name: 'desc', // Change 'name' to your desired sort field if needed
+    },
   });
 
   return sendApiResponse({
