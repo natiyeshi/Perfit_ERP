@@ -19,6 +19,9 @@ export const getCompetitorsController = asyncWrapper(async (req, res) => {
     },
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    orderBy: {
+      name: 'asc', // Change 'name' to your desired sort field if needed
+    },
   });
 
   return sendApiResponse({

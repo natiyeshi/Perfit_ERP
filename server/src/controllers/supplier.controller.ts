@@ -21,6 +21,9 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
     },
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
+    orderBy: {
+      manufacturerName: 'asc', // Change 'name' to your desired sort field if needed
+    },
   });
 
   return sendApiResponse({
