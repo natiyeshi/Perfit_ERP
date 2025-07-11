@@ -93,11 +93,7 @@ export const createSupplierController = asyncWrapper(async (req, res) => {
 
   const products =
     bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
-      ? await db.product.findMany({
-          where: {
-            id: { in: bodyValidation.data.productIDs },
-          },
-        })
+      ? bodyValidation.data.productIDs.map((id) => ({ id }))
       : [];
 
   const { productIDs, ...supplierDTO } = bodyValidation.data;
@@ -155,11 +151,7 @@ export const updateSupplierController = asyncWrapper(async (req, res) => {
 
   const products =
     bodyValidation.data.productIDs && bodyValidation.data.productIDs.length > 0
-      ? await db.product.findMany({
-          where: {
-            id: { in: bodyValidation.data.productIDs },
-          },
-        })
+      ? bodyValidation.data.productIDs.map((id) => ({ id }))
       : [];
 
   const { productIDs, ...restAtt } = bodyValidation.data;
@@ -272,11 +264,7 @@ export const createMultipleSuppliersController = asyncWrapper(async (req, res) =
       const { productIDs, ...supplierData } = supplier;
       const products =
         productIDs && productIDs.length > 0
-          ? await db.product.findMany({
-              where: {
-                id: { in: productIDs },
-              },
-            })
+          ? productIDs.map((id) => ({ id }))
           : [];
 
       return {

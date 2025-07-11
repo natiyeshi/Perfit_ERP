@@ -4,33 +4,39 @@ import {
   paginationsQueryValidator,
 } from "./query.validator";
 import { CompetitorImport } from "@prisma/client";
-
 export const createCompetitorImportSchema = z.object({
-  quantity: z
-    .number({ message: "Quantity must be a number." })
-    .int({ message: "Quantity must be an integer." })
-    .positive({ message: "Quantity must be greater than zero." }),
-  unitPrice: z
-    .number({
-      message: "Product price must be a number.",
+  importId: z
+    .string({
+      message: "Import ID must be a string.",
     })
-    .positive({ message: "Unit price must be a positive number." }),
-  manufacturerDate: z.coerce.date({
-    message: "Manufacturer date is invalid date format.",
-  }),
-  expiryDate: z.coerce.date({
-    message: "Expiry date is invalid date format.",
-  }),
+    .min(1, { message: "Import ID is required." }),
+  amount: z
+    .number({
+      message: "Amount must be a number.",
+    })
+    .positive({ message: "Amount must be a positive number." }),
+  paymentMode: z
+    .string({
+      message: "Payment mode must be a string.",
+    })
+    .optional(),
   modeOfShipment: z
     .string({
       message: "Mode of shipment must be a string.",
     })
     .optional(),
-  productId: z
+  currency: z
     .string({
-      message: "Product ID must be a string.",
+      message: "Currency must be a string.",
     })
-    .min(1, { message: "Product ID is required." }),
+    .optional(),
+  products: z.array(
+    z.object({
+      productId: z.string({ required_error: "productId is required" }),
+      unitPrice: z.number({ required_error: "unitPrice is required" }),
+      quantity: z.number({ required_error: "quantity is required" }).int(),
+    })
+  ),
   supplierId: z
     .string({
       message: "Supplier ID must be a string.",
@@ -42,11 +48,16 @@ export const createCompetitorImportSchema = z.object({
     .string({
       message: "Competitor ID must be a string.",
     })
-    .min(1, { message: "Competitor ID is required" }),
+    .min(1, { message: "Competitor ID is required." }),
+  date: z
+    .preprocess(
+      (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
+      z.date({ message: "Date must be a valid date." })
+    ),
 });
 
 export const updateCompetitorImportSchema =
-  createCompetitorImportSchema.partial() satisfies z.ZodType<
+  createCompetitorImportSchema.partial() as z.ZodType<
     Partial<Omit<CompetitorImport, "id" | "createdAt">>
   >;
 

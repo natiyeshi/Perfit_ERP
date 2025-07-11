@@ -2,11 +2,18 @@ import { Competitor } from "@prisma/client";
 import * as z from "zod";
 
 export const createCompetitorSchema = z.object({
+
   name: z
     .string({ message: "Name must be a string." })
     .min(1, {
       message: "Name is required.",
     }),
+  competitorId: z
+    .string({ message: "Competitor ID must be a string." })
+    .min(1, {
+      message: "Competitor ID is required.",
+    })
+    .optional(),
   email: z
     .string({ message: "Email has to be a string" })
     .email({
@@ -22,12 +29,14 @@ export const createCompetitorSchema = z.object({
       message: "Phone number must be at least 7 characters long.",
     })
     .optional(),
-  country: z
+  tin: z
     .string({
-      message: "Country has to be a string.",
+      message: "Tin has to be a string.",
     })
-    .min(2, {
-      message: "Country must be at least 2 characters long.",
+    .optional(),
+  licenseNumber: z
+    .string({
+      message: "licenseNumber has to be a string.",
     })
     .optional(),
   isDirectCompetitor: z

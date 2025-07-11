@@ -76,6 +76,17 @@ export const createCompetitorController = asyncWrapper(async (req, res) => {
       zodErrorFmt(bodyValidation.error)
     );
 
+  // Check if email already exists
+  if (bodyValidation.data.email) {
+    const existingCompetitor = await db.competitor.findUnique({
+      where: { email: bodyValidation.data.email },
+      select: { id: true },
+    });
+    if (existingCompetitor) {
+      throw RouteError.BadRequest("Email already exists for another competitor.");
+    }
+  }
+
   const newCompetitor = await db.competitor.create({
     data: bodyValidation.data,
   });

@@ -26,21 +26,33 @@ model Flag {
   user        User    @relation(fields: [userId], references: [id])
 }
 
+model ProductWithPrice {
+  id               String             @id @unique @default(cuid())
+  productId        String
+  unitPrice        Float
+  quantity         Int
+  product          Product            @relation(fields: [productId], references: [id])
+  CompetitorImport CompetitorImport[]
+}
+
 model Product {
   id                    String                @id @unique @default(cuid())
-  name                  String
-  unit                  String
-  brand                 String
+  productId             String?               @unique @map("product_id")
+  genericName           String
+  brandName             String
+  description           String?
+  intendedUse           String?
+  unit                  String?
   supplierId            String?
   inventory             Inventory?
-  competitorImports     CompetitorImport[]
   competitorInventories CompetitorInventory[]
   imports               Import[]
   pipelines             Pipeline[]
   supplier              Supplier?             @relation(fields: [supplierId], references: [id])
   transactions          Transaction[]
-  CostBuildUp           CostBuildUp[]
   IODMProduct           IODMProduct[]
+  ProductWithPrice      ProductWithPrice[]
+  CostBuildUpProduct    CostBuildUpProduct[]
 
   @@map("products")
 }
@@ -48,7 +60,9 @@ model Product {
 model Supplier {
   id                  String             @id @unique @default(cuid())
   manufacturerName    String
-  email               String?            
+  manufacturerId      String?            @unique
+  description         String?
+  email               String?
   phoneNumber         String?            @map("phone_number")
   country             String?
   IODMs               IODM[]
@@ -62,9 +76,11 @@ model Supplier {
 model Competitor {
   id                  String                @id @unique @default(cuid())
   name                String
+  competitorId        String?               @unique
+  licenseNumber       String?               @unique
+  tin                 String?               @unique
   email               String?               @unique
   phoneNumber         String?               @map("phone_number")
-  country             String?
   isDirectCompetitor  Boolean               @default(false) @map("is_direct_competitor")
   competitorImports   CompetitorImport[]
   competitorInventory CompetitorInventory[]
@@ -86,19 +102,19 @@ model CompetitorInventory {
 }
 
 model CompetitorImport {
-  id               String     @id @unique @default(cuid())
-  quantity         Int
-  unitPrice        Float      @map("unit_price")
-  manufacturerDate DateTime   @map("manufacturer_date")
-  expiryDate       DateTime   @map("expiry_date")
-  modeOfShipment   String?    @map("mode_of_shipment")
-  productId        String
-  supplierId       String
-  competitorId     String
-  createdAt        DateTime   @default(now()) @map("created_at")
-  competitor       Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
-  product          Product    @relation(fields: [productId], references: [id])
-  supplier         Supplier   @relation(fields: [supplierId], references: [id])
+  id             String             @id @unique @default(cuid())
+  importId       String             @unique @map("import_id")
+  amount         Float              @map("unit_price")
+  paymentMode    String?
+  modeOfShipment String?            @map("mode_of_shipment")
+  currency       String?
+  supplierId     String
+  competitorId   String
+  date           DateTime           @map("date")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  competitor     Competitor         @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  supplier       Supplier           @relation(fields: [supplierId], references: [id])
+  products       ProductWithPrice[]
 
   @@map("competitor_imports")
 }
@@ -264,14 +280,14 @@ enum MOVEMENT {
 }
 
 model CostBuildUp {
-  id                       Int      @id @default(autoincrement())
+  id                       Int   @id @default(autoincrement())
   fobPriceUSD              Float // e.g. 47400
   exchangeRate             Float // e.g. 125
   totalFobCostBirr         Float // e.g. 5925000
   fcPurchase               Float // e.g. 2370000
   bankServiceCharges       Float // e.g. 173337.10
   insuranceCharge          Float // e.g. 2820.56
-  seaFreightCharge         Float // e.g. 485186
+  freightCharge            Float // e.g. 485186
   customsDuty              Float // e.g. 677147.24
   storageCharges           Float // e.g. 15000
   inlandTransport          Float // e.g. 30000
@@ -279,8 +295,24 @@ model CostBuildUp {
   loadingUnloadingExpenses Float // e.g. 20000
   totalCost                Float // e.g. 9703990.90
   usdPurchasePrice         Float
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-  product                  Product  @relation(fields: [productId], references: [id])
-  productId                String
+  mislaneousCost           Float // e.g. 0.00
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  CostBuildUpProducts CostBuildUpProduct[]
+}
+
+model CostBuildUpProduct {
+  id                     Int    @id @default(autoincrement())
+  productId              String
+  unitPrice              Float // e.g. 47400 / 1000 = 47.40
+  quantity               Int
+  competitorSellingPrice Float // e.g. 47400 / 1000 = 47.40
+  sellingPrice           Float? // e.g. 47400 / 1000 = 47.40
+  
+  costBuildUpId          Int
+  costBuildUp CostBuildUp @relation(fields: [costBuildUpId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+
+  @@unique([productId, costBuildUpId])
 }

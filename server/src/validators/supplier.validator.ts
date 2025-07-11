@@ -13,6 +13,16 @@ export const createSupplierSchema = z.object({
       message: "Invalid email.",
     })
     .optional(),
+  description: z
+    .string({ message: "description has to be a string" })
+    .optional(),
+    
+  manufacturerId: z
+    .string({ message: "Manufacturer ID has to be a string" })
+    .min(1, {
+      message: "Manufacturer ID is required.",
+    })
+    .optional(),
   phoneNumber: z
     .string({
       message: "Phone number must be string",

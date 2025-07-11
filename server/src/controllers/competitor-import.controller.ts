@@ -26,9 +26,16 @@ export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
     take: queryValidation.data.limit,
     skip: (queryValidation.data.page || 1) - 1 || undefined,
     include: {
-      product: isPopulate,
-      supplier: isPopulate,
-      competitor: isPopulate,
+      products: {
+        include: {
+          product: true,
+        },
+      },
+      supplier: true,
+      competitor: true,
+    },
+    orderBy: {
+      date: "desc",
     },
   });
 
@@ -64,7 +71,11 @@ export const getCompetitorImportByIDController = asyncWrapper(
         id: queryParamValidation.data.id,
       },
       include: {
-        product: true,
+        products: {
+          include : {
+            product: true,
+          }
+        },
         supplier: true,
         competitor: true,
       },
@@ -85,124 +96,6 @@ export const getCompetitorImportByIDController = asyncWrapper(
   }
 );
 
-export const createCompetitorImportController = asyncWrapper(
-  async (req, res) => {
-    const bodyValidation =
-      competitorImportValidator.createCompetitorImportSchema.safeParse(
-        req.body
-      );
-
-    if (!bodyValidation.success)
-      throw RouteError.BadRequest(
-        zodErrorFmt(bodyValidation.error)[0].message,
-        zodErrorFmt(bodyValidation.error)
-      );
-
-    const existingProduct = await db.product.findUnique({
-      where: {
-        id: bodyValidation.data.productId,
-      },
-    });
-
-    if (!existingProduct)
-      throw RouteError.BadRequest("Invalid product ID. Product not found.");
-
-    const existingCompetitor = await db.competitor.findUnique({
-      where: {
-        id: bodyValidation.data.competitorId,
-      },
-    });
-
-    if (!existingCompetitor)
-      throw RouteError.BadRequest(
-        "Invalid competitor ID. Competitor not found."
-      );
-
-    const existingSupplier = await db.supplier.findUnique({
-      where: {
-        id: bodyValidation.data.supplierId,
-      },
-    });
-
-    if (!existingSupplier)
-      throw RouteError.BadRequest("Invalid supplier ID. Supplier not found.");
-
-    const competitorImport = await db.competitorImport.create({
-      data: bodyValidation.data,
-    });
-
-    console.log({
-      competitorImport,
-    });
-
-    if (existingCompetitor.isDirectCompetitor) {
-      const existingCompetitorInventory =
-        await db.competitorInventory.findFirst({
-          where: {
-            productId: bodyValidation.data.productId,
-            competitorId: bodyValidation.data.competitorId,
-          },
-        });
-
-      if (!existingCompetitorInventory) {
-        await db.competitorInventory.create({
-          data: {
-            productId: competitorImport.productId,
-            sellingPrice: competitorImport.unitPrice,
-            competitorId: competitorImport.competitorId,
-          },
-        });
-      }
-    }
-
-    return sendApiResponse({
-      res,
-      statusCode: StatusCodes.CREATED,
-      success: true,
-      message: "Competitor import created successfully.",
-      result: competitorImport,
-    });
-  }
-);
-
-export const updateCompetitorImportController = asyncWrapper(
-  async (req, res) => {
-    const queryParamValidation = queryValidator
-      .queryParamIDValidator("Competitor Import ID not provided or invalid.")
-      .safeParse(req.params);
-    const bodyValidation =
-      competitorImportValidator.updateCompetitorImportSchema.safeParse(
-        req.body
-      );
-
-    if (!queryParamValidation.success)
-      throw RouteError.BadRequest(
-        zodErrorFmt(queryParamValidation.error)[0].message,
-        zodErrorFmt(queryParamValidation.error)
-      );
-
-    if (!bodyValidation.success)
-      throw RouteError.BadRequest(
-        zodErrorFmt(bodyValidation.error)[0].message,
-        zodErrorFmt(bodyValidation.error)
-      );
-
-    const updatedCompetitorImport = await db.competitorImport.update({
-      where: {
-        id: queryParamValidation.data.id,
-      },
-      data: bodyValidation.data,
-    });
-
-    return sendApiResponse({
-      res,
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Competitor import updated successfully.",
-      result: updatedCompetitorImport,
-    });
-  }
-);
 
 export const deleteCompetitorImportController = asyncWrapper(
   async (req, res) => {
