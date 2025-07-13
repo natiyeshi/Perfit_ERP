@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 
 export async function getAccessToken() {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   // console.log('Navigating...');
   await page.goto('https://id.eris.efda.gov.et/account/login', { waitUntil: 'networkidle' });
