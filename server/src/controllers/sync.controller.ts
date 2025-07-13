@@ -2,10 +2,12 @@ import { StatusCodes } from "http-status-codes";
 import { db } from "../libs";
 import { asyncWrapper, sendApiResponse } from "../utils";
 import { syncData } from "../utils/im-sync";
+import { getAccessToken } from "../utils/getToken";
 
 export const syncRouter = asyncWrapper(async (req, res) => {
     try {
-        const results = await syncData();
+        const token = await getAccessToken();
+        const results = await syncData(token);
         const synced = results.filter(r => r.status === 'synced');
         const skipped = results.filter(r => r.status === 'skipped');
         const failed = results.filter(r => r.status === 'failed');
