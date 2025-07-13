@@ -73,7 +73,7 @@ export const createcostbuildupController = asyncWrapper(async (req, res) => {
       CostBuildUpProducts: {
         create: CostBuildUpProducts?.map((product: any) => ({
           productId: product.productId,
-          unitPrice: product.unitPric,
+          unitPrice: product.unitPrice,
           quantity: product.quantity,
           competitorSellingPrice: product.competitorSellingPrice,
           sellingPrice: product.sellingPrice,

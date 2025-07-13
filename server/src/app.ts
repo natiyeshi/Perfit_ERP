@@ -10,6 +10,7 @@ import { setupSwagger } from "./libs";
 import { sendApiResponse } from "./utils";
 import { StatusCodes } from "http-status-codes";
 import { Request, Response, NextFunction, RequestHandler } from "express";
+import { startImportSync } from "./utils/schedule";
 
 const app = express();
 
@@ -27,85 +28,86 @@ app.use(express.json());
 app.use(middlewares.limiter);
 app.use(cookieParser(ENV.COOKIE_SECRET)); // Use a secret key for signing
 
+startImportSync();
 // Routes
 app.use("/api/v1/auth", routes.authRouter);
 app.use(
   "/api/v1/users",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.userRouter
 );
 app.use(
   "/api/v1/products",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.productRouter
 );
 app.use(
   "/api/v1/suppliers",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.supplierRouter
 );
 app.use(
   "/api/v1/competitors",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.competitorRouter
 );
 app.use(
   "/api/v1/competitor-imports",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.competitorImportRouter
 );
 app.use(
   "/api/v1/inventories",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.inventoryRouter
 );
 app.use(
   "/api/v1/imports",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.importRouter
 );
 app.use(
   "/api/v1/customers",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.customerRouter
 );
 app.use(
   "/api/v1/transactions",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.transactionRouter
 );
 app.use(
   "/api/v1/competitor-inventories",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.competitorInventoryRouter
 );
 app.use(
   "/api/v1/pipelines",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.pipelineRouter
 );
 app.use(
   "/api/v1/IODMs",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.IODM_Router
 );
 
 app.use(
   "/api/v1/weekly-sales",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.weeklySalesRouter
 );
 
 app.use(
   "/api/v1/sales-persons",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.salesPersonRouter
 );
 
 
 app.use(
   "/api/v1/cost-buildup",
-  // authMiddleware.authenticationMiddleWare,
+  authMiddleware.authenticationMiddleWare,
   routes.costBuildUp
 );
 
