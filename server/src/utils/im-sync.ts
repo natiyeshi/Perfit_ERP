@@ -71,7 +71,7 @@ export interface ImportPermit {
 export const getLists = async (token : string): Promise<ImportPermitResponse | null> => {
     const form = new FormData();
     form.append("start", "0");
-    form.append("length", "500");
+    form.append("length", "40");
     form.append("search[value]", "");
     form.append("draw", "0");
     form.append("submoduleTypeCode", "MDCN");
