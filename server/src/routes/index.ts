@@ -15,6 +15,7 @@ import weeklySalesRouter from "./weekly-sales.routes";
 import salesPersonRouter from "./sales-person.routes";
 import costBuildUp from "./costbuildup.routes"
 import ImportSync from "./import-sync.routes"
+import marakiRouter from "./maraki.routes"
 
 export default {
   authRouter,
@@ -33,5 +34,6 @@ export default {
   weeklySalesRouter,
   salesPersonRouter,
   ImportSync,
-  costBuildUp
+  costBuildUp,
+  marakiRouter
 };

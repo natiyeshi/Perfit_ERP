@@ -112,6 +112,7 @@ app.use(
 );
 
 app.use("/api/v1/import-sync", routes.ImportSync);
+app.use("/api/v1/maraki", routes.marakiRouter);
 
 
 const notFoundHandler: RequestHandler = (req, res) => {
