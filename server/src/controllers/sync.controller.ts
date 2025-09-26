@@ -7,7 +7,13 @@ import { getAccessToken } from "../utils/getToken";
 export const syncRouter = asyncWrapper(async (req, res) => {
     try {
         const token = await getAccessToken();
-        const results = await syncData(token);
+        // Get and validate length parameter
+        let length = 40; // default value
+        if (req.query?.len) {
+            const len = Number(req.query.len);
+            length = isNaN(len) ? 40 : Math.max(1, len);
+        }
+        const results = await syncData(token, length);
         const synced = results.filter(r => r.status === 'synced');
         const skipped = results.filter(r => r.status === 'skipped');
         const failed = results.filter(r => r.status === 'failed');

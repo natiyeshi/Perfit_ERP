@@ -68,10 +68,10 @@ export interface ImportPermit {
 // const token = "eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCJ9.eyJuYmYiOjE3NTI0MDI0MDIsImV4cCI6MTc1MjQ4ODgwMiwiaXNzIjoiaHR0cHM6Ly9pZC5lcmlzLmVmZGEuZ292LmV0IiwiYXVkIjoiaHR0cHM6Ly9pZC5lcmlzLmVmZGEuZ292LmV0L3Jlc291cmNlcyIsImNsaWVudF9pZCI6ImVyaXMtcG9ydGFsLXNwYSIsInN1YiI6IjA5NzA0MTM5NDYiLCJhdXRoX3RpbWUiOjE3NTI0MDIzOTcsImlkcCI6ImxvY2FsIiwicGhvbmVfbnVtYmVyIjoiOTcwNDEzOTQ2IiwiZW1haWwiOiJhdHR0MjAwN0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQW50ZW5laCBUYXllIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9wcmltYXJ5c2lkIjoiMTQ0NDgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiMDk3MDQxMzk0NiIsInVzZXJJZCI6IjE0NDQ4IiwiYnJhbmNoSWQiOiIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJJUCBBcHBsaWNhbnQiLCJyb2xlQ29kZXMiOiJJUEEiLCJqdGkiOiIyQzFDNzQ0NjYwNkQ5RjUwMzY2MUY3MjY5RkMyQ0RFOSIsInNpZCI6IkNBQTk2OUZGMzRENDFBODVBMkY4RTBEQzc0QzE0M0Y4IiwiaWF0IjoxNzUyNDAyNDAyLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIl0sImFtciI6WyJwd2QiXX0.Ry0W9cfK_mp3dwWt7ZZsZ1bZf0oRVbQzx-trPIercFK7pIK8nytrjan7NL_EGGTrzoqRraF36BqBN2JcBScxSPhbD8hGugLBmM_29DqDJ_zPNefDDKzF7BU-17czPJXk2ZIMqYGPEXgVlurbqLzIpIxQP6GKDOomYEN8rOlZ2Wfs5GYDEierE8ZTBSfF5t-6-jwr3bjn8e7KEhs7oC3ZTn1WQe8lWXOpHep2wR2r-vvQq7K19oebqmNmQr5S-UqbHhYlOpiPgkDswZXHAqtQVRxCZzVKKRPAtll9cOidPGBH_SDHpyEaSgwamvRftVu_HleF0ATNJBRMrerCO7QHjA"
 
 
-export const getLists = async (token : string): Promise<ImportPermitResponse | null> => {
+export const getLists = async (token: string, length: number = 40): Promise<ImportPermitResponse | null> => {
     const form = new FormData();
     form.append("start", "0");
-    form.append("length", "40");
+    form.append("length", length.toString());
     form.append("search[value]", "");
     form.append("draw", "0");
     form.append("submoduleTypeCode", "MDCN");
@@ -295,10 +295,10 @@ export const syncToDb = async (data: any) => {
 };
 
 // Returns an array of sync results: { id, status: 'synced' | 'skipped' | 'failed', error? }
-export const syncData = async (token : string) => {
+export const syncData = async (token : string, length : number) => {
     const results: { id: number; status: 'synced' | 'skipped' | 'failed'; error?: string }[] = [];
     try {
-        const result = await getLists(token);
+        const result = await getLists(token,length);
         const ids = result?.data.map(item => item.id) || [];
         if (!ids.length) {
             console.error("[SYNC] No import permits found to sync.");
