@@ -116,8 +116,11 @@ app.use(
   routes.costBuildUp
 );
 
-app.use("/api/v1/import-sync", routes.ImportSync);
-app.use("/api/v1/maraki", routes.marakiRouter);
+// app.use("/api/v1/import-sync", routes.ImportSync);
+app.use("/api/v1/maraki", 
+  authMiddleware.authenticationMiddleWare,
+  routes.marakiRouter
+);
 
 
 const notFoundHandler: RequestHandler = (req, res) => {
