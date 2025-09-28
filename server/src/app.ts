@@ -11,8 +11,13 @@ import { sendApiResponse } from "./utils";
 import { StatusCodes } from "http-status-codes";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { startImportSync } from "./utils/schedule";
+import { securityMiddleware } from "./libs/security";
 
 const app = express();
+
+
+// Register security middleware FIRST
+app.use(securityMiddleware);
 
 // Registering middlewares
 app.use(
