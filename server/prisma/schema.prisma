@@ -116,6 +116,9 @@ model CompetitorImport {
   supplier       Supplier           @relation(fields: [supplierId], references: [id])
   products       ProductWithPrice[]
 
+  @@index([date])
+  @@index([competitorId])
+  @@index([supplierId])
   @@map("competitor_imports")
 }
 

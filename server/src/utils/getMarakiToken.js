@@ -8,7 +8,7 @@ export async function getAccessToken() {
   // Wait for visible username input
   await page.waitForSelector('input#inputName');
   // console.log('Filling credentials...');
-  await page.fill('input#inputName', 'Fitsum');
+  await page.fill('input#inputName', '  ');
   await page.fill('input#inputPassword', '766324');
   // console.log('Clicking the button...');
   // Click the login button (use button text or class)

@@ -69,4 +69,14 @@ export const getCompetitorImportsQuerySchema = paginationsQueryValidator
         message: "Populate must be a boolean.",
       })
       .optional(),
+    search: z
+      .string()
+      .trim()
+      .optional(),
+    sortBy: z
+      .enum(["date", "amount", "createdAt"])
+      .optional(),
+    order: z
+      .enum(["asc", "desc"])
+      .optional(),
   });

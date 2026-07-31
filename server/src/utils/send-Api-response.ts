@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ApiResponse } from "../types";
+import { ApiResponse, PaginationMeta } from "../types";
 
 type SendApiResponse<T> = {
   res: Response;
@@ -7,6 +7,7 @@ type SendApiResponse<T> = {
   success: boolean;
   message: string;
   result: T | null;
+  meta?: PaginationMeta;
 };
 
 const sendApiResponse = <T>({
@@ -15,11 +16,13 @@ const sendApiResponse = <T>({
   success,
   message,
   result,
+  meta,
 }: SendApiResponse<T>) => {
   return res.status(statusCode).json({
     success,
     message,
     result,
+    ...(meta ? { meta } : {}),
   } satisfies ApiResponse<T>);
 };
 
