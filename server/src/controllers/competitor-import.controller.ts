@@ -187,6 +187,86 @@ export const getAverageUnitPriceController = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * Top/bottom aggregations for the import report charts, computed in Postgres.
+ * One endpoint serves several charts via the `metric` param, each returning a
+ * tiny `{ name, value }[]` instead of shipping the full dataset to the browser.
+ */
+export const getImportAnalyticsController = asyncWrapper(async (req, res) => {
+  const queryValidation =
+    competitorImportValidator.getImportAnalyticsQuerySchema.safeParse(req.query);
+
+  if (!queryValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
+    );
+
+  const { metric, days } = queryValidation.data;
+  const limit = queryValidation.data.limit ?? 10;
+  const order = queryValidation.data.order === "asc" ? "ASC" : "DESC";
+  const threshold = days
+    ? new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+    : null;
+
+  const dateFilter = Prisma.sql`(${threshold}::timestamp IS NULL OR ci."date" >= ${threshold})`;
+
+  let sql: Prisma.Sql;
+  switch (metric) {
+    // Sum of import amount (column is mapped to "unit_price") per competitor.
+    case "competitor_total_price":
+      sql = Prisma.sql`
+        SELECT c."name" AS name, SUM(ci."unit_price")::float8 AS value
+        FROM "competitor_imports" ci
+        JOIN "competitors" c ON c."id" = ci."competitorId"
+        WHERE ${dateFilter}
+        GROUP BY c."name"
+        ORDER BY value ${Prisma.raw(order)}
+        LIMIT ${limit}
+      `;
+      break;
+    // Sum of quantity * unit price per supplier.
+    case "supplier_total_value":
+      sql = Prisma.sql`
+        SELECT s."manufacturerName" AS name,
+               SUM(pwp."quantity" * pwp."unitPrice")::float8 AS value
+        FROM "competitor_imports" ci
+        JOIN "suppliers" s ON s."id" = ci."supplierId"
+        JOIN "_CompetitorImportToProductWithPrice" j ON j."A" = ci."id"
+        JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+        WHERE ${dateFilter}
+        GROUP BY s."manufacturerName"
+        ORDER BY value ${Prisma.raw(order)}
+        LIMIT ${limit}
+      `;
+      break;
+    // Sum of imported quantity per product brand (top = DESC, least = ASC).
+    case "product_quantity":
+      sql = Prisma.sql`
+        SELECT p."brandName" AS name, SUM(pwp."quantity")::float8 AS value
+        FROM "competitor_imports" ci
+        JOIN "_CompetitorImportToProductWithPrice" j ON j."A" = ci."id"
+        JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+        JOIN "products" p ON p."id" = pwp."productId"
+        WHERE ${dateFilter}
+        GROUP BY p."brandName"
+        ORDER BY value ${Prisma.raw(order)}
+        LIMIT ${limit}
+      `;
+      break;
+  }
+
+  const rows = await db.$queryRaw<{ name: string; value: number }[]>(sql);
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Import analytics retrieved successfully.",
+    result: rows,
+  });
+});
+
 export const getCompetitorImportByIDController = asyncWrapper(
   async (req, res) => {
     const queryParamValidation = queryValidator

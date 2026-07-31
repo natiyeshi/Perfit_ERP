@@ -87,3 +87,13 @@ export const getAverageUnitPriceQuerySchema = paginationsQueryValidator
     search: z.string().trim().optional(),
     order: z.enum(["asc", "desc"]).optional(),
   });
+
+export const getImportAnalyticsQuerySchema = lastDaysQueryValidator.extend({
+  metric: z.enum([
+    "competitor_total_price",
+    "supplier_total_value",
+    "product_quantity",
+  ]),
+  order: z.enum(["asc", "desc"]).optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+});
