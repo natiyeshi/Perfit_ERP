@@ -80,3 +80,10 @@ export const getCompetitorImportsQuerySchema = paginationsQueryValidator
       .enum(["asc", "desc"])
       .optional(),
   });
+
+export const getAverageUnitPriceQuerySchema = paginationsQueryValidator
+  .extend(lastDaysQueryValidator.shape)
+  .extend({
+    search: z.string().trim().optional(),
+    order: z.enum(["asc", "desc"]).optional(),
+  });

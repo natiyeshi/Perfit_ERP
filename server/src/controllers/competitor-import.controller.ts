@@ -105,6 +105,88 @@ export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * Average unit price per product (by generic name), computed entirely in
+ * Postgres with GROUP BY + AVG and returned one page at a time. This replaces
+ * the old client-side O(n^2) aggregation over the full dataset.
+ */
+export const getAverageUnitPriceController = asyncWrapper(async (req, res) => {
+  const queryValidation =
+    competitorImportValidator.getAverageUnitPriceQuerySchema.safeParse(
+      req.query
+    );
+
+  if (!queryValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
+    );
+
+  const { days, search } = queryValidation.data;
+  const limit = queryValidation.data.limit ?? 20;
+  const page = queryValidation.data.page && queryValidation.data.page > 0
+    ? queryValidation.data.page
+    : 1;
+  const offset = (page - 1) * limit;
+  const order = queryValidation.data.order === "asc" ? "ASC" : "DESC";
+
+  const threshold = days
+    ? new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+    : null;
+  const searchTerm = search && search.length > 0 ? `%${search}%` : null;
+
+  // Shared WHERE fragment (parameterised) reused by the page + count queries.
+  const whereSql = Prisma.sql`
+    WHERE (${threshold}::timestamp IS NULL OR ci."date" >= ${threshold})
+      AND (${searchTerm}::text IS NULL OR p."genericName" ILIKE ${searchTerm})
+  `;
+
+  const rowsPromise = db.$queryRaw<
+    { name: string; avgUnitPrice: number; count: number }[]
+  >(Prisma.sql`
+    SELECT p."genericName" AS name,
+           AVG(pwp."unitPrice")::float8 AS "avgUnitPrice",
+           COUNT(*)::int AS count
+    FROM "_CompetitorImportToProductWithPrice" j
+    JOIN "competitor_imports" ci ON ci."id" = j."A"
+    JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+    JOIN "products" p ON p."id" = pwp."productId"
+    ${whereSql}
+    GROUP BY p."genericName"
+    ORDER BY "avgUnitPrice" ${Prisma.raw(order)}
+    LIMIT ${limit} OFFSET ${offset}
+  `);
+
+  const totalPromise = db.$queryRaw<{ total: number }[]>(Prisma.sql`
+    SELECT COUNT(*)::int AS total FROM (
+      SELECT p."genericName"
+      FROM "_CompetitorImportToProductWithPrice" j
+      JOIN "competitor_imports" ci ON ci."id" = j."A"
+      JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+      JOIN "products" p ON p."id" = pwp."productId"
+      ${whereSql}
+      GROUP BY p."genericName"
+    ) t
+  `);
+
+  const [rows, totalRows] = await Promise.all([rowsPromise, totalPromise]);
+  const total = totalRows[0]?.total ?? 0;
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Average unit price per product retrieved successfully.",
+    result: rows,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
+});
+
 export const getCompetitorImportByIDController = asyncWrapper(
   async (req, res) => {
     const queryParamValidation = queryValidator
