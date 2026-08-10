@@ -8,7 +8,7 @@
     "build": "npm run clean && npm install typescript && npx tsc",
     "clean": "npx rimraf ./dist",
     "prisma": "npx prisma generate",
-    "sync:imports:from-jul-17": "ts-node src/scripts/sync-imports-from-date.ts 2026-07-17"
+    "sync:imports:from-jul-17": "cross-env NODE_ENV=production ts-node src/scripts/sync-imports-from-date.ts 2026-07-17"
   },
   "author": "Nesredin Getahun",
   "license": "ISC",
