@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.get("/", syncRouter);
 router.get("/auth/status", getCrawlerAuthStatusController);
 router.post("/auth/token", saveCrawlerTokenController);
 router.delete("/auth/token", clearCrawlerTokenController);
+router.get("/", syncRouter);
 
 export default router;
 
