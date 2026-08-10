@@ -12,6 +12,7 @@ import { StatusCodes } from "http-status-codes";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { startImportSync } from "./utils/schedule";
 import { securityMiddleware } from "./libs/security";
+import { USER_ROLE } from "@prisma/client";
 
 const app = express();
 
@@ -116,7 +117,11 @@ app.use(
   routes.costBuildUp
 );
 
-// app.use("/api/v1/import-sync", routes.ImportSync);
+app.use(
+  "/api/v1/import-sync",
+  authMiddleware.roleAuthenticationMiddleware([USER_ROLE.ADMIN]),
+  routes.ImportSync
+);
 app.use("/api/v1/maraki", 
   authMiddleware.authenticationMiddleWare,
   routes.marakiRouter

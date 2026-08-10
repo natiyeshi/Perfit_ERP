@@ -1,10 +1,18 @@
 
 import { Router } from "express";
-import { syncRouter } from "../controllers/sync.controller";
+import {
+    clearCrawlerTokenController,
+    getCrawlerAuthStatusController,
+    saveCrawlerTokenController,
+    syncRouter,
+} from "../controllers/sync.controller";
 
 const router = Router();
 
 router.get("/", syncRouter);
+router.get("/auth/status", getCrawlerAuthStatusController);
+router.post("/auth/token", saveCrawlerTokenController);
+router.delete("/auth/token", clearCrawlerTokenController);
 
 export default router;
 

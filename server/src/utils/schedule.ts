@@ -19,6 +19,9 @@ export const startImportSync = () => {
         try {
             // Directly call the sync function
             const result = await syncRouterFunction(40); // Using a default length of 40
+            if (result?.error) {
+                throw new Error(result.error);
+            }
             console.log(`[IMPORT SYNC] Completed at ${new Date().toISOString()}`);
             console.log(result);
         } catch (error: any) {
