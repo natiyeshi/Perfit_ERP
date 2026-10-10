@@ -1,0 +1,2 @@
+# Server-side ops files must keep Unix line endings (bash/fail2ban)
+ops/** text eol=lf
