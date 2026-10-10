@@ -1,5 +1,6 @@
 import { Product } from "@prisma/client";
 import * as z from "zod";
+import { paginationsQueryValidator } from "./query.validator";
 export const createProductSchema = z.object({
   productId: z
     .string({ message: "Product Id must be a string." })
@@ -31,3 +32,13 @@ export const updateProductSchema =
   createProductSchema.partial() satisfies z.ZodType<
     Partial<Omit<Product, "id">>
   >;
+
+// Products table: server-side pagination, search and sort (columns the table
+// shows). Without `limit` the endpoint returns the full list for dropdowns.
+export const getProductsQuerySchema = paginationsQueryValidator.extend({
+  search: z.string().trim().optional(),
+  sortBy: z
+    .enum(["brandName", "genericName", "unit", "description", "intendedUse"])
+    .optional(),
+  order: z.enum(["asc", "desc"]).optional(),
+});

@@ -1,40 +1,91 @@
 import { StatusCodes } from "http-status-codes";
+import { Prisma } from "@prisma/client";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { productValidator, queryValidator } from "../validators";
 import { cache, db, sendCachedJson, zodErrorFmt } from "../libs";
 
 const PRODUCTS_TTL_MS = 10 * 60 * 1000;
+const MAX_PAGE_SIZE = 200; // the table offers up to 100
 
 export const getProductsController = asyncWrapper(async (req, res) => {
-  const paginationValiation =
-    queryValidator.paginationsQueryValidator.safeParse(req.query);
+  const queryValidation = productValidator.getProductsQuerySchema.safeParse(
+    req.query
+  );
 
-  if (!paginationValiation.success)
+  if (!queryValidation.success)
     throw RouteError.BadRequest(
-      zodErrorFmt(paginationValiation.error)[0].message,
-      zodErrorFmt(paginationValiation.error)
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
     );
 
-  const { limit, page } = paginationValiation.data;
+  const { limit, page, search, sortBy, order } = queryValidation.data;
 
-  // The full product list is loaded on ~9 screens (mostly dropdowns) and only
-  // changes on writes/sync, which invalidate this cache.
+  // No `limit`: the full list, used by the product dropdowns on ~8 forms.
+  // Cached pre-gzipped and invalidated on writes/sync.
+  if (!limit) {
+    return sendCachedJson(
+      req,
+      res,
+      cache.PRODUCTS_PREFIX + "list",
+      PRODUCTS_TTL_MS,
+      async () => ({
+        success: true,
+        message: "Products retrived successfully",
+        result: await db.product.findMany({
+          orderBy: {
+            brandName: 'asc', // Change 'name' to your desired sort field if needed
+          },
+        }),
+      })
+    );
+  }
+
+  // Paginated mode (products table): search and sort run in Postgres.
+  const pageSize = Math.min(limit, MAX_PAGE_SIZE);
+  const currentPage = page && page > 0 ? page : 1;
+
+  const where: Prisma.ProductWhereInput =
+    search && search.length > 0
+      ? {
+          OR: [
+            { brandName: { contains: search, mode: "insensitive" } },
+            { genericName: { contains: search, mode: "insensitive" } },
+            { unit: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
   return sendCachedJson(
     req,
     res,
-    cache.cacheKey(cache.PRODUCTS_PREFIX + "list", { limit, page }),
+    cache.cacheKey(cache.PRODUCTS_PREFIX + "page", {
+      pageSize, currentPage, search, sortBy, order,
+    }),
     PRODUCTS_TTL_MS,
-    async () => ({
-      success: true,
-      message: "Products retrived successfully",
-      result: await db.product.findMany({
-        take: limit,
-        skip: (page || 1) - 1 || undefined,
-        orderBy: {
-          brandName: 'asc', // Change 'name' to your desired sort field if needed
+    async () => {
+      const [products, total] = await Promise.all([
+        db.product.findMany({
+          where,
+          // id breaks ties so rows never repeat or go missing between pages.
+          orderBy: [{ [sortBy ?? "brandName"]: order ?? "asc" }, { id: "asc" }],
+          skip: (currentPage - 1) * pageSize,
+          take: pageSize,
+        }),
+        db.product.count({ where }),
+      ]);
+
+      return {
+        success: true,
+        message: "Products retrived successfully",
+        result: products,
+        meta: {
+          total,
+          page: currentPage,
+          limit: pageSize,
+          totalPages: Math.ceil(total / pageSize),
         },
-      }),
-    })
+      };
+    }
   );
 });
 
