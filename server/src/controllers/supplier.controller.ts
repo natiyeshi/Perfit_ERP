@@ -13,10 +13,10 @@ export const getSuppliersController = asyncWrapper(async (req, res) => {
       zodErrorFmt(paginationValiation.error)[0].message,
       zodErrorFmt(paginationValiation.error)
     );
+  // Only deliverableProducts is used by the client. competitorImports/imports
+  // were embedding most of the import table in every list response (~1.1 MB).
   const suppliers = await db.supplier.findMany({
     include: {
-      competitorImports: true,
-      imports: true,
       deliverableProducts: true,
     },
     take: paginationValiation.data.limit,

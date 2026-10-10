@@ -13,10 +13,9 @@ export const getCompetitorsController = asyncWrapper(async (req, res) => {
       zodErrorFmt(paginationValiation.error)
     );
 
+  // competitorImports isn't used by the client and embedded every import of
+  // every competitor in the list response (~1.1 MB).
   const competitors = await db.competitor.findMany({
-    include: {
-      competitorImports: true,
-    },
     take: paginationValiation.data.limit,
     skip: (paginationValiation.data.page || 1) - 1 || undefined,
     orderBy: {

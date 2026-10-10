@@ -97,3 +97,15 @@ export const getImportAnalyticsQuerySchema = lastDaysQueryValidator.extend({
   order: z.enum(["asc", "desc"]).optional(),
   limit: z.coerce.number().int().min(1).max(50).optional(),
 });
+
+// Charts on the import pipeline report page. `months` mirrors the page's time
+// filter (subMonths on createdAt); omit it for "all".
+export const getPipelineReportQuerySchema = z.object({
+  chart: z.enum([
+    "top_products",
+    "least_products",
+    "top_suppliers",
+    "top_competitors",
+  ]),
+  months: z.coerce.number().int().min(1).max(120).optional(),
+});

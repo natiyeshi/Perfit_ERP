@@ -5,8 +5,12 @@ import {
   RouteError,
   sendApiResponse,
 } from "../utils";
-import { db, zodErrorFmt } from "../libs";
+import { cache, db, zodErrorFmt } from "../libs";
 import { competitorImportValidator, queryValidator } from "../validators";
+
+// Analytics only change on the hourly sync or a write request, both of which
+// clear the cache; the TTL just bounds staleness from out-of-process writes.
+const ANALYTICS_TTL_MS = 10 * 60 * 1000;
 
 export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
   const queryValidation =
@@ -169,7 +173,14 @@ export const getAverageUnitPriceController = asyncWrapper(async (req, res) => {
     ) t
   `);
 
-  const [rows, totalRows] = await Promise.all([rowsPromise, totalPromise]);
+  // Prisma raw queries are lazy, so on a cache hit neither query runs.
+  const [rows, totalRows] = await cache.getOrSetCache(
+    cache.cacheKey(cache.ANALYTICS_PREFIX + "average-unit-price", {
+      days, search, limit, page, order,
+    }),
+    ANALYTICS_TTL_MS,
+    () => Promise.all([rowsPromise, totalPromise])
+  );
   const total = totalRows[0]?.total ?? 0;
 
   return sendApiResponse({
@@ -256,7 +267,11 @@ export const getImportAnalyticsController = asyncWrapper(async (req, res) => {
       break;
   }
 
-  const rows = await db.$queryRaw<{ name: string; value: number }[]>(sql);
+  const rows = await cache.getOrSetCache(
+    cache.cacheKey(cache.ANALYTICS_PREFIX + "top", { metric, days, limit, order }),
+    ANALYTICS_TTL_MS,
+    () => db.$queryRaw<{ name: string; value: number }[]>(sql)
+  );
 
   return sendApiResponse({
     res,
@@ -337,3 +352,151 @@ export const deleteCompetitorImportController = asyncWrapper(
     });
   }
 );
+
+/**
+ * Dashboard "Customer Sales" / "Product Sales" tables, aggregated in Postgres.
+ * Same numbers the dashboard used to compute in the browser from the full
+ * `/competitor-imports?populate=true` payload (~7 MB), but returns only the
+ * grouped rows.
+ */
+export const getDashboardReportController = asyncWrapper(async (_req, res) => {
+  const result = await cache.getOrSetCache(
+    cache.ANALYTICS_PREFIX + "dashboard-report",
+    ANALYTICS_TTL_MS,
+    async () => {
+      const [customers, productSales] = await Promise.all([
+        db.$queryRaw<{ name: string; sales: number; transactions: number }[]>`
+          SELECT c."name" AS name,
+                 SUM(ci."unit_price")::float8 AS sales,
+                 COUNT(*)::int AS transactions
+          FROM "competitor_imports" ci
+          JOIN "competitors" c ON c."id" = ci."competitorId"
+          GROUP BY c."name"
+          ORDER BY sales DESC
+        `,
+        db.$queryRaw<
+          { id: string; name: string; unit: string; soldQuantity: number; soldAmount: number }[]
+        >`
+          SELECT p."id" AS id,
+                 COALESCE(NULLIF(p."genericName", ''), 'Unknown Product') AS name,
+                 COALESCE(NULLIF(p."unit", ''), 'pcs') AS unit,
+                 SUM(pwp."quantity")::float8 AS "soldQuantity",
+                 SUM(pwp."unitPrice" * pwp."quantity")::float8 AS "soldAmount"
+          FROM "competitor_imports" ci
+          JOIN "_CompetitorImportToProductWithPrice" j ON j."A" = ci."id"
+          JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+          JOIN "products" p ON p."id" = pwp."productId"
+          GROUP BY p."id"
+          ORDER BY "soldAmount" DESC
+        `,
+      ]);
+
+      const customerSales = customers.map((c) => ({
+        ...c,
+        averageSale: c.sales / c.transactions,
+      }));
+      return { customerSales, productSales };
+    }
+  );
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Dashboard report retrieved successfully.",
+    result,
+  });
+});
+
+/**
+ * Charts on the import pipeline report page. Mirrors the page's original
+ * client-side logic: the time filter is `createdAt > now - N months`, and every
+ * name that appears in ANY import is kept with 0 when it has nothing inside the
+ * window (so "least imported" can include zeros, as before).
+ */
+export const getPipelineReportController = asyncWrapper(async (req, res) => {
+  const queryValidation =
+    competitorImportValidator.getPipelineReportQuerySchema.safeParse(req.query);
+
+  if (!queryValidation.success)
+    throw RouteError.BadRequest(
+      zodErrorFmt(queryValidation.error)[0].message,
+      zodErrorFmt(queryValidation.error)
+    );
+
+  const { chart, months } = queryValidation.data;
+
+  // created_at is a timezone-less column holding UTC (Prisma's convention), so
+  // compare against UTC "now" explicitly; plain now() would be shifted by the
+  // DB session's TimeZone setting.
+  const inWindow = months
+    ? Prisma.sql`ci."created_at" > (now() AT TIME ZONE 'UTC') - make_interval(months => ${months}::int)`
+    : Prisma.sql`TRUE`;
+
+  // Ties are broken in the order the browser used to first encounter each name:
+  // imports by date desc, then products within an import by id (Prisma's order).
+  const compute = async () => {
+    type Row = { name: string; value: number };
+    switch (chart) {
+      case "top_products":
+      case "least_products": {
+        const rows = await db.$queryRaw<Row[]>`
+          SELECT p."genericName" AS name,
+                 SUM(CASE WHEN ${inWindow} THEN pwp."quantity" ELSE 0 END)::float8 AS value
+          FROM "competitor_imports" ci
+          JOIN "_CompetitorImportToProductWithPrice" j ON j."A" = ci."id"
+          JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+          JOIN "products" p ON p."id" = pwp."productId"
+          GROUP BY p."genericName"
+          ORDER BY value ${Prisma.raw(chart === "top_products" ? "DESC" : "ASC")},
+                   MAX(ci."date") DESC,
+                   (array_agg(pwp."id" ORDER BY ci."date" DESC, pwp."id"))[1]
+        `;
+        if (chart === "least_products") return rows.slice(0, 4);
+
+        const top = rows.slice(0, 4);
+        const othersValue = rows.slice(4).reduce((sum, r) => sum + r.value, 0);
+        if (othersValue > 0) top.push({ name: "Others", value: othersValue });
+        return top;
+      }
+      case "top_suppliers":
+        return db.$queryRaw<Row[]>`
+          SELECT s."manufacturerName" AS name,
+                 SUM(CASE WHEN ${inWindow} THEN ci."unit_price" ELSE 0 END)::float8 AS value
+          FROM "competitor_imports" ci
+          JOIN "suppliers" s ON s."id" = ci."supplierId"
+          GROUP BY s."manufacturerName"
+          ORDER BY value DESC, MAX(ci."date") DESC
+          LIMIT 4
+        `;
+      case "top_competitors":
+        // Total product quantity per competitor. LEFT JOINs keep competitors
+        // whose imports have no products (value 0), like the old chart did.
+        return db.$queryRaw<Row[]>`
+          SELECT c."name" AS name,
+                 COALESCE(SUM(CASE WHEN ${inWindow} THEN pwp."quantity" ELSE 0 END), 0)::float8 AS value
+          FROM "competitor_imports" ci
+          JOIN "competitors" c ON c."id" = ci."competitorId"
+          LEFT JOIN "_CompetitorImportToProductWithPrice" j ON j."A" = ci."id"
+          LEFT JOIN "ProductWithPrice" pwp ON pwp."id" = j."B"
+          GROUP BY c."name"
+          ORDER BY value DESC, MAX(ci."date") DESC
+          LIMIT 4
+        `;
+    }
+  };
+
+  const result = await cache.getOrSetCache(
+    cache.cacheKey(cache.ANALYTICS_PREFIX + "pipeline-report", { chart, months }),
+    ANALYTICS_TTL_MS,
+    compute
+  );
+
+  return sendApiResponse({
+    res,
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Pipeline report retrieved successfully.",
+    result,
+  });
+});

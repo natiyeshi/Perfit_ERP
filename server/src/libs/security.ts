@@ -12,6 +12,14 @@ const blockedPatterns = [
   /luci/,
 ];
 
+// Appending through a stream keeps the same log file and format, but doesn't
+// block the event loop on a disk write for every request like appendFileSync.
+const logStream = fs.createWriteStream(
+  path.join(process.cwd(), "security.log"),
+  { flags: "a" }
+);
+logStream.on("error", (err) => console.error("[SECURITY] log write failed:", err));
+
 export const securityMiddleware: RequestHandler = (req, res, next) => {
   const ip =
     (req.headers["x-forwarded-for"] as string)?.split(",").shift() ||
@@ -21,8 +29,7 @@ export const securityMiddleware: RequestHandler = (req, res, next) => {
     req.url
   } from ${ip}\n`;
 
-  const logPath = path.join(process.cwd(), "security.log");
-  fs.appendFileSync(logPath, logLine);
+  logStream.write(logLine);
 
   // 🔍 Block suspicious requests
   if (blockedPatterns.some((pattern) => pattern.test(req.url))) {

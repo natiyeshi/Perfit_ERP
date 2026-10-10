@@ -1,19 +1,28 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, sendApiResponse } from "../utils";
+import { cache } from "../libs";
 import axios, { type AxiosResponse } from "axios";
+
+// The upstream Maraki service is slow and spiky (p95 ~1.7s). Successful
+// responses are reused for a minute; failures are never cached.
+const MARAKI_TTL_MS = 60 * 1000;
+const MARAKI_TIMEOUT_MS = 15 * 1000;
 
 /**
  * Get all IODMs with optional pagination and filters
  */
 export const getDashboardInfo = asyncWrapper(async (req, res) => {
   try {
-    const response: AxiosResponse<{ Data: any[] }> = await axios.post(
-      "http://webapp.et:5201/4447673/run/ListRunDashBoardItemsQuery",
-      {
-        "DashBoardId": "SALES_DASHBOARD2",
-      }
-    );
-    const result = response.data?.Data ?? [];
+    const result = await cache.getOrSetCache("maraki:dashboard", MARAKI_TTL_MS, async () => {
+      const response: AxiosResponse<{ Data: any[] }> = await axios.post(
+        "http://webapp.et:5201/4447673/run/ListRunDashBoardItemsQuery",
+        {
+          "DashBoardId": "SALES_DASHBOARD2",
+        },
+        { timeout: MARAKI_TIMEOUT_MS }
+      );
+      return response.data?.Data ?? [];
+    });
     return sendApiResponse({
       res,
       statusCode: StatusCodes.OK,

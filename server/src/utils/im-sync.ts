@@ -1,6 +1,6 @@
 import axios from "axios";
 import FormData from "form-data";
-import { db, zodErrorFmt } from "../libs";
+import { cache, db, zodErrorFmt } from "../libs";
 import { Router, Request, Response } from "express";
 
 export interface ImportPermitResponse {
@@ -323,6 +323,11 @@ export const syncData = async (token : string, length : number) => {
                 console.error(`[SYNC] Failed to sync import with ID: ${id} - ${err?.message || err}`);
                 results.push({ id, status: 'failed', error: err?.message || String(err) });
             }
+        }
+        // New imports change every analytics result; the cron and the
+        // /import-sync route both end up here.
+        if (results.some(r => r.status === 'synced')) {
+            cache.invalidateCache(cache.ANALYTICS_PREFIX);
         }
         return results;
     } catch (error: any) {

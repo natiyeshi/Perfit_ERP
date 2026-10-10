@@ -33,6 +33,8 @@ model ProductWithPrice {
   quantity         Int
   product          Product            @relation(fields: [productId], references: [id])
   CompetitorImport CompetitorImport[]
+
+  @@index([productId])
 }
 
 model Product {
@@ -54,6 +56,7 @@ model Product {
   ProductWithPrice      ProductWithPrice[]
   CostBuildUpProduct    CostBuildUpProduct[]
 
+  @@index([supplierId])
   @@map("products")
 }
 
@@ -119,6 +122,8 @@ model CompetitorImport {
   @@index([date])
   @@index([competitorId])
   @@index([supplierId])
+  @@index([amount])
+  @@index([createdAt])
   @@map("competitor_imports")
 }
 

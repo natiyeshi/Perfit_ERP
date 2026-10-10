@@ -1,4 +1,5 @@
 import express from "express";
+import compression from "compression";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -13,6 +14,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import { startImportSync } from "./utils/schedule";
 import { securityMiddleware } from "./libs/security";
 import { USER_ROLE } from "@prisma/client";
+import { cache } from "./libs";
 
 const app = express();
 
@@ -29,8 +31,21 @@ app.use(
     credentials: true,
   })
 );
+// gzip JSON responses (list endpoints are hundreds of KB uncompressed).
+app.use(compression());
 app.use(morgan("dev"));
 app.use(express.json());
+
+// Any successful write can change what analytics report (new import, renamed
+// supplier/competitor/product...), so drop cached analytics after it.
+app.use((req, res, next) => {
+  if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    res.on("finish", () => {
+      if (res.statusCode < 400) cache.invalidateCache(cache.ANALYTICS_PREFIX);
+    });
+  }
+  next();
+});
 app.use(middlewares.limiter);
 app.use(cookieParser(ENV.COOKIE_SECRET)); // Use a secret key for signing
 
