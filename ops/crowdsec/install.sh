@@ -160,8 +160,13 @@ systemctl is-active --quiet crowdsec-firewall-bouncer || { echo "bouncer failed 
 say "Self-test"
 TEST_IP=203.0.113.77   # TEST-NET-3, never a real host
 cscli decisions add --ip "$TEST_IP" --duration 2m --reason "install self-test" >/dev/null
-sleep 12
-if iptables-save 2>/dev/null | grep -q "crowdsec" && (ipset list 2>/dev/null | grep -q "$TEST_IP" || iptables-save | grep -q "$TEST_IP"); then
+# The bouncer pulls decisions every ~10s and was just restarted: retry for 30s.
+FOUND=0
+for _ in $(seq 1 10); do
+  sleep 3
+  if ipset list 2>/dev/null | grep -q "$TEST_IP" || iptables-save 2>/dev/null | grep -q "$TEST_IP"; then FOUND=1; break; fi
+done
+if [ "$FOUND" -eq 1 ]; then
   echo "OK: a test decision reached the firewall."
 else
   echo "WARNING: test decision not seen in iptables/ipset yet. Check: systemctl status crowdsec-firewall-bouncer"
