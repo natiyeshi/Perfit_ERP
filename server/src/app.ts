@@ -36,12 +36,12 @@ app.use(compression());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// Any successful write can change what analytics report (new import, renamed
-// supplier/competitor/product...), so drop cached analytics after it.
+// Any successful write can change cached data (new import, renamed
+// supplier/competitor/product...), so drop the DB-derived caches after it.
 app.use((req, res, next) => {
   if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
     res.on("finish", () => {
-      if (res.statusCode < 400) cache.invalidateCache(cache.ANALYTICS_PREFIX);
+      if (res.statusCode < 400) cache.invalidateDataCaches();
     });
   }
   next();

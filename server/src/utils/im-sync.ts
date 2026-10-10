@@ -327,7 +327,7 @@ export const syncData = async (token : string, length : number) => {
         // New imports change every analytics result; the cron and the
         // /import-sync route both end up here.
         if (results.some(r => r.status === 'synced')) {
-            cache.invalidateCache(cache.ANALYTICS_PREFIX);
+            cache.invalidateDataCaches();
         }
         return results;
     } catch (error: any) {

@@ -5,12 +5,15 @@ import {
   RouteError,
   sendApiResponse,
 } from "../utils";
-import { cache, db, zodErrorFmt } from "../libs";
+import { cache, db, sendCachedJson, zodErrorFmt } from "../libs";
 import { competitorImportValidator, queryValidator } from "../validators";
 
 // Analytics only change on the hourly sync or a write request, both of which
 // clear the cache; the TTL just bounds staleness from out-of-process writes.
 const ANALYTICS_TTL_MS = 10 * 60 * 1000;
+
+const DEFAULT_PAGE_SIZE = 50; // the import table's default
+const MAX_PAGE_SIZE = 200; // the table offers up to 100
 
 export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
   const queryValidation =
@@ -60,53 +63,49 @@ export const getCompetitorImportsController = asyncWrapper(async (req, res) => {
     competitor: true,
   } satisfies Prisma.CompetitorImportInclude;
 
-  // Legacy mode: no `limit` provided -> return every matching row (used by the
-  // report page). Paginated mode kicks in as soon as a `limit` is supplied.
-  if (!limit) {
-    const competitorImports = await db.competitorImport.findMany({
-      where,
-      include,
-      orderBy,
-    });
-
-    return sendApiResponse({
-      res,
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Competitor imports retrieved successfully.",
-      result: competitorImports,
-    });
-  }
-
+  // Always paginated. The old "no limit = every import with relations" mode
+  // (~7 MB, 1.5 s) was only used by charts that now call the analytics
+  // endpoints; the cap stops a huge `limit` from recreating it.
+  const pageSize = Math.min(limit ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
   const currentPage = page && page > 0 ? page : 1;
-  const skip = (currentPage - 1) * limit;
+  const skip = (currentPage - 1) * pageSize;
 
-  const [competitorImports, total, sum] = await Promise.all([
-    db.competitorImport.findMany({
-      where,
-      include,
-      orderBy,
-      skip,
-      take: limit,
-    }),
-    db.competitorImport.count({ where }),
-    db.competitorImport.aggregate({ where, _sum: { amount: true } }),
-  ]);
-
-  return sendApiResponse({
+  // Same page for every user and only changes on writes/sync (which clear it),
+  // so whole pages, including the count and sum, are cached.
+  return sendCachedJson(
+    req,
     res,
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: "Competitor imports retrieved successfully.",
-    result: competitorImports,
-    meta: {
-      total,
-      page: currentPage,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      sumAmount: sum._sum.amount ?? 0,
-    },
-  });
+    cache.cacheKey(cache.IMPORTS_TABLE_PREFIX + "page", {
+      pageSize, currentPage, days, search, sortBy, order,
+    }),
+    ANALYTICS_TTL_MS,
+    async () => {
+      const [competitorImports, total, sum] = await Promise.all([
+        db.competitorImport.findMany({
+          where,
+          include,
+          orderBy,
+          skip,
+          take: pageSize,
+        }),
+        db.competitorImport.count({ where }),
+        db.competitorImport.aggregate({ where, _sum: { amount: true } }),
+      ]);
+
+      return {
+        success: true,
+        message: "Competitor imports retrieved successfully.",
+        result: competitorImports,
+        meta: {
+          total,
+          page: currentPage,
+          limit: pageSize,
+          totalPages: Math.ceil(total / pageSize),
+          sumAmount: sum._sum.amount ?? 0,
+        },
+      };
+    }
+  );
 });
 
 /**

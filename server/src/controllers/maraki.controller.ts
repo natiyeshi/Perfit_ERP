@@ -3,9 +3,13 @@ import { asyncWrapper, sendApiResponse } from "../utils";
 import { cache } from "../libs";
 import axios, { type AxiosResponse } from "axios";
 
-// The upstream Maraki service is slow and spiky (p95 ~1.7s). Successful
-// responses are reused for a minute; failures are never cached.
-const MARAKI_TTL_MS = 60 * 1000;
+// The upstream Maraki service is slow and spiky (0.5–6s). Data is considered
+// fresh for a minute; after that, for up to 30 more minutes, users get the
+// cached copy instantly while one background request refreshes it
+// (stale-while-revalidate). Only a cold start or 30+ idle minutes makes a user
+// wait for Maraki. Failures are never cached.
+const MARAKI_FRESH_MS = 60 * 1000;
+const MARAKI_STALE_MS = 30 * 60 * 1000;
 const MARAKI_TIMEOUT_MS = 15 * 1000;
 
 /**
@@ -13,7 +17,7 @@ const MARAKI_TIMEOUT_MS = 15 * 1000;
  */
 export const getDashboardInfo = asyncWrapper(async (req, res) => {
   try {
-    const result = await cache.getOrSetCache("maraki:dashboard", MARAKI_TTL_MS, async () => {
+    const result = await cache.getOrSetCacheSWR("maraki:dashboard", MARAKI_FRESH_MS, MARAKI_STALE_MS, async () => {
       const response: AxiosResponse<{ Data: any[] }> = await axios.post(
         "http://webapp.et:5201/4447673/run/ListRunDashBoardItemsQuery",
         {

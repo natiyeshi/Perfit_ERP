@@ -1,7 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import { asyncWrapper, RouteError, sendApiResponse } from "../utils";
 import { productValidator, queryValidator } from "../validators";
-import { db, zodErrorFmt } from "../libs";
+import { cache, db, sendCachedJson, zodErrorFmt } from "../libs";
+
+const PRODUCTS_TTL_MS = 10 * 60 * 1000;
 
 export const getProductsController = asyncWrapper(async (req, res) => {
   const paginationValiation =
@@ -13,21 +15,27 @@ export const getProductsController = asyncWrapper(async (req, res) => {
       zodErrorFmt(paginationValiation.error)
     );
 
-  const products = await db.product.findMany({
-    take: paginationValiation.data.limit,
-    skip: (paginationValiation.data.page || 1) - 1 || undefined,
-    orderBy: {
-      brandName: 'asc', // Change 'name' to your desired sort field if needed
-    },
-  });
+  const { limit, page } = paginationValiation.data;
 
-  return sendApiResponse({
+  // The full product list is loaded on ~9 screens (mostly dropdowns) and only
+  // changes on writes/sync, which invalidate this cache.
+  return sendCachedJson(
+    req,
     res,
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: "Products retrived successfully",
-    result: products,
-  });
+    cache.cacheKey(cache.PRODUCTS_PREFIX + "list", { limit, page }),
+    PRODUCTS_TTL_MS,
+    async () => ({
+      success: true,
+      message: "Products retrived successfully",
+      result: await db.product.findMany({
+        take: limit,
+        skip: (page || 1) - 1 || undefined,
+        orderBy: {
+          brandName: 'asc', // Change 'name' to your desired sort field if needed
+        },
+      }),
+    })
+  );
 });
 
 export const getProductByIDController = asyncWrapper(async (req, res) => {
