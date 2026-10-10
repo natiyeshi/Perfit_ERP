@@ -84,13 +84,15 @@ cscli collections install \
   crowdsecurity/whitelist-good-actors >/dev/null
 cscli hub upgrade >/dev/null || true
 
-# Read nginx logs (only if the installer's auto-detection didn't already).
-if ! grep -rqs "$ACCESS_LOG" /etc/crowdsec/acquis.yaml /etc/crowdsec/acquis.d/ 2>/dev/null; then
+# Read nginx logs, unless CrowdSec's setup already does (it usually adds
+# acquis.d/setup.nginx.yaml with /var/log/nginx/*.log). Reading a file twice
+# would count every request double.
+rm -f /etc/crowdsec/acquis.d/perfit-nginx.yaml
+if ! grep -rqs -E "type: *nginx" /etc/crowdsec/acquis.yaml /etc/crowdsec/acquis.d/ 2>/dev/null; then
   mkdir -p /etc/crowdsec/acquis.d
   cat > /etc/crowdsec/acquis.d/perfit-nginx.yaml <<EOF
 filenames:
-  - $ACCESS_LOG
-  - $ERROR_LOG
+  - /var/log/nginx/*.log   # includes backend.access.log / backend.error.log
 labels:
   type: nginx
 EOF
